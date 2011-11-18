@@ -1,8 +1,8 @@
 ﻿using System;
 using Framework.Core.Common;
 using Framework.Gui;
+using Game.Entities.Outworld.World.SpatialSensor;
 using Game.World.Terrains.Parts.Areas.Helpers;
-using Outworld.Model.Components.World;
 using Outworld.Scenes.InGame.Controls.Hud;
 using Game.World.Terrains.Rendering.MeshPools;
 using Microsoft.Xna.Framework;

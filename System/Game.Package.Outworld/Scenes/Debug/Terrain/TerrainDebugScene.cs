@@ -7,13 +7,13 @@ using Framework.Core.Scenes;
 using Framework.Core.Scenes.Cameras;
 using Framework.Core.Services;
 using Framework.Gui;
+using Game.Entities.Outworld.World;
 using Game.World.Terrains.Contexts;
 using Game.World.Terrains.Helpers;
 using Game.World.Terrains.Parts.Areas.Helpers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Outworld.Model.Components.World;
 using Outworld.Settings.Global;
 
 namespace Outworld.Scenes.Debug.Terrain

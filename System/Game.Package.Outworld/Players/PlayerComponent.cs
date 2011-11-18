@@ -1,21 +1,22 @@
 ﻿using System;
-using System.Timers;
 using Framework.Core.Animations;
 using Framework.Core.Services;
 using Framework.Physics;
 using Framework.Physics.RigidBodies;
 using Framework.Physics.RigidBodies.Shapes;
+using Game.Entities.Outworld.Characters;
+using Game.Entities.Outworld.World;
+using Game.Entities.Outworld.World.SpatialSensor;
 using Game.Entities.System;
 using Game.Entities.System.ComponentModel;
 using Game.Entities.System.EntityModel;
 using Game.World.Terrains.Helpers;
 using Game.World.Terrains.Parts.Tiles;
 using Microsoft.Xna.Framework;
-using Outworld.Model.Components.World;
 using Outworld.Scenes.InGame;
 using Outworld.Settings.Global;
 
-namespace Outworld.Model.Components.Characters.Player
+namespace Outworld.Players
 {
 	public class PlayerComponent : IComponent, IModelUpdateable
 	{

@@ -5,7 +5,7 @@ using Game.Entities.System.ComponentModel;
 using Game.Entities.System.EntityModel;
 using Microsoft.Xna.Framework;
 
-namespace Outworld.Model.Components.World
+namespace Game.Entities.Outworld.World.SpatialSensor
 {
 	/// <summary>
 	/// Analyzes a SpatialComponent and provides state information such as if an entity is falling, hitting the ground etc.

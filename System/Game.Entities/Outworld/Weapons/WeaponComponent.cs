@@ -1,7 +1,7 @@
 ﻿using Game.Entities.System.ComponentModel;
 using Game.Entities.System.EntityModel;
 
-namespace Outworld.Model.Components.Weapons
+namespace Game.Entities.Outworld.Weapons
 {
 	public class WeaponComponent : IComponent
 	{

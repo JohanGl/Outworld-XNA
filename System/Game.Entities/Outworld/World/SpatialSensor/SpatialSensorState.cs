@@ -1,4 +1,4 @@
-﻿namespace Outworld.Model.Components.World
+﻿namespace Game.Entities.Outworld.World.SpatialSensor
 {
 	public enum SpatialSensorState
 	{

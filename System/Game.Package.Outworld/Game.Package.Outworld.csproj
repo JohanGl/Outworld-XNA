@@ -123,14 +123,8 @@
     <Compile Include="Settings\Global\Entities\Networks\NetworkSettings.cs" />
     <Compile Include="Settings\SettingsHandler.cs" />
     <Compile Include="Settings\Global\Entities\Worlds\WorldSettings.cs" />
-    <Compile Include="Model\Components\Characters\Player\PlayerInputComponent.cs" />
-    <Compile Include="Model\Components\Weapons\WeaponComponent.cs" />
-    <Compile Include="Model\Components\Characters\HealthComponent.cs" />
-    <Compile Include="Model\Components\Characters\Player\PlayerComponent.cs" />
-    <Compile Include="Model\Components\World\SpatialSensor\SpatialSensorComponent.cs" />
-    <Compile Include="Model\Components\World\SpatialComponent.cs" />
-    <Compile Include="Model\Components\World\SpatialSensor\SpatialSensorState.cs" />
-    <Compile Include="Model\Entities\Entity.cs" />
+    <Compile Include="Players\PlayerInputComponent.cs" />
+    <Compile Include="Players\PlayerComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenes\InGame\Controls\Hud\HealthBar.cs" />
     <Compile Include="Scenes\InGame\Controls\Hud\WeaponBar.cs" />

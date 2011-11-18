@@ -3,15 +3,15 @@ using Framework.Core.Contexts;
 using Framework.Core.Scenes.Cameras;
 using Framework.Core.Services;
 using Framework.Physics.Controllers;
+using Game.Entities.Outworld.World;
 using Game.Entities.System;
 using Game.Entities.System.ComponentModel;
 using Game.Entities.System.EntityModel;
-using Outworld.Model.Components.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Outworld.Settings.Global;
 
-namespace Outworld.Model.Components.Characters.Player
+namespace Outworld.Players
 {
 	public class PlayerInputComponent : IComponent, IModelUpdateable
 	{

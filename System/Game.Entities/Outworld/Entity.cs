@@ -2,7 +2,7 @@
 using Game.Entities.System.ComponentModel.Handlers;
 using Game.Entities.System.EntityModel;
 
-namespace Outworld.Model.Entities
+namespace Game.Entities.Outworld
 {
 	public class Entity : IEntity
 	{

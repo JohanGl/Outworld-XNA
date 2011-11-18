@@ -4,7 +4,7 @@ using Game.Entities.System.ComponentModel;
 using Game.Entities.System.EntityModel;
 using Microsoft.Xna.Framework;
 
-namespace Outworld.Model.Components.World
+namespace Game.Entities.Outworld.World
 {
 	public class SpatialComponent : IComponent
 	{

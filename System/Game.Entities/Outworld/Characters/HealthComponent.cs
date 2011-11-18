@@ -1,7 +1,7 @@
 ﻿using Game.Entities.System.ComponentModel;
 using Game.Entities.System.EntityModel;
 
-namespace Outworld.Model.Components.Characters
+namespace Game.Entities.Outworld.Characters
 {
 	public class HealthComponent : IComponent
 	{

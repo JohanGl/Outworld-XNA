@@ -3,11 +3,12 @@ using Framework.Core.Contexts;
 using Framework.Core.Services;
 using Framework.Physics.RigidBodies;
 using Framework.Physics.RigidBodies.Shapes;
+using Game.Entities.Outworld;
+using Game.Entities.Outworld.Characters;
+using Game.Entities.Outworld.World;
+using Game.Entities.Outworld.World.SpatialSensor;
 using Game.World;
-using Outworld.Model.Components.Characters;
-using Outworld.Model.Components.Characters.Player;
-using Outworld.Model.Components.World;
-using Outworld.Model.Entities;
+using Outworld.Players;
 using Outworld.Settings.Global;
 
 namespace Outworld.Helpers.EntityFactories
