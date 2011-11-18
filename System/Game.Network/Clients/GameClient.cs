@@ -116,8 +116,10 @@ namespace Game.Network.Clients
 				return;
 			}
 
+			// Remove any previous instance of this entity if available
 			RemoveServerGameEntityById(clientId);
 
+			// Add the new entity
 			if (connected)
 			{
 				var entity = new ServerEntity

@@ -18,6 +18,7 @@ using Game.World.Terrains.Parts.Areas;
 using Game.World.Terrains.Parts.Tiles;
 using Microsoft.Xna.Framework.Audio;
 using Outworld.Players;
+using Outworld.Scenes.InGame.Helpers.BreadCrumbs;
 using Graphics = Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -36,12 +37,13 @@ namespace Outworld.Scenes.InGame
 		private GlobalSettings globalSettings;
 		private IPhysicsRenderer physicsRenderer;
 
+		private BreadCrumbHelper breadCrumbsHelper;
+
 		/// <summary>
 		/// Used for displaying how much memory is being allocated by the application
 		/// </summary>
 		private Process currentProcess = Process.GetCurrentProcess();
 	
-		private double currentProcessUpdateOffset;
 		private Entity player;
 		private PlayerInputComponent playerInput;
 		private SpatialComponent playerSpatial;
@@ -51,6 +53,8 @@ namespace Outworld.Scenes.InGame
 		private string activeCamera;
 		private GameTimer timerSendDataToServer;
 		private GameTimer timerWalkingSounds;
+		private GameTimer timerSaveBreadCrumb;
+		private GameTimer timerUpdateCurrentProcess;
 
 		// Sounds
 		private bool walkToggle;
@@ -70,14 +74,21 @@ namespace Outworld.Scenes.InGame
 
 			physicsRenderer = gameClient.World.PhysicsHandler.CreateRenderer(context.Graphics.Device, (BasicEffect)context.Graphics.Effect);
 
-			InitializeWorld(globalSettings);
+			InitializeHelpers();
+			InitializeWorld();
 			InitializeInput();
 			InitializeCamera();
 			InitializePlayer();
 			InitializeTimers();
 		}
 
-		private void InitializeWorld(GlobalSettings globalSettings)
+		private void InitializeHelpers()
+		{
+			// Allows us to store breadcrumbs for 20 minutes (since breadcrumbs are stored every 10 seconds and we allow 120 entries. 10 * 120 = 1200 seconds which equals 20 minutes)
+			breadCrumbsHelper = new BreadCrumbHelper(120);
+		}
+
+		private void InitializeWorld()
 		{
 			skyColor = new Color(188, 231, 250, 255);
 
@@ -107,6 +118,10 @@ namespace Outworld.Scenes.InGame
 			Context.Input.Keyboard.AddMapping(Keys.D);
 			Context.Input.Keyboard.AddMapping(Keys.LeftShift);
 			Context.Input.Keyboard.AddMapping(Keys.Space);
+			Context.Input.Keyboard.AddMapping(Keys.Up);
+			Context.Input.Keyboard.AddMapping(Keys.Down);
+			Context.Input.Keyboard.AddMapping(Keys.Left);
+			Context.Input.Keyboard.AddMapping(Keys.Right);
 
 			Context.Input.Mouse.ShowCursor = false;
 			Context.Input.Mouse.AutoCenter = true;
@@ -121,6 +136,14 @@ namespace Outworld.Scenes.InGame
 			playerSpatialSensor = player.Components.Get<SpatialSensorComponent>();
 			playerHealth = player.Components.Get<HealthComponent>();
 
+			if (breadCrumbsHelper.BreadCrumbs.Count > 0)
+			{
+				var lastBreadCrumb = breadCrumbsHelper.GetLastBreadCrumb();
+
+				playerSpatial.Position = lastBreadCrumb.Position;
+				playerSpatial.Angle = lastBreadCrumb.Angle;
+			}
+
 			// Find a suitable spawn point around the player location
 			var playerBounds = playerSpatial.GetBoundingBox(globalSettings.Player.Spatial.Size);
 			playerSpatial.Position = gameClient.World.TerrainContext.Visibility.SpawnPointHelper.FindSuitableSpawnPoint(playerBounds);
@@ -133,6 +156,8 @@ namespace Outworld.Scenes.InGame
 		{
 			timerSendDataToServer = new GameTimer(TimeSpan.FromMilliseconds(1000 / 30), SendDataToServer);
 			timerWalkingSounds = new GameTimer(TimeSpan.FromMilliseconds(400), UpdateWalkingSounds);
+			timerSaveBreadCrumb = new GameTimer(TimeSpan.FromSeconds(10), SaveBreadCrumb);
+			timerUpdateCurrentProcess = new GameTimer(TimeSpan.FromSeconds(2), UpdateCurrentProcess);
 		}
 
 		public void Respawn()
@@ -199,13 +224,10 @@ namespace Outworld.Scenes.InGame
 			Context.Resources.Sounds.Remove("Walking1");
 			Context.Resources.Sounds.Remove("Walking2");
 			Context.Resources.Sounds.Remove("Landing1");
-
 		}
 
 		public override void Update(GameTime gameTime)
 		{
-			timerSendDataToServer.Update(gameTime);
-
 			// Network update
 			gameServer.Update(gameTime);
 			gameClient.Update(gameTime);
@@ -216,15 +238,20 @@ namespace Outworld.Scenes.InGame
 			playerInput.HasFocus = HasFocus;
 			player.Components.Update(gameTime);
 
-			UpdateCurrentProcess(gameTime);
 			UpdateCamera();
 			UpdateGui();
 
+			// Update input
 			if (HasFocus)
 			{
 				UpdateInput();
 				timerWalkingSounds.Update(gameTime);
 			}
+
+			// Update all timers
+			timerSendDataToServer.Update(gameTime);
+			timerSaveBreadCrumb.Update(gameTime);
+			timerUpdateCurrentProcess.Update(gameTime);
 		}
 
 		private void UpdateInput()
@@ -279,14 +306,9 @@ namespace Outworld.Scenes.InGame
 			//previouslyDescending = playerSpatialSensor.State[SpatialSensorState.Descending];
 		}
 
-		private void UpdateCurrentProcess(GameTime gameTime)
+		private void UpdateCurrentProcess()
 		{
-			// Update the current process every 3 seconds
-			if (gameTime.TotalGameTime.TotalSeconds - currentProcessUpdateOffset > 3)
-			{
-				currentProcessUpdateOffset = gameTime.TotalGameTime.TotalSeconds;
-				currentProcess = Process.GetCurrentProcess();
-			}
+			currentProcess = Process.GetCurrentProcess();
 		}
 
 		public override void Render(GameTime gameTime)
@@ -350,6 +372,12 @@ namespace Outworld.Scenes.InGame
 			}
 		}
 
+		private void SaveBreadCrumb()
+		{
+			breadCrumbsHelper.Add(playerSpatial.Position, playerSpatial.Angle);
+			System.Diagnostics.Debug.WriteLine("Breadcrumbs: " + breadCrumbsHelper.BreadCrumbs.Count);
+		}
+
 		private void gameClient_GetClientSpatialCompleted(object sender, ClientSpatialEventArgs e)
 		{
 			for (int i = 0; i < e.ClientData.Length; i++)
@@ -359,9 +387,7 @@ namespace Outworld.Scenes.InGame
 				// Forced spatial update from the server
 				if (clientData.ClientId == gameClient.ClientId)
 				{
-					//playerSpatial.Position = clientData.Position;
-					//playerSpatial.Velocity = clientData.Velocity;
-					//playerSpatialSensor.ResetSensorValues();
+					// Move the player to the forced location
 				}
 				// Update other clients spatial data
 				else

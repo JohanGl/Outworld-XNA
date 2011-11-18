@@ -107,7 +107,8 @@ namespace Framework.Network.Servers
 		{
 			NetConnection excluded = null;
 
-			if (excludedClientId.HasValue && connections.ContainsKey(excludedClientId.Value))
+			if (excludedClientId.HasValue &&
+				connections.ContainsKey(excludedClientId.Value))
 			{
 				excluded = connections[excludedClientId.Value];
 			}

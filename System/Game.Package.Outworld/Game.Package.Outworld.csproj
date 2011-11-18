@@ -108,6 +108,8 @@
     <Compile Include="Scenes\Debug\Models\Animations\SkinningData.cs" />
     <Compile Include="Scenes\Debug\Models\ModelScene.cs" />
     <Compile Include="Scenes\InGame\ChildScenes\InGameMenu\InGameMenuScene.cs" />
+    <Compile Include="Scenes\InGame\Helpers\BreadCrumbs\BreadCrumb.cs" />
+    <Compile Include="Scenes\InGame\Helpers\BreadCrumbs\BreadCrumbHelper.cs" />
     <Compile Include="Scenes\Loading\LoadingScene.cs" />
     <Compile Include="Scenes\Debug\Terrain\TerrainDebugScene.cs" />
     <Compile Include="Scenes\NewGameScene\NewGameScene.cs" />

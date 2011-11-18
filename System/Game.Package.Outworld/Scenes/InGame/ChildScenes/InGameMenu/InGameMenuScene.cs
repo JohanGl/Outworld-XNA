@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using Framework.Core.Contexts;
 using Framework.Core.Scenes;
 using Framework.Gui;
@@ -132,26 +131,6 @@ namespace Outworld.Scenes.InGame.ChildScenes.InGameMenu
 			return button;
 		}
 
-		private void AddButton(string text, Thickness margin, object tag)
-		{
-			var button = new Button(text,
-									Context.Resources.Fonts["Global.Default"],
-									Context.Resources.Textures["Gui.Hud.Buttons.Default"],
-									Context.Resources.Textures["Gui.Hud.Buttons.Selected"],
-									Context.Resources.Textures["Gui.Hud.Buttons.Pressed"]);
-			button.Margin = margin;
-			button.HorizontalAlignment = HorizontalAlignment.Center;
-			button.VerticalAlignment = VerticalAlignment.Center;
-			button.Opacity = 0.6f;
-			button.Tag = tag;
-
-			button.Click += button_Click;
-
-			gui.Elements.Add(button);
-
-			buttons.Add(button);
-		}
-
 		private void button_Click(object sender, System.EventArgs e)
 		{
 			var tag = (sender as Button).Tag;
@@ -176,9 +155,12 @@ namespace Outworld.Scenes.InGame.ChildScenes.InGameMenu
 
 		private void UpdateInputs()
 		{
+			
+
 			// Select previous GUI-item
 			if (Context.Input.GamePadState[Buttons.LeftThumbstickUp].WasJustPressed ||
-				Context.Input.GamePadState[Buttons.DPadUp].WasJustPressed)
+				Context.Input.GamePadState[Buttons.DPadUp].WasJustPressed ||
+				Context.Input.Keyboard.KeyboardState[Keys.Up].WasJustPressed)
 			{
 				buttonIndex--;
 
@@ -192,7 +174,8 @@ namespace Outworld.Scenes.InGame.ChildScenes.InGameMenu
 
 			// Select next GUI-item
 			if (Context.Input.GamePadState[Buttons.LeftThumbstickDown].WasJustPressed || 
-				Context.Input.GamePadState[Buttons.DPadDown].WasJustPressed)
+				Context.Input.GamePadState[Buttons.DPadDown].WasJustPressed ||
+				Context.Input.Keyboard.KeyboardState[Keys.Down].WasJustPressed)
 			{
 				buttonIndex++;
 
@@ -205,7 +188,8 @@ namespace Outworld.Scenes.InGame.ChildScenes.InGameMenu
 			}
 
 			// GUI-item pressed
-			if (Context.Input.GamePadState[Buttons.A].WasJustPressed)
+			if (Context.Input.GamePadState[Buttons.A].WasJustPressed ||
+				Context.Input.Keyboard.KeyboardState[Keys.Space].WasJustPressed)
 			{
 				PressSelectedButton();
 			}

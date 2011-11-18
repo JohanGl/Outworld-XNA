@@ -120,16 +120,11 @@ namespace Game.Network.Servers
 			server.Writer.Write(e.Type == ClientStatusType.Connected);
 			server.Writer.Write(server.GetClientIdAsLong(e.ClientId));
 
-			long? clientId = null;
+			long? clientId = server.GetClientIdAsLong(e.ClientId);
 
-			if (e.Type != ClientStatusType.Connected)
+			if (clientId == -1)
 			{
-				clientId = server.GetClientIdAsLong(e.ClientId);
-
-				if (clientId == -1)
-				{
-					clientId = null;
-				}
+				clientId = null;
 			}
 
 			server.Broadcast(MessageDeliveryMethod.ReliableUnordered, clientId);
