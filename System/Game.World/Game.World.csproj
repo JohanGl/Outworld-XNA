@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{05959044-0F61-4D38-89F7-38B2B2D44AD7}</ProjectGuid>
+    <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Game.World</RootNamespace>
+    <AssemblyName>Game.World</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
+    <XnaPlatform>Windows</XnaPlatform>
+    <XnaProfile>HiDef</XnaProfile>
+    <XnaCrossPlatformGroupID>1e5a1298-27a2-4af7-bba4-4125891dd43a</XnaCrossPlatformGroupID>
+    <XnaOutputType>Library</XnaOutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>false</XnaCompressContent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\x86\Release</OutputPath>
+    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>true</XnaCompressContent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.GamerServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Xact, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Video, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Avatar, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Storage, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="mscorlib">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Net">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Terrains\Contexts\TerrainContext.cs" />
+    <Compile Include="Terrains\Generators\Areas\AreaGeneratorDefault.cs" />
+    <Compile Include="Terrains\Generators\Areas\AreaGeneratorAdvanced.cs" />
+    <Compile Include="Terrains\Generators\Areas\Themes\AreaThemeHandler.cs" />
+    <Compile Include="Terrains\Generators\Areas\MergeMasks\AreaMergeMaskImageProvider.cs" />
+    <Compile Include="Terrains\Generators\Areas\MergeMasks\AreaMerger.cs" />
+    <Compile Include="Terrains\Generators\Areas\Tiles\AreaHeightMapCache.cs" />
+    <Compile Include="Terrains\Generators\Areas\Tiles\DebugGenerator.cs" />
+    <Compile Include="Terrains\Generators\Areas\Tiles\MountainsGenerator.cs" />
+    <Compile Include="Terrains\Generators\Areas\Tiles\IAreaTilesGenerator.cs" />
+    <Compile Include="Terrains\Generators\Areas\Tiles\PlainsGenerator.cs" />
+    <Compile Include="Terrains\Generators\Noise\Managers\AreaResources\NoiseAreaResourceType.cs" />
+    <Compile Include="Terrains\Generators\Noise\Generators\LibNoise\NoiseGeneratorLibNoise.cs" />
+    <Compile Include="Terrains\Generators\Noise\Generators\LibNoise\Utils.cs" />
+    <Compile Include="Terrains\Generators\Noise\Managers\Areas\AreaGenerator.cs" />
+    <Compile Include="Terrains\Generators\Noise\Generators\Default\NoiseGeneratorDefault.cs" />
+    <Compile Include="Terrains\Generators\Noise\Generators\INoiseGenerator.cs" />
+    <Compile Include="Terrains\Generators\Noise\Generators\NoiseGeneratorSettings.cs" />
+    <Compile Include="Terrains\Generators\Noise\Managers\Areas\NoiseAreaType.cs" />
+    <Compile Include="Terrains\Generators\Noise\Managers\World\NoiseWorldType.cs" />
+    <Compile Include="Terrains\Generators\Noise\Managers\AreaResources\AreaResourceGenerator.cs" />
+    <Compile Include="Terrains\Generators\Noise\Managers\NoiseManager.cs" />
+    <Compile Include="Terrains\Generators\Noise\Helpers\NoiseModifiers.cs" />
+    <Compile Include="Terrains\Generators\Noise\Managers\World\WorldGenerator.cs" />
+    <Compile Include="Terrains\Generators\TerrainGenerator.cs" />
+    <Compile Include="Terrains\Generators\TerrainGeneratorAsync.cs" />
+    <Compile Include="Terrains\Generators\Areas\IAreaGenerator.cs" />
+    <Compile Include="Terrains\Helpers\AreaCollisionHelper.cs" />
+    <Compile Include="Terrains\Helpers\TerrainContextCollisionHelper.cs" />
+    <Compile Include="Terrains\Helpers\ImageExporter.cs" />
+    <Compile Include="Terrains\Parts\Areas\AreaModels\AreaModelHandler.cs" />
+    <Compile Include="Terrains\Parts\Areas\AreaModels\Builders\AreaModelBuilder.cs" />
+    <Compile Include="Terrains\Parts\Areas\AreaModels\Builders\TerrainMeshBuildInfo.cs" />
+    <Compile Include="Terrains\Parts\Areas\Collections\AreaCacheCollection.cs" />
+    <Compile Include="Terrains\Parts\Areas\Collections\AreaCollection.cs" />
+    <Compile Include="Terrains\Parts\Areas\Entities\Area.cs" />
+    <Compile Include="Terrains\Parts\Areas\Entities\AreaInfo.cs" />
+    <Compile Include="Terrains\Parts\Areas\Entities\AreaModel.cs" />
+    <Compile Include="Terrains\Parts\Areas\Entities\AreaRange.cs" />
+    <Compile Include="Terrains\Parts\Areas\Helpers\AreaHelper.cs" />
+    <Compile Include="Terrains\Parts\Areas\AreaModels\Builders\AreaModelBuildInfo.cs" />
+    <Compile Include="Terrains\Parts\Tiles\Entities\Enums.cs" />
+    <Compile Include="Terrains\Parts\Tiles\Entities\Tile.cs" />
+    <Compile Include="Terrains\Rendering\Contexts\RenderStateContext.cs" />
+    <Compile Include="Terrains\Rendering\Entities\TerrainMesh.cs" />
+    <Compile Include="Terrains\Rendering\Entities\TerrainVertex.cs" />
+    <Compile Include="Terrains\Parts\Areas\AreaModels\Builders\BlockMeshBuilder.cs" />
+    <Compile Include="Terrains\Rendering\MeshPools\Entities\Enums.cs" />
+    <Compile Include="Terrains\Rendering\MeshPools\TerrainMeshPool.cs" />
+    <Compile Include="Terrains\Rendering\TerrainRenderer.cs" />
+    <Compile Include="Terrains\Rendering\TerrainRendererAsync.cs" />
+    <Compile Include="Terrains\Visibility\Helpers\AreaSpawnPointHelper.cs" />
+    <Compile Include="Terrains\Visibility\Partials\TerrainVisibilityStatistics.cs" />
+    <Compile Include="Terrains\Visibility\Partials\ViewSettings.cs" />
+    <Compile Include="Terrains\Visibility\Queues\VisibilityQueue.cs" />
+    <Compile Include="Terrains\Visibility\Queues\VisibilityQueueJob.cs" />
+    <Compile Include="Terrains\Visibility\TerrainVisibility.cs" />
+    <Compile Include="WorldContext.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Framework.Core\Framework.Core.csproj">
+      <Project>{F0B86B7F-3493-4EF9-919B-36C8CC4B0A9B}</Project>
+      <Name>Framework.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Framework.Physics\Framework.Physics.csproj">
+      <Project>{8677A581-51A1-4825-B283-4BEAB53EBE3C}</Project>
+      <Name>Framework.Physics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Game.Model\Game.Model.csproj">
+      <Project>{4D073AD7-3754-4E97-8142-6FE8D5DDED54}</Project>
+      <Name>Game.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
+  <!--
+      To modify your build process, add your task inside one of the targets below and uncomment it. 
+      Other similar extension points exist, see Microsoft.Common.targets.
+      <Target Name="BeforeBuild">
+      </Target>
+      <Target Name="AfterBuild">
+      </Target>
+    -->
+</Project>

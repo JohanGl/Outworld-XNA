@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Settings>
+	<GamePackages>
+		<GamePackageInfo>
+			<Name>Outworld</Name>
+			<Description>Some description...</Description>
+			<Assembly>Outworld\Game.Package.Outworld.dll</Assembly>
+			<Version>1.0</Version>
+		</GamePackageInfo>
+	</GamePackages>
+</Settings>

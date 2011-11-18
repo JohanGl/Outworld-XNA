@@ -1,0 +1,324 @@
+﻿using System;
+using System.Text;
+using System.Linq;
+using Framework.Core.Common;
+using Framework.Core.Contexts;
+using Framework.Core.Scenes;
+using Framework.Core.Scenes.Cameras;
+using Framework.Core.Services;
+using Framework.Gui;
+using Game.World.Terrains.Contexts;
+using Game.World.Terrains.Helpers;
+using Game.World.Terrains.Parts.Areas.Helpers;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Outworld.Model.Components.World;
+using Outworld.Settings.Global;
+
+namespace Outworld.Scenes.Debug.Terrain
+{
+	public class TerrainDebugScene : SceneBase
+	{
+		private StringBuilder stringBuilder;
+		private TerrainContext terrainContext;
+		private Color skyColor;
+		private CameraFirstPerson camera;
+		private InputContext inputContext;
+		private SpatialComponent spatialComponent;
+		private Vector2 lookAroundAmplifier;
+		private const float radian = (float)Math.PI / 180f;
+		private int seed = 140024513;
+
+		private ChatBox chatBox;
+		private GuiManager gui;
+
+		private KeyboardState currentKeyboardState;
+		private KeyboardState previousKeyboardState;
+
+		public override void Initialize(GameContext context)
+		{
+			base.Initialize(context);
+
+			inputContext = context.Input;
+			stringBuilder = new StringBuilder(100, 500);
+			skyColor = new Color(188, 231, 250, 255);
+
+			lookAroundAmplifier = new Vector2(2f, 2f);
+
+			spatialComponent = new SpatialComponent();
+			spatialComponent.Position = new Vector3(18, 80, 80);
+			spatialComponent.Angle = new Vector3(180, -20, 0);
+
+			var globalSettings = ServiceLocator.Get<GlobalSettings>();
+			InitializeInput();
+
+			gui = new GuiManager(Context.Input, Context.Graphics.Device, Context.Graphics.SpriteBatch);
+		}
+
+		public override void LoadContent()
+		{
+			var content = Context.Resources.Content;
+			var resources = Context.Resources;
+
+			// Terrain
+			string[] tiles = { "Grass", "Grass2", "Stone5", "Stone6", "Sand", "Mud" };
+			for (int i = 1; i <= 6; i++)
+			{
+				resources.Textures.Add("Tile" + i, content.Load<Texture2D>(@"Tiles\" + tiles[i - 1]));
+			}
+
+			terrainContext = new TerrainContext(Context, new Vector2i(5, 3), seed);
+			terrainContext.Visibility.Teleport(new Vector3(16.5f, spatialComponent.Position.Y, 16.5f));
+			InitializeCamera();
+
+			InitializeGui();
+		}
+
+		private void InitializeGui()
+		{
+			chatBox = new ChatBox(300, 120, 5, Context.Resources.Fonts["Global.Default"]);
+			chatBox.HorizontalAlignment = HorizontalAlignment.Right;
+			gui.Elements.Add(chatBox);
+
+			gui.UpdateLayout();
+		}
+
+		public override void UnloadContent()
+		{
+			terrainContext.Clear();
+			Context.View.Cameras.Clear();
+
+			var resources = Context.Resources;
+
+			for (int i = 1; i <= 6; i++)
+			{
+				resources.Textures.Remove("Tile" + i);
+			}
+		}
+
+		public override void Update(GameTime gameTime)
+		{
+			UpdateInput();
+			HandleInputMove();
+			HandleInputLookAround();
+			UpdateCamera(camera);
+		}
+
+		public override void Render(GameTime gameTime)
+		{
+			// Clear the screen
+			Context.Graphics.Device.Clear(skyColor);
+
+			// Render the terrain
+			terrainContext.Renderer.Render(gameTime, camera);
+
+			// Calculate in which area the camera is at and print it below
+			var currentArea = new Vector3i();
+			AreaHelper.FindAreaLocation(spatialComponent.Position, ref currentArea);
+
+			stringBuilder.Clear();
+			stringBuilder.Append("X: ");
+			stringBuilder.Append(spatialComponent.Position.X);
+			stringBuilder.Append(", Y: ");
+			stringBuilder.Append(spatialComponent.Position.Y);
+			stringBuilder.Append(", Z: ");
+			stringBuilder.Append(spatialComponent.Position.Z);
+			stringBuilder.Append(Environment.NewLine);
+			stringBuilder.Append("AX: ");
+			stringBuilder.Append(spatialComponent.Angle.X);
+			stringBuilder.Append(", AY: ");
+			stringBuilder.Append(spatialComponent.Angle.Y);
+			stringBuilder.Append(", AZ: ");
+			stringBuilder.Append(spatialComponent.Angle.Z);
+			stringBuilder.Append(Environment.NewLine);
+			stringBuilder.Append("Area: ");
+			stringBuilder.Append(currentArea.X);
+			stringBuilder.Append(", ");
+			stringBuilder.Append(currentArea.Y);
+			stringBuilder.Append(", ");
+			stringBuilder.Append(currentArea.Z);
+
+			Context.Graphics.SpriteBatch.Begin();
+			Context.Graphics.SpriteBatch.DrawString(Context.Resources.Fonts["Global.Default"],
+													stringBuilder,
+													new Vector2(3, 0),
+													Color.Black,
+													0,
+													new Vector2(0, 0),
+													1,
+													SpriteEffects.None,
+													0);
+			Context.Graphics.SpriteBatch.End();
+
+			gui.Render();
+		}
+
+		private void InitializeInput()
+		{
+			Context.Input.Keyboard.ClearMappings();
+
+			Context.Input.Mouse.AutoCenter = false;
+			Context.Input.Mouse.ShowCursor = true;
+		}
+
+		private void InitializeCamera()
+		{
+			camera = new CameraFirstPerson();
+			camera.Initialize(Context.Graphics.Device.Viewport);
+		}
+
+		public void UpdateCamera(CameraBase camera)
+		{
+			camera.Position = spatialComponent.Position;
+
+			Matrix cameraRotation = Matrix.CreateRotationX(radian * -spatialComponent.Angle.Y) *
+									Matrix.CreateRotationY(radian * -spatialComponent.Angle.X) *
+									Matrix.CreateRotationZ(radian * -spatialComponent.Angle.Z);
+			Vector3 upVector = Vector3.Transform(Vector3.Up, cameraRotation);
+
+			camera.Target = camera.Position - Vector3.Transform(Vector3.Forward, cameraRotation);
+			camera.View = Matrix.CreateLookAt(camera.Position, camera.Target, upVector);
+			camera.ApplyToEffect((BasicEffect)Context.Graphics.Effect);
+		}
+
+		private void UpdateInput()
+		{
+			// Get keyboard state
+			currentKeyboardState = Keyboard.GetState();
+			
+			// New seed
+			if (currentKeyboardState.IsKeyDown(Keys.F1))
+			{
+				Random rand = new Random();
+				this.seed = rand.Next();
+				terrainContext = new TerrainContext(Context, new Vector2i(5, 3), seed);
+
+				terrainContext.Visibility.Teleport(new Vector3(16.5f, spatialComponent.Position.Y, 16.5f));
+				
+				InitializeCamera();
+			}
+			// Save terrain-snapshot
+			else if (currentKeyboardState.IsKeyDown(Keys.F2))
+			{
+				ImageExporter.AreasToBitmap(String.Format("terrain{0}.png", seed.ToString()), terrainContext.Visibility.AreaCollection.Areas.ToList(), true);
+			}
+			else if (IsKeyPressedThisUpdate(Keys.T))
+			{
+				if (!chatBox.IsFocused)
+				{
+					if (chatBox.Visibility == Visibility.Hidden)
+					{
+						chatBox.Visibility = Visibility.Visible;
+						chatBox.IsFocused = true;
+					}
+					else if (chatBox.Visibility == Visibility.Visible)
+					{
+						chatBox.Visibility = Visibility.Hidden;
+						chatBox.IsFocused = false;
+					}
+				}
+			}
+
+			gui.UpdateInput();
+
+			previousKeyboardState = currentKeyboardState;
+		}
+
+		private bool IsKeyPressedThisUpdate(Keys key)
+		{
+			if(previousKeyboardState.IsKeyUp(key) && currentKeyboardState.IsKeyDown(key))
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		private void HandleInputMove()
+		{
+			// Forward / backward
+			if (inputContext.GamePadState[Buttons.LeftThumbstickUp].Pressed)
+			{
+				spatialComponent.Position += GetVelocity(-90);
+			}
+			else if (inputContext.GamePadState[Buttons.LeftThumbstickDown].Pressed)
+			{
+				spatialComponent.Position -= GetVelocity(-90);
+			}
+
+			// Ascend / Descend
+			if (inputContext.GamePadState[Buttons.DPadUp].Pressed)
+			{
+				spatialComponent.Position = new Vector3(spatialComponent.Position.X, spatialComponent.Position.Y + 0.5f, spatialComponent.Position.Z);
+			}
+			else if (inputContext.GamePadState[Buttons.DPadDown].Pressed)
+			{
+				spatialComponent.Position = new Vector3(spatialComponent.Position.X, spatialComponent.Position.Y - 0.5f, spatialComponent.Position.Z);
+			}
+
+			// Strafe left / right
+			if (inputContext.GamePadState[Buttons.LeftThumbstickLeft].Pressed)
+			{
+				spatialComponent.Position += GetVelocity(0);
+			}
+			else if (inputContext.GamePadState[Buttons.LeftThumbstickRight].Pressed)
+			{
+				spatialComponent.Position -= GetVelocity(0);
+			}
+		}
+
+		private Vector3 GetVelocity(int angle)
+		{
+			float velocityX = 0.75f * (float)Math.Cos(radian * (spatialComponent.Angle.X - angle));
+			float velocityZ = 0.75f * (float)Math.Sin(radian * (spatialComponent.Angle.X - angle));
+
+			return new Vector3(velocityX, 0, velocityZ);
+		}
+
+		private void HandleInputLookAround()
+		{
+			// Look up
+			if (inputContext.GamePadState[Buttons.RightThumbstickUp].Pressed)
+			{
+				spatialComponent.Angle.Y += inputContext.GamePadState[Buttons.RightThumbstickUp].Value * lookAroundAmplifier.Y;
+			}
+			// Look down
+			else if (inputContext.GamePadState[Buttons.RightThumbstickDown].Pressed)
+			{
+				spatialComponent.Angle.Y -= inputContext.GamePadState[Buttons.RightThumbstickDown].Value * lookAroundAmplifier.Y;
+			}
+
+			// Look left
+			if (inputContext.GamePadState[Buttons.RightThumbstickLeft].Pressed)
+			{
+				spatialComponent.Angle.X -= inputContext.GamePadState[Buttons.RightThumbstickLeft].Value * lookAroundAmplifier.X;
+
+				if (spatialComponent.Angle.X < 0)
+				{
+					spatialComponent.Angle.X += 360f;
+				}
+			}
+			// Look right
+			else if (inputContext.GamePadState[Buttons.RightThumbstickRight].Pressed)
+			{
+				spatialComponent.Angle.X += inputContext.GamePadState[Buttons.RightThumbstickRight].Value * lookAroundAmplifier.X;
+
+				if (spatialComponent.Angle.X > 359)
+				{
+					spatialComponent.Angle.X -= 360f;
+				}
+			}
+
+			// Up/down angle limit checks
+			if (spatialComponent.Angle.Y > 90)
+			{
+				spatialComponent.Angle.Y = 90;
+			}
+			else if (spatialComponent.Angle.Y < -90)
+			{
+				spatialComponent.Angle.Y = -90;
+			}
+		}
+	}
+}
