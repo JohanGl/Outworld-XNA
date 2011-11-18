@@ -1,5 +1,5 @@
-﻿using Game.Model.Components;
-using Game.Model.Entities;
+﻿using Game.Entities.System.ComponentModel;
+using Game.Entities.System.EntityModel;
 
 namespace Outworld.Model.Components.Characters
 {

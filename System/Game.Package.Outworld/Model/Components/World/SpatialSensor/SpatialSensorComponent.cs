@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Game.Model;
-using Game.Model.Components;
-using Game.Model.Entities;
+using Game.Entities.System;
+using Game.Entities.System.ComponentModel;
+using Game.Entities.System.EntityModel;
 using Microsoft.Xna.Framework;
 
 namespace Outworld.Model.Components.World

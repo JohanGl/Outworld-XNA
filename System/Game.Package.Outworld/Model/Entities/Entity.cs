@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Game.Model.Components;
-using Game.Model.Entities;
+using Game.Entities.System.ComponentModel.Handlers;
+using Game.Entities.System.EntityModel;
 
 namespace Outworld.Model.Entities
 {

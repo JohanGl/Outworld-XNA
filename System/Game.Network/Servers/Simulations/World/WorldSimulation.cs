@@ -1,5 +1,5 @@
 ﻿using Framework.Physics;
-using Game.Model.Entities;
+using Game.Entities.System.EntityModel.Handlers;
 using Game.Network.Servers.Simulations.World.Terrains;
 using Microsoft.Xna.Framework;
 

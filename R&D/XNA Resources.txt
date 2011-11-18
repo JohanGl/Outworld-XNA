@@ -1,0 +1,19 @@
+----------------------------------------------------------------------------------------------------
+Microsoft XNA Game Studio 4.0 (2010-09-16)
+----------------------------------------------------------------------------------------------------
+
+Microsoft Download Center
+
+http://www.microsoft.com/downloads/en/details.aspx?FamilyID=9ac86eca-206f-4274-97f2-ef6c8b1f478f
+
+----------------------------------------------------------------------------------------------------
+Physics engines
+----------------------------------------------------------------------------------------------------
+
+"Are there any Physics Engines for use with XNA GS?"
+http://forums.create.msdn.com/forums/t/7574.aspx
+
+"Physics Engines List"
+http://www.digitalrune.com/Support/Blog/tabid/719/EntryId/30/Physics-Engines-List.aspx
+
+----------------------------------------------------------------------------------------------------

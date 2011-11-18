@@ -122,6 +122,7 @@
     <Compile Include="Terrains\Generators\TerrainGeneratorAsync.cs" />
     <Compile Include="Terrains\Generators\Areas\IAreaGenerator.cs" />
     <Compile Include="Terrains\Helpers\AreaCollisionHelper.cs" />
+    <Compile Include="Terrains\Helpers\CollisionTile.cs" />
     <Compile Include="Terrains\Helpers\TerrainContextCollisionHelper.cs" />
     <Compile Include="Terrains\Helpers\ImageExporter.cs" />
     <Compile Include="Terrains\Parts\Areas\AreaModels\AreaModelHandler.cs" />
@@ -162,9 +163,9 @@
       <Project>{8677A581-51A1-4825-B283-4BEAB53EBE3C}</Project>
       <Name>Framework.Physics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Game.Model\Game.Model.csproj">
-      <Project>{4D073AD7-3754-4E97-8142-6FE8D5DDED54}</Project>
-      <Name>Game.Model</Name>
+    <ProjectReference Include="..\Game.Entities\Game.Entities.csproj">
+      <Project>{4FFB3829-E503-4CE1-8682-596ACC565118}</Project>
+      <Name>Game.Entities</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

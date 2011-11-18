@@ -1,0 +1,74 @@
+------------------------------------------------------------------------
+Introduction
+------------------------------------------------------------------------
+
+Outworld is a futuristic first person shooter, located on an unexplored planet.
+
+Engaged in war with a hostile alien race that posesses superior technology and weaponry,
+humanity must even out the odds by gathering valuable data in order to reverse-engineer
+and utilize this technology against its foes in order to survive.
+
+After detecting large-scale alien activity on the planet Antar-8, scientists believe that the
+planet serves as a resource depot for the alien forces. Plans are initiated to send a specialized
+team to the planet to extract valuable resources and technology in aid of humanitys forces.
+
+Players take on the role as a small group of space marines, specially trained for survival in
+extreme conditions. 
+
+Besides being equipped with a pulse rifle and an damage-absorbing energy shield, each marine
+carries an invaluable artificial analysis and manufacturing unit called a Helix.
+
+------------------------------------------------------------------------
+Game Overview
+------------------------------------------------------------------------
+
+Genre
+ - Fps
+ - Action
+
+Game Elements
+ - Shooting
+ - Combat
+ - Exploration
+ - Collecting
+ - Research
+ - Construction
+
+Theme
+ - Sci-fi
+ - War
+
+Visual Style
+ - Halo
+ - X-Com 1-2
+ - Minecraft
+
+Game Sequence
+ - Sandbox world
+ - Linear storyline
+
+Players
+ - 1-4 players co-op campaign
+
+Player Immersion
+ - Intriguing story
+ - Tactical combat (Learning the most efficient way to take down different types of enemies by constructing unique weapons)
+ - Exploration and research (Finding new materials which can be used for construction of weapons and items)
+ - Creativity (construction of items)
+
+------------------------------------------------------------------------
+Technology and Marketing
+------------------------------------------------------------------------
+
+Technical
+ - Platforms:	PC (Xbox 360 planned)
+ - Programming:	C# with XNA
+
+Sales & Distribution
+ - Target consumer group:	Primarily 18-30 year old males
+ - Distribution:		Online through the game website and/or Steam
+ - Payment form:		Online through the game website
+ - Estimated price:		€9.99
+
+------------------------------------------------------------------------
+

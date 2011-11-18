@@ -1,7 +1,7 @@
 ﻿using Framework.Core.Common;
 using Framework.Core.Contexts;
 using Framework.Physics;
-using Game.Model.Entities;
+using Game.Entities.System.EntityModel.Handlers;
 using Game.World.Terrains.Contexts;
 using Microsoft.Xna.Framework;
 

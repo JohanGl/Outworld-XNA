@@ -7,13 +7,6 @@ using Microsoft.Xna.Framework;
 
 namespace Game.World.Terrains.Helpers
 {
-	public struct CollisionTile
-	{
-		public string Id;
-		public Tile Tile;
-		public BoundingBox BoundingBox;
-	}
-
 	/// <summary>
 	/// Handles collision operations for all areas within a TerrainContext
 	/// </summary>
