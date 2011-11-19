@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using Framework.Core.Common;
 using Framework.Core.Contexts;
@@ -14,7 +15,9 @@ using Game.Entities.Outworld.World.SpatialSensor;
 using Game.Network.Clients;
 using Game.Network.Clients.Events;
 using Game.Network.Servers;
+using Game.World.Terrains.Helpers;
 using Game.World.Terrains.Parts.Areas;
+using Game.World.Terrains.Parts.Areas.Helpers;
 using Game.World.Terrains.Parts.Tiles;
 using Microsoft.Xna.Framework.Audio;
 using Outworld.Players;
@@ -33,9 +36,9 @@ namespace Outworld.Scenes.InGame
 	{
 		private IGameServer gameServer;
 		private IGameClient gameClient;
-		private StringBuilder stringBuilder;
 		private GlobalSettings globalSettings;
 		private IPhysicsRenderer physicsRenderer;
+		private StringBuilder stringBuilder;
 
 		private BreadCrumbHelper breadCrumbsHelper;
 
@@ -43,8 +46,9 @@ namespace Outworld.Scenes.InGame
 		/// Used for displaying how much memory is being allocated by the application
 		/// </summary>
 		private Process currentProcess = Process.GetCurrentProcess();
-	
+
 		private Entity player;
+		private PlayerComponent playerComponent;
 		private PlayerInputComponent playerInput;
 		private SpatialComponent playerSpatial;
 		private SpatialSensorComponent playerSpatialSensor;
@@ -122,6 +126,8 @@ namespace Outworld.Scenes.InGame
 			Context.Input.Keyboard.AddMapping(Keys.Down);
 			Context.Input.Keyboard.AddMapping(Keys.Left);
 			Context.Input.Keyboard.AddMapping(Keys.Right);
+			Context.Input.Keyboard.AddMapping(Keys.F1);
+			Context.Input.Keyboard.AddMapping(Keys.F2);
 
 			Context.Input.Mouse.ShowCursor = false;
 			Context.Input.Mouse.AutoCenter = true;
@@ -131,17 +137,23 @@ namespace Outworld.Scenes.InGame
 		{
 			player = PlayerEntityFactory.Get("Player", Context, gameClient.World);
 
+			playerComponent = player.Components.Get<PlayerComponent>();
 			playerInput = player.Components.Get<PlayerInputComponent>();
 			playerSpatial = player.Components.Get<SpatialComponent>();
 			playerSpatialSensor = player.Components.Get<SpatialSensorComponent>();
 			playerHealth = player.Components.Get<HealthComponent>();
 
+			// Check if we should spawn at a previous breadcrumb
 			if (breadCrumbsHelper.BreadCrumbs.Count > 0)
 			{
 				var lastBreadCrumb = breadCrumbsHelper.GetLastBreadCrumb();
 
 				playerSpatial.Position = lastBreadCrumb.Position;
 				playerSpatial.Angle = lastBreadCrumb.Angle;
+
+				// Remove the last breadcrumb so if we die fast, we respawn from the one before that one, allowing us to step further away from our current position more fluently.
+				// This is because we assume that a hostile area isnt preferred to spawn in and try to backtrack to a safer breadcrumb position if possible.
+				breadCrumbsHelper.RemoveLastBreadCrumb();
 			}
 
 			// Find a suitable spawn point around the player location
@@ -263,6 +275,27 @@ namespace Outworld.Scenes.InGame
 					Context.Scenes.AddChild(this, new InGameMenuScene(), true);
 				}
 			}
+			
+			// Debug tool shortcuts
+			if (Context.Input.Keyboard.KeyboardState[Keys.F1].WasJustPressed)
+			{
+				ImageExporter.AreasToBitmap("snapshot.png", gameClient.World.TerrainContext.Visibility.AreaCollection.Areas.ToList(), true);
+				System.Diagnostics.Debug.WriteLine("Snapshot taken");
+			}
+			
+			if (Context.Input.Keyboard.KeyboardState[Keys.F2].WasJustPressed)
+			{
+				var areaLocation = new Vector3i();
+				AreaHelper.FindAreaLocation(playerSpatial.Position, ref areaLocation);
+
+				var area = gameClient.World.TerrainContext.Visibility.AreaCollection.Areas.SingleOrDefault(p => p.Info.Location.ToString() == areaLocation.ToString());
+
+				if (area != null)
+				{
+					ImageExporter.AreaTo3DBitmap("area3d.png", area);
+					System.Diagnostics.Debug.WriteLine("3D Area snapshot taken");
+				}
+			}
 		}
 
 		private void UpdateCamera()
@@ -374,8 +407,10 @@ namespace Outworld.Scenes.InGame
 
 		private void SaveBreadCrumb()
 		{
-			breadCrumbsHelper.Add(playerSpatial.Position, playerSpatial.Angle);
-			System.Diagnostics.Debug.WriteLine("Breadcrumbs: " + breadCrumbsHelper.BreadCrumbs.Count);
+			if (!playerComponent.IsDead)
+			{
+				breadCrumbsHelper.Add(playerSpatial.Position, playerSpatial.Angle);
+			}
 		}
 
 		private void gameClient_GetClientSpatialCompleted(object sender, ClientSpatialEventArgs e)

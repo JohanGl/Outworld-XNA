@@ -140,6 +140,7 @@ namespace Outworld.Players
 		public void Kill()
 		{
 			input.IsEnabled = false;
+			IsDead = true;
 			isDying = true;
 
 			AnimationHandler.Animations[AnimationType.DeathCameraTilt].From = spatial.Angle.Y;

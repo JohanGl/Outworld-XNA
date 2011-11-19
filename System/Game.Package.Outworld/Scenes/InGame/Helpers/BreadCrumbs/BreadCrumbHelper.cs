@@ -60,5 +60,13 @@ namespace Outworld.Scenes.InGame.Helpers.BreadCrumbs
 
 			return null;
 		}
+
+		public void RemoveLastBreadCrumb()
+		{
+			if (BreadCrumbs.Count > 0)
+			{
+				BreadCrumbs.RemoveAt(BreadCrumbs.Count - 1);
+			}
+		}
 	}
 }
