@@ -6,8 +6,6 @@ using Game.Network.Clients.Settings;
 using Game.Network.Servers;
 using Game.Network.Servers.Settings;
 using Microsoft.Xna.Framework.Graphics;
-using Outworld.Scenes.Debug.Models;
-using Outworld.Scenes.Debug.Terrain;
 using Outworld.Scenes.InGame;
 using Outworld.Settings;
 using Outworld.Settings.Global;
