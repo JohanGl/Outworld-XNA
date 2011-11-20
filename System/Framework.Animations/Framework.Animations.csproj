@@ -1,21 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{B5CC347C-15CB-4E6F-B87B-66E931C33A3C}</ProjectGuid>
+    <ProjectGuid>{8E74959C-F8B8-41F3-8421-9112CC2CD51B}</ProjectGuid>
     <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Outworld</RootNamespace>
-    <AssemblyName>Game.Package.Outworld</AssemblyName>
+    <RootNamespace>Framework.Animations</RootNamespace>
+    <AssemblyName>Framework.Animations</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
     <XnaPlatform>Windows</XnaPlatform>
     <XnaProfile>HiDef</XnaProfile>
-    <XnaCrossPlatformGroupID>9327d173-063b-4444-8e70-9e1be799de38</XnaCrossPlatformGroupID>
+    <XnaCrossPlatformGroupID>64ff8deb-5e46-4328-bff3-461732d5781d</XnaCrossPlatformGroupID>
     <XnaOutputType>Library</XnaOutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -44,14 +43,8 @@
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Jitter">
-      <HintPath>..\Resources\Libraries\Physics\Jitter\Debug\Jitter.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
@@ -99,78 +92,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GamePackage.cs" />
-    <Compile Include="Helpers\EntityFactories\PlayerEntityFactory.cs" />
-    <Compile Include="Scenes\Debug\Models\Animations\AnimationClip.cs" />
-    <Compile Include="Scenes\Debug\Models\Animations\AnimationPlayer.cs" />
-    <Compile Include="Scenes\Debug\Models\Animations\Keyframe.cs" />
-    <Compile Include="Scenes\Debug\Models\Animations\SkinnedModelProcessor.cs" />
-    <Compile Include="Scenes\Debug\Models\Animations\SkinningData.cs" />
-    <Compile Include="Scenes\Debug\Models\ModelScene.cs" />
-    <Compile Include="Scenes\InGame\ChildScenes\InGameMenu\InGameMenuScene.cs" />
-    <Compile Include="Scenes\InGame\Helpers\BreadCrumbs\BreadCrumb.cs" />
-    <Compile Include="Scenes\InGame\Helpers\BreadCrumbs\BreadCrumbHelper.cs" />
-    <Compile Include="Scenes\Loading\LoadingScene.cs" />
-    <Compile Include="Scenes\Debug\Terrain\TerrainDebugScene.cs" />
-    <Compile Include="Scenes\NewGameScene\NewGameScene.cs" />
-    <Compile Include="Settings\Global\Entities\Input\InputGamePadSettings.cs" />
-    <Compile Include="Settings\Global\Entities\Input\InputKeyboardSettings.cs" />
-    <Compile Include="Settings\Global\Entities\Input\InputMouseSettings.cs" />
-    <Compile Include="Settings\Global\Entities\Input\InputSettings.cs" />
-    <Compile Include="Settings\Global\GlobalSettings.cs" />
-    <Compile Include="Settings\Global\Entities\Players\PlayerSettings.cs" />
-    <Compile Include="Settings\Global\Entities\Players\PlayerAnimationDurationSettings.cs" />
-    <Compile Include="Settings\Global\Entities\Players\PlayerMovementSettings.cs" />
-    <Compile Include="Settings\Global\Entities\Players\PlayerSpatialSettings.cs" />
-    <Compile Include="Settings\Global\Entities\Networks\NetworkSettings.cs" />
-    <Compile Include="Settings\SettingsHandler.cs" />
-    <Compile Include="Settings\Global\Entities\Worlds\WorldSettings.cs" />
-    <Compile Include="Players\PlayerInputComponent.cs" />
-    <Compile Include="Players\PlayerComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scenes\InGame\Controls\Hud\HealthBar.cs" />
-    <Compile Include="Scenes\InGame\Controls\Hud\WeaponBar.cs" />
-    <Compile Include="Scenes\InGame\Entities\AnimationType.cs" />
-    <Compile Include="Scenes\InGame\Entities\Weapons\IWeapon.cs" />
-    <Compile Include="Scenes\InGame\Partials\Gui.cs" />
-    <Compile Include="Scenes\InGame\InGameScene.cs" />
+    <Compile Include="SkinnedModel.cs" />
+    <Compile Include="System\AnimationClip.cs" />
+    <Compile Include="System\AnimationPlayer.cs" />
+    <Compile Include="System\Keyframe.cs" />
+    <Compile Include="System\SkinningData.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Framework.Animations\Framework.Animations.csproj">
-      <Project>{8E74959C-F8B8-41F3-8421-9112CC2CD51B}</Project>
-      <Name>Framework.Animations</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Framework.Core\Framework.Core.csproj">
-      <Project>{F0B86B7F-3493-4EF9-919B-36C8CC4B0A9B}</Project>
-      <Name>Framework.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Framework.Gui\Framework.Gui.csproj">
-      <Project>{F32613D7-5152-435E-A396-D3C4C87BB83B}</Project>
-      <Name>Framework.Gui</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Framework.Physics\Framework.Physics.csproj">
-      <Project>{8677A581-51A1-4825-B283-4BEAB53EBE3C}</Project>
-      <Name>Framework.Physics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Game.Entities\Game.Entities.csproj">
-      <Project>{4FFB3829-E503-4CE1-8682-596ACC565118}</Project>
-      <Name>Game.Entities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Game.Network\Game.Network.csproj">
-      <Project>{816F4C8D-21DE-440A-AE9A-D99E077C3703}</Project>
-      <Name>Game.Network</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Game.World\Game.World.csproj">
-      <Project>{05959044-0F61-4D38-89F7-38B2B2D44AD7}</Project>
-      <Name>Game.World</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)*.*" "$(ProjectDir)..\Resources\GamePackages\Outworld\" /S /R /Y</PostBuildEvent>
-  </PropertyGroup>
   <!--
       To modify your build process, add your task inside one of the targets below and uncomment it. 
       Other similar extension points exist, see Microsoft.Common.targets.

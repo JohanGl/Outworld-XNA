@@ -119,6 +119,10 @@
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Framework.Animations\Framework.Animations.csproj">
+      <Project>{8E74959C-F8B8-41F3-8421-9112CC2CD51B}</Project>
+      <Name>Framework.Animations</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Framework.Core\Framework.Core.csproj">
       <Project>{F0B86B7F-3493-4EF9-919B-36C8CC4B0A9B}</Project>
       <Name>Framework.Core</Name>

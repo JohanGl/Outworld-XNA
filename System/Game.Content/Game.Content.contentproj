@@ -250,10 +250,15 @@
     <Compile Include="Models\Characters\Dude\dude.fbx">
       <Name>dude</Name>
       <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
+      <Processor>SkinnedModelProcessor</Processor>
     </Compile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Framework.Animations.Pipeline\Framework.Animations.Pipeline.csproj">
+      <Project>{EDD42E93-1638-4CB4-9E7A-1E0ABF12FC47}</Project>
+      <Name>Framework.Animations.Pipeline</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Characters\Dude\head.tga">
       <Name>head</Name>

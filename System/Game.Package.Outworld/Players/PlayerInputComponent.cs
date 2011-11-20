@@ -57,6 +57,23 @@ namespace Outworld.Players
 			HandleInput();
 		}
 
+		public void UpdateCamera3rdPerson(CameraBase camera)
+		{
+			camera.Position = spatialComponent.RigidBody.Position;
+			camera.Position.Y += playerComponent.CameraOffsetY;
+
+			Vector3 thirdPersonReference = new Vector3(0, 0.4f, 4f);
+			Matrix rotationMatrix = Matrix.CreateRotationY(radian * (-spatialComponent.Angle.X + 180));
+
+			// Create a vector pointing the direction the camera is facing.
+			Vector3 transformedReference = Vector3.Transform(thirdPersonReference, rotationMatrix);
+
+			// Calculate the position the camera is looking from.
+			Vector3 cameraPosition = transformedReference + spatialComponent.Position;
+
+			camera.View = Matrix.CreateLookAt(cameraPosition, spatialComponent.Position, Vector3.Up);
+		}
+
 		public void UpdateCamera(CameraBase camera)
 		{
 			camera.Position = spatialComponent.RigidBody.Position;

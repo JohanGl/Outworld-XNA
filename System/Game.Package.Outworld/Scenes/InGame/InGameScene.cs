@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Framework.Animations;
 using Framework.Core.Common;
 using Framework.Core.Contexts;
 using Framework.Core.Scenes;
@@ -59,6 +60,8 @@ namespace Outworld.Scenes.InGame
 		private GameTimer timerWalkingSounds;
 		private GameTimer timerSaveBreadCrumb;
 		private GameTimer timerUpdateCurrentProcess;
+
+		private SkinnedModel skinnedModelPlayer;
 
 		// Sounds
 		private bool walkToggle;
@@ -202,7 +205,13 @@ namespace Outworld.Scenes.InGame
 			InitializeGui();
 
 			// Models
-			Context.Resources.Models.Add("Player", content.Load<Graphics.Model>(@"Models\Characters\Player"));
+			Context.Resources.Models.Add("Player", content.Load<Model>(@"Models\Characters\Player"));
+			Context.Resources.Models.Add("Player2", content.Load<Model>(@"Models\Characters\Dude\dude"));
+
+			skinnedModelPlayer = new SkinnedModel();
+			skinnedModelPlayer.Initialize(Context.Resources.Models["Player2"]);
+			skinnedModelPlayer.SetAnimationClip("Take 001");
+			skinnedModelPlayer.Scale = 0.0225f;
 
 			// Sounds
 			Context.Resources.Sounds.Add("Walking1", content.Load<SoundEffect>(@"Sounds\Characters\Walking01"));
@@ -232,6 +241,10 @@ namespace Outworld.Scenes.InGame
 			resources.Textures.Remove("Gui.Hud.WeaponBorder");
 			resources.Textures.Remove("Gui.Hud.HealthBorder");
 
+			// Models
+			resources.Models.Remove("Player");
+			resources.Models.Remove("Player2");
+
 			// Sounds
 			Context.Resources.Sounds.Remove("Walking1");
 			Context.Resources.Sounds.Remove("Walking2");
@@ -259,6 +272,9 @@ namespace Outworld.Scenes.InGame
 				UpdateInput();
 				timerWalkingSounds.Update(gameTime);
 			}
+
+			// Update models
+			skinnedModelPlayer.Update(gameTime);
 
 			// Update all timers
 			timerSendDataToServer.Update(gameTime);
@@ -301,7 +317,8 @@ namespace Outworld.Scenes.InGame
 		private void UpdateCamera()
 		{
 			var camera = Context.View.Cameras[activeCamera];
-			playerInput.UpdateCamera(camera);
+			//playerInput.UpdateCamera(camera);
+			playerInput.UpdateCamera3rdPerson(camera);
 			camera.ApplyToEffect((BasicEffect)Context.Graphics.Effect);
 		}
 
@@ -352,8 +369,6 @@ namespace Outworld.Scenes.InGame
 			// Render the terrain
 			gameClient.World.TerrainContext.Renderer.Render(gameTime, Context.View.Cameras[activeCamera]);
 
-			//physicsRenderer.Render();
-
 			RenderServerEntities();
 
 			RenderGui();
@@ -361,6 +376,9 @@ namespace Outworld.Scenes.InGame
 
 		private void RenderServerEntities()
 		{
+			var camera = Context.View.Cameras["Default"];
+			skinnedModelPlayer.Render(camera.View, camera.Projection, playerSpatial.Position + new Vector3(0, -0.725f, 0), playerSpatial.Angle.X + 180f);
+
 			for (int i = 0; i < gameClient.ServerEntities.Count; i++)
 			{
 				var entity = gameClient.ServerEntities[i];
