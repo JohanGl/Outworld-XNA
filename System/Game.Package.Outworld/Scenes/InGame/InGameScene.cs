@@ -329,11 +329,11 @@ namespace Outworld.Scenes.InGame
 			{
 				if (!walkToggle)
 				{
-					Context.Resources.Sounds["Walking1"].Play(0.5f, 0f, -0.1f);
+					Context.Resources.Sounds["Walking1"].Play(0.25f, 0f, -0.1f);
 				}
 				else
 				{
-					Context.Resources.Sounds["Walking2"].Play(0.5f, 0f, 0.1f);
+					Context.Resources.Sounds["Walking2"].Play(0.25f, 0f, 0.1f);
 				}
 
 				walkToggle = !walkToggle;
@@ -382,14 +382,14 @@ namespace Outworld.Scenes.InGame
 			for (int i = 0; i < gameClient.ServerEntities.Count; i++)
 			{
 				var entity = gameClient.ServerEntities[i];
-				RenderModel(entity.Position, -entity.Angle.X);
+				RenderModel(entity.Position, -entity.Angle.X + 180);
 			}
 		}
 
 		private void RenderModel(Vector3 position, float angle)
 		{
 			var camera = Context.View.Cameras["Default"];
-			skinnedModelPlayer.Render(camera.View, camera.Projection, position + new Vector3(0, -0.725f, 0), angle + 180f);
+			skinnedModelPlayer.Render(camera.View, camera.Projection, position + new Vector3(0, -0.725f, 0), angle);
 		}
 
 		private void SendDataToServer()
