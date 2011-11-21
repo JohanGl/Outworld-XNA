@@ -382,36 +382,14 @@ namespace Outworld.Scenes.InGame
 			for (int i = 0; i < gameClient.ServerEntities.Count; i++)
 			{
 				var entity = gameClient.ServerEntities[i];
-				RenderModel(Context.Resources.Models["Player"], entity.Position, -entity.Angle.X);
+				RenderModel(entity.Position, -entity.Angle.X);
 			}
 		}
 
-		private void RenderModel(Graphics.Model m, Vector3 position, float angle)
+		private void RenderModel(Vector3 position, float angle)
 		{
 			var camera = Context.View.Cameras["Default"];
-
-			Matrix[] transforms = new Matrix[m.Bones.Count];
-			m.CopyAbsoluteBoneTransformsTo(transforms);
-			Matrix projection = camera.Projection;
-			Matrix view = camera.View;
-			
-			var state = new RasterizerState();
-			state.CullMode = CullMode.None;
-			Context.Graphics.Device.RasterizerState = state;
-
-			foreach (ModelMesh mesh in m.Meshes)
-			{
-				foreach (BasicEffect effect in mesh.Effects)
-				{
-					effect.EnableDefaultLighting();
-
-					effect.View = view;
-					effect.Projection = projection;
-					effect.World = Matrix.Identity * Matrix.CreateRotationY(MathHelper.ToRadians(angle)) * transforms[mesh.ParentBone.Index] * Matrix.CreateTranslation(position);
-				}
-
-				mesh.Draw();
-			}
+			skinnedModelPlayer.Render(camera.View, camera.Projection, position + new Vector3(0, -0.725f, 0), angle + 180f);
 		}
 
 		private void SendDataToServer()
