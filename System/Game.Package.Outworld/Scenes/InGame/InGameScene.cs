@@ -382,7 +382,7 @@ namespace Outworld.Scenes.InGame
 			for (int i = 0; i < gameClient.ServerEntities.Count; i++)
 			{
 				var entity = gameClient.ServerEntities[i];
-				RenderModel(entity.Position, -entity.Angle.X + 180);
+				RenderModel(entity.Position, entity.Angle.X + 180f);
 			}
 		}
 
