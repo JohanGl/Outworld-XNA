@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using Framework.Core.Contexts;
 using Framework.Core.Scenes;
 using Microsoft.Xna.Framework;
@@ -11,24 +10,21 @@ namespace Outworld.Scenes.Debug.Models
 {
 	public class ModelScene : SceneBase
 	{
-		private StringBuilder stringBuilder;
 		private Vector3 Position = Vector3.Zero;
 		private float angle;
 
-		Microsoft.Xna.Framework.Graphics.Model currentModel;
+		Model currentModel;
 		AnimationPlayer animationPlayer;
 
 		public override void Initialize(GameContext context)
 		{
 			base.Initialize(context);
-
-			stringBuilder = new StringBuilder(100, 500);
 		}
 
 		public override void LoadContent()
 		{
 			var content = Context.Resources.Content;
-			Context.Resources.Models.Add("weapon", content.Load<Graphics.Model>(@"Models\Weapons\MyGun02"));
+			Context.Resources.Models.Add("weapon", content.Load<Model>(@"Models\Weapons\Pistol01"));
 		}
 
 		public override void UnloadContent()
@@ -38,33 +34,15 @@ namespace Outworld.Scenes.Debug.Models
 
 		public override void Update(GameTime gameTime)
 		{
-			angle += 30f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+			angle += 60f * (float)gameTime.ElapsedGameTime.TotalSeconds;
 		}
 
 		public override void Render(GameTime gameTime)
 		{
 			DrawModel(Context.Resources.Models["weapon"]);
-
-			//stringBuilder.Clear(); 
-			//stringBuilder.Append("Models");
-
-			//Context.Graphics.Device.Clear(Color.Purple);
-
-			//Context.Graphics.SpriteBatch.Begin();
-
-			//Context.Graphics.SpriteBatch.DrawString(Context.Resources.Fonts["Global.Default"],
-			//                                        stringBuilder,
-			//                                        new Vector2(3, 0),
-			//                                        Color.White,
-			//                                        0,
-			//                                        new Vector2(0, 0),
-			//                                        1,
-			//                                        SpriteEffects.None,
-			//                                        0);
-			//Context.Graphics.SpriteBatch.End();
 		}
 
-		private void DrawModel(Graphics.Model m)
+		private void DrawModel(Model m)
 		{
 			Matrix[] transforms = new Matrix[m.Bones.Count];
 			float aspectRatio = Context.Graphics.Device.Viewport.AspectRatio;
@@ -81,6 +59,7 @@ namespace Outworld.Scenes.Debug.Models
 				foreach (BasicEffect effect in mesh.Effects)
 				{
 					effect.EnableDefaultLighting();
+					effect.DiffuseColor = new Vector3(1, 1, 1);
 
 					effect.View = view;
 					effect.Projection = projection;

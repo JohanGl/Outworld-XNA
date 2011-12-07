@@ -23,7 +23,6 @@ using Game.World.Terrains.Parts.Tiles;
 using Microsoft.Xna.Framework.Audio;
 using Outworld.Players;
 using Outworld.Scenes.InGame.Helpers.BreadCrumbs;
-using Graphics = Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -130,7 +129,8 @@ namespace Outworld.Scenes.InGame
 			Context.Input.Keyboard.AddMapping(Keys.Left);
 			Context.Input.Keyboard.AddMapping(Keys.Right);
 			Context.Input.Keyboard.AddMapping(Keys.F1);
-			Context.Input.Keyboard.AddMapping(Keys.F2);
+			Context.Input.Keyboard.AddMapping(Keys.F11);
+			Context.Input.Keyboard.AddMapping(Keys.F12);
 
 			Context.Input.Mouse.ShowCursor = false;
 			Context.Input.Mouse.AutoCenter = true;
@@ -291,15 +291,20 @@ namespace Outworld.Scenes.InGame
 					Context.Scenes.AddChild(this, new InGameMenuScene(), true);
 				}
 			}
-			
-			// Debug tool shortcuts
+
 			if (Context.Input.Keyboard.KeyboardState[Keys.F1].WasJustPressed)
+			{
+
+			}
+
+			// Debug tool shortcuts
+			if (Context.Input.Keyboard.KeyboardState[Keys.F11].WasJustPressed)
 			{
 				ImageExporter.AreasToBitmap("snapshot.png", gameClient.World.TerrainContext.Visibility.AreaCollection.Areas.ToList(), true);
 				System.Diagnostics.Debug.WriteLine("Snapshot taken");
 			}
 			
-			if (Context.Input.Keyboard.KeyboardState[Keys.F2].WasJustPressed)
+			if (Context.Input.Keyboard.KeyboardState[Keys.F12].WasJustPressed)
 			{
 				var areaLocation = new Vector3i();
 				AreaHelper.FindAreaLocation(playerSpatial.Position, ref areaLocation);
@@ -317,8 +322,8 @@ namespace Outworld.Scenes.InGame
 		private void UpdateCamera()
 		{
 			var camera = Context.View.Cameras[activeCamera];
-			//playerInput.UpdateCamera(camera);
-			playerInput.UpdateCamera3rdPerson(camera);
+			playerInput.UpdateCamera(camera);
+			//playerInput.UpdateCamera3rdPerson(camera);
 			camera.ApplyToEffect((BasicEffect)Context.Graphics.Effect);
 		}
 
@@ -376,8 +381,8 @@ namespace Outworld.Scenes.InGame
 
 		private void RenderServerEntities()
 		{
-			var camera = Context.View.Cameras["Default"];
-			skinnedModelPlayer.Render(camera.View, camera.Projection, playerSpatial.Position + new Vector3(0, -0.725f, 0), playerSpatial.Angle.X + 180f);
+			//var camera = Context.View.Cameras["Default"];
+			//skinnedModelPlayer.Render(camera.View, camera.Projection, playerSpatial.Position + new Vector3(0, -0.725f, 0), playerSpatial.Angle.X + 180f);
 
 			for (int i = 0; i < gameClient.ServerEntities.Count; i++)
 			{

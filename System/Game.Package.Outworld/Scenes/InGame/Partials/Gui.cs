@@ -15,6 +15,7 @@ namespace Outworld.Scenes.InGame
 		private GuiManager gui;
 		private WeaponBar weaponBar;
 		private HealthBar healthBar;
+		private Notifications notifications;
 
 		private void InitializeGui()
 		{
@@ -36,6 +37,11 @@ namespace Outworld.Scenes.InGame
 			healthBar = new HealthBar();
 			healthBar.Initialize(Context);
 			gui.Elements.Add(healthBar);
+
+			// Notifications
+			notifications = new Notifications();
+			notifications.Initialize(Context);
+			gui.Elements.Add(notifications);
 
 			gui.UpdateLayout();
 		}
