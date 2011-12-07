@@ -264,7 +264,7 @@ namespace Outworld.Scenes.InGame
 			player.Components.Update(gameTime);
 
 			UpdateCamera();
-			UpdateGui();
+			UpdateGui(gameTime);
 
 			// Update input
 			if (HasFocus)
@@ -294,7 +294,7 @@ namespace Outworld.Scenes.InGame
 
 			if (Context.Input.Keyboard.KeyboardState[Keys.F1].WasJustPressed)
 			{
-
+				notifications.AddNotification("Player joined!");
 			}
 
 			// Debug tool shortcuts

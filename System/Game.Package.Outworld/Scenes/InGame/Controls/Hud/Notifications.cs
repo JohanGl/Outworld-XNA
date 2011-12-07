@@ -10,8 +10,9 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 {
 	public class NotificationItem
 	{
+		public bool IsEnabled;
 		public string Text;
-		public float Alpha;
+		public float Opacity;
 		public GameTimer FadeTimer;
 	}
 
@@ -46,27 +47,42 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 		public void AddNotification(string text)
 		{
-			var item = new NotificationItem();
-			item.Text = text;
-			item.Alpha = 1f;
-			item.FadeTimer = new GameTimer(TimeSpan.FromMilliseconds(100));
+			// Create the item and set opacity to 8 which means that it will be visible for 8 seconds
+			var item = new NotificationItem
+			{
+				IsEnabled = true,
+				Text = text,
+				Opacity = 8f,
+				FadeTimer = new GameTimer(TimeSpan.FromMilliseconds(50))
+			};
 
 			items.Add(item);
 		}
 
 		public void Update(GameTime gameTime)
 		{
-			for (int i = 0; i < itemDisplayCapacity; i++)
+			for (int i = 0; i < items.Count; i++)
 			{
-				if (items[i].FadeTimer.Update(gameTime))
+				if (items[i].IsEnabled)
 				{
+					if (items[i].FadeTimer.Update(gameTime))
+					{
+						items[i].Opacity -= 0.05f;
+						items[i].IsEnabled = items[i].Opacity > 0f;
+					}
 				}
 			}
 		}
 
 		public override void Render(GraphicsDevice device, SpriteBatch spriteBatch)
 		{
-			spriteBatch.DrawString(context.Resources.Fonts["Hud.Small"], "Notifications!", positionTitle, new Color(255, 255, 255, alpha));
+			for (int i = 0; i < items.Count; i++)
+			{
+				if (items[i].IsEnabled)
+				{
+					spriteBatch.DrawString(context.Resources.Fonts["Hud.Small"], items[i].Text, positionTitle + new Vector2(0, i * 10), Color.White * items[i].Opacity);
+				}
+			}
 		}
 	}
 }
