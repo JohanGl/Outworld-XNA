@@ -16,6 +16,7 @@ namespace Game.Network.Clients
 		bool IsConnected { get; }
 		WorldContext World { get; set; }
 		List<ServerEntity> ServerEntities { get; set; }
+		List<string> Notifications { get; set; }
 
 		void Initialize(GameClientSettings settings);
 		void Connect();

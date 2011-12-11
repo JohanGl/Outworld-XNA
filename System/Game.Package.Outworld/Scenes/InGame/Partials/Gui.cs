@@ -48,11 +48,18 @@ namespace Outworld.Scenes.InGame
 
 		private void UpdateGui(GameTime gameTime)
 		{
+			// Update the healthbar
 			if (healthBar.Amount != playerHealth.Health)
 			{
 				healthBar.Amount = (int)playerHealth.Health;
 				healthBar.Percentage = playerHealth.Percentage;
 				healthBar.UpdateProgressBar();
+			}
+
+			// Add all newly added notifications from the game client
+			for (int i = 0; i < gameClient.Notifications.Count; i++)
+			{
+				notifications.AddNotification(gameClient.Notifications[i]);
 			}
 
 			notifications.Update(gameTime);

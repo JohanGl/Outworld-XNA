@@ -256,7 +256,6 @@ namespace Outworld.Scenes.InGame
 			// Network update
 			gameServer.Update(gameTime);
 			gameClient.Update(gameTime);
-
 			gameClient.World.TerrainContext.Visibility.Update(ref playerSpatial.RigidBody.Position);
 
 			// Update the player components

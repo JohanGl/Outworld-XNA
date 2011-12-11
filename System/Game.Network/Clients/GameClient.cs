@@ -19,6 +19,7 @@ namespace Game.Network.Clients
 		public WorldContext World { get; set; }
 		public byte ClientId { get; set; }
 		public List<ServerEntity> ServerEntities { get; set; }
+		public List<string> Notifications { get; set; }
 
 		public bool IsConnected
 		{
@@ -35,6 +36,7 @@ namespace Game.Network.Clients
 		{
 			messageHelper = new MessageHelper();
 			ServerEntities = new List<ServerEntity>();
+			Notifications = new List<string>();
 			Logger.RegisterLogLevelsFor<GameClient>(Logger.LogLevels.Adaptive);
 		}
 
@@ -64,6 +66,7 @@ namespace Game.Network.Clients
 		public void Update(GameTime gameTime)
 		{
 			client.Update();
+			Notifications.Clear();
 
 			for (int i = 0; i < client.Messages.Count; i++)
 			{
@@ -104,6 +107,8 @@ namespace Game.Network.Clients
 			client.Reader.ReadByte();
 			byte clientId = client.Reader.ReadByte();
 			bool connected = client.Reader.ReadBool();
+
+			Notifications.Add(string.Format("Player {0} {1}", clientId, connected ? "connected" : "disconnected"));
 
 			UpdateServerEntities(clientId, connected);
 		}
