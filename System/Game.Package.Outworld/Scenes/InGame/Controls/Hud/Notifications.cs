@@ -8,7 +8,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Outworld.Scenes.InGame.Controls.Hud
 {
-
 	public class Notifications : UIElement
 	{
 		protected class NotificationItem
@@ -19,7 +18,6 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 		private GameContext context;
 		private Vector2 positionTitle;
-		private int visibleCount;
 		public GameTimer fadeTimer;
 
 		private int capacity;
@@ -71,25 +69,23 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 					{
 						item.Opacity -= 0.05f;
 					}
+					else
+					{
+						items.Remove(item);
+					}
 				}
 			}
 		}
 
 		public override void Render(GraphicsDevice device, SpriteBatch spriteBatch)
 		{
-			visibleCount = 0;
-
 			for (int i = 0; i < items.Count; i++)
 			{
 				var item = items[i];
 
-				if (item.Opacity > 0)
-				{
-					spriteBatch.DrawString(context.Resources.Fonts["Hud.Small"], item.Text,
-										   positionTitle + new Vector2(0, visibleCount * 12),
-										   Color.White * item.Opacity);
-					visibleCount++;
-				}
+				spriteBatch.DrawString(context.Resources.Fonts["Hud.Small"], item.Text,
+										positionTitle + new Vector2(0, i * 12),
+										Color.White * item.Opacity);
 			}
 		}
 	}
