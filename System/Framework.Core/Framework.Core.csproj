@@ -96,6 +96,7 @@
     <Compile Include="Animations\AnimationHandler.cs" />
     <Compile Include="Animations\Entities\Animation.cs" />
     <Compile Include="Common\GameTimer.cs" />
+    <Compile Include="Common\Pool.cs" />
     <Compile Include="Common\Range.cs" />
     <Compile Include="Common\Vector2i.cs" />
     <Compile Include="Common\Vector4b.cs" />

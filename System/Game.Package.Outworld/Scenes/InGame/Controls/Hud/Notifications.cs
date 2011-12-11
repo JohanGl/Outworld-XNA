@@ -8,34 +8,36 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Outworld.Scenes.InGame.Controls.Hud
 {
-	public class NotificationItem
-	{
-		public string Text;
-		public float Alpha;
-		public GameTimer FadeTimer;
-	}
-
 	public class Notifications : UIElement
 	{
+		protected class NotificationItem
+		{
+			public float Opacity;
+			public string Text;
+		}
+
 		private GameContext context;
 		private Vector2 positionTitle;
+		public GameTimer fadeTimer;
 
-		private int itemDisplayCapacity;
+		private int capacity;
 		private List<NotificationItem> items;
 
-		public void Initialize(GameContext context)
+		public void Initialize(GameContext context, int capacity)
 		{
 			this.context = context;
+			this.capacity = capacity;
 
-			itemDisplayCapacity = 10;
-			items = new List<NotificationItem>(itemDisplayCapacity);
+			items = new List<NotificationItem>(capacity);
+
+			fadeTimer = new GameTimer(TimeSpan.FromMilliseconds(50));
 		}
 
 		public override void UpdateLayout(GuiManager guiManager, Rectangle availableSize)
 		{
 			HorizontalAlignment = HorizontalAlignment.Left;
 			VerticalAlignment = VerticalAlignment.Center;
-			Margin = new Thickness(16, 0, 0, 0);
+			Margin = new Thickness(4, 0, 0, 0);
 			Width = 300;
 			Height = 40;
 
@@ -46,27 +48,45 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 		public void AddNotification(string text)
 		{
-			var item = new NotificationItem();
-			item.Text = text;
-			item.Alpha = 1f;
-			item.FadeTimer = new GameTimer(TimeSpan.FromMilliseconds(100));
+			if (items.Count == capacity)
+			{
+				items.RemoveAt(0);
+			}
 
-			items.Add(item);
+			items.Add(new NotificationItem() { Text = text, Opacity = 5f });
 		}
 
 		public void Update(GameTime gameTime)
 		{
-			for (int i = 0; i < itemDisplayCapacity; i++)
+			// Update all items fade state
+			if (fadeTimer.Update(gameTime))
 			{
-				if (items[i].FadeTimer.Update(gameTime))
+				for (int i = 0; i < items.Count; i++)
 				{
+					var item = items[i];
+
+					if (item.Opacity > 0f)
+					{
+						item.Opacity -= 0.05f;
+					}
+					else
+					{
+						items.Remove(item);
+					}
 				}
 			}
 		}
 
 		public override void Render(GraphicsDevice device, SpriteBatch spriteBatch)
 		{
-			spriteBatch.DrawString(context.Resources.Fonts["Hud.Small"], "Notifications!", positionTitle, new Color(255, 255, 255, 0.5f));
+			for (int i = 0; i < items.Count; i++)
+			{
+				var item = items[i];
+
+				spriteBatch.DrawString(context.Resources.Fonts["Hud.Small"], item.Text,
+										positionTitle + new Vector2(0, i * 12),
+										Color.White * item.Opacity);
+			}
 		}
 	}
 }

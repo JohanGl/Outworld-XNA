@@ -40,13 +40,13 @@ namespace Outworld.Scenes.InGame
 
 			// Notifications
 			notifications = new Notifications();
-			notifications.Initialize(Context);
+			notifications.Initialize(Context, 10);
 			gui.Elements.Add(notifications);
 
 			gui.UpdateLayout();
 		}
 
-		private void UpdateGui()
+		private void UpdateGui(GameTime gameTime)
 		{
 			if (healthBar.Amount != playerHealth.Health)
 			{
@@ -54,6 +54,8 @@ namespace Outworld.Scenes.InGame
 				healthBar.Percentage = playerHealth.Percentage;
 				healthBar.UpdateProgressBar();
 			}
+
+			notifications.Update(gameTime);
 		}
 
 		private void RenderGui()
