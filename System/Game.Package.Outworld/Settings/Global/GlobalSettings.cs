@@ -28,11 +28,11 @@ namespace Outworld.Settings.Global
 
 		public void InitializeDefaults()
 		{
-			// World
+			// World (seed 500 = buggy)
 			World.Seed = 0;
-			World.Fog = true;
+			World.Fog = false;
 			World.Gravity = new Vector3(0, -30, 0);
-			World.ViewDistance = new Vector2i(3, 3);
+			World.ViewDistance = new Vector2i(1, 1);
 
 			// Player
 			Player.CameraOffsetY = 0.7f;

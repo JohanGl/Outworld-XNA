@@ -40,7 +40,7 @@ namespace Outworld.Scenes.InGame
 
 			// Notifications
 			notifications = new Notifications();
-			notifications.Initialize(Context);
+			notifications.Initialize(Context, 10);
 			gui.Elements.Add(notifications);
 
 			gui.UpdateLayout();

@@ -294,7 +294,7 @@ namespace Outworld.Scenes.InGame
 
 			if (Context.Input.Keyboard.KeyboardState[Keys.F1].WasJustPressed)
 			{
-				notifications.AddNotification("Player joined!");
+				notifications.AddNotification("Player joined! " + DateTime.Now.Second.ToString());
 			}
 
 			// Debug tool shortcuts
