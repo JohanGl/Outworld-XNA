@@ -66,7 +66,7 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 		public override void Render(GraphicsDevice device, SpriteBatch spriteBatch)
 		{
-			spriteBatch.DrawString(context.Resources.Fonts["Hud.Small"], "Notifications!", positionTitle, new Color(255, 255, 255, alpha));
+			spriteBatch.DrawString(context.Resources.Fonts["Hud.Small"], "Notifications!", positionTitle, new Color(255, 255, 255, 0.5f));
 		}
 	}
 }

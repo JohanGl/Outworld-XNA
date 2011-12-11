@@ -118,7 +118,7 @@ namespace Game.Network.Servers
 			server.Writer.Write((byte)GameClientMessageType.ClientStatus);
 			server.Writer.Write(e.ClientId);
 			server.Writer.Write(e.Type == ClientStatusType.Connected);
-			server.Writer.Write(server.GetClientIdAsLong(e.ClientId));
+//			server.Writer.Write(server.GetClientIdAsLong(e.ClientId));
 
 			long? clientId = server.GetClientIdAsLong(e.ClientId);
 
