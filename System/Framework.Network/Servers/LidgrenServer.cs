@@ -15,18 +15,15 @@ namespace Framework.Network.Servers
 		public List<Message> Messages { get; set; }
 		public IMessageReader Reader { get; set; }
 		public IMessageWriter Writer { get; set; }
-		private IServerConfiguration configuration;
 
 		private NetServer server;
 		private NetIncomingMessage messageIn;
 		private Dictionary<long, NetConnection> connections;
-		private Dictionary<long, byte> connectionIds;
 
 		public LidgrenServer()
 		{
 			Messages = new List<Message>();
 			connections = new Dictionary<long, NetConnection>();
-			connectionIds = new Dictionary<long, byte>();
 		}
 
 		public bool IsStarted
@@ -39,8 +36,6 @@ namespace Framework.Network.Servers
 
 		public void Initialize(IServerConfiguration configuration)
 		{
-			this.configuration = configuration;
-
 			var netPeerConfiguration = new NetPeerConfiguration("LidgrenConfig");
 			netPeerConfiguration.Port = configuration.Port;
 
@@ -116,67 +111,6 @@ namespace Framework.Network.Servers
 			server.SendToAll((NetOutgoingMessage)Writer.GetMessage(), excluded, GetDeliveryMethod(method), 0);
 		}
 
-		public byte CreateClientIdAsByteMapping(long clientId)
-		{
-			// Initialize the client id if not already done
-			if (!connectionIds.ContainsKey(clientId))
-			{
-				byte clientByteId = 0;
-
-				// Find a unused id in the range 1-255
-				for (int i = 1; i <= 255; i++)
-				{
-					bool foundNewId = true;
-
-					foreach (var pair in connectionIds)
-					{
-						if (pair.Value == i)
-						{
-							foundNewId = false;
-							break;
-						}
-					}
-
-					if (foundNewId)
-					{
-						clientByteId = (byte)i;
-						break;
-					}
-				}
-
-				// Add the new client id to the lookup table
-				connectionIds.Add(clientId, clientByteId);
-			}
-
-			return connectionIds[clientId];
-		}
-
-		public byte GetClientIdAsByte(long clientId)
-		{
-			foreach (var pair in connectionIds)
-			{
-				if (pair.Key == clientId)
-				{
-					return pair.Value;
-				}
-			}
-
-			throw new KeyNotFoundException("The specified clientId does not contain a byte mapping");
-		}
-
-		public long GetClientIdAsLong(byte clientId)
-		{
-			foreach (var pair in connectionIds)
-			{
-				if (pair.Value == clientId)
-				{
-					return pair.Key;
-				}
-			}
-
-			return -1;
-		}
-
 		private NetDeliveryMethod GetDeliveryMethod(MessageDeliveryMethod method)
 		{
 			switch (method)
@@ -242,7 +176,6 @@ namespace Framework.Network.Servers
 				if (connections.ContainsKey(senderId))
 				{
 					connections.Remove(senderId);
-					connectionIds.Remove(senderId);
 				}
 
 				connections.Add(senderId, messageIn.SenderConnection);
@@ -265,7 +198,6 @@ namespace Framework.Network.Servers
 				if (connections.ContainsKey(senderId))
 				{
 					connections.Remove(senderId);
-					connectionIds.Remove(senderId);
 				}
 
 				// Store the event as a message

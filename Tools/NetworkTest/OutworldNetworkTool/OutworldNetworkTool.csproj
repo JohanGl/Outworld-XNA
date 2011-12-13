@@ -81,19 +81,19 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\outworld\System\Framework.Core\Framework.Core.csproj">
+    <ProjectReference Include="..\..\..\System\Framework.Core\Framework.Core.csproj">
       <Project>{F0B86B7F-3493-4EF9-919B-36C8CC4B0A9B}</Project>
       <Name>Framework.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\outworld\System\Framework.Network\Framework.Network.csproj">
+    <ProjectReference Include="..\..\..\System\Framework.Network\Framework.Network.csproj">
       <Project>{B970FFE7-43B4-4D78-9CD3-254BCA6564FA}</Project>
       <Name>Framework.Network</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\outworld\System\Game.Network\Game.Network.csproj">
+    <ProjectReference Include="..\..\..\System\Game.Network\Game.Network.csproj">
       <Project>{816F4C8D-21DE-440A-AE9A-D99E077C3703}</Project>
       <Name>Game.Network</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\outworld\System\Game.World\Game.World.csproj">
+    <ProjectReference Include="..\..\..\System\Game.World\Game.World.csproj">
       <Project>{05959044-0F61-4D38-89F7-38B2B2D44AD7}</Project>
       <Name>Game.World</Name>
     </ProjectReference>

@@ -18,6 +18,7 @@ namespace Game.Network.Servers
 		public WorldSimulation World { get; private set; }
 
 		private IServer server;
+		private Dictionary<long, byte> connectionIds;
 		private MessageHelper messageHelper;
 		private Dictionary<byte, ClientData> clientData;
 		private double timer;
@@ -28,6 +29,7 @@ namespace Game.Network.Servers
 		{
 			messageHelper = new MessageHelper();
 			clientData = new Dictionary<byte, ClientData>();
+			connectionIds = new Dictionary<long, byte>();
 
 			clientTimeOutTimer = new GameTimer(TimeSpan.FromSeconds(2));
 
@@ -43,7 +45,7 @@ namespace Game.Network.Servers
 				if (gameTime.TotalGameTime.Seconds - pair.Value.TimeOut >= 2)
 				{
 					var message = new Message();
-					message.ClientId = server.GetClientIdAsLong(pair.Key);
+					message.ClientId = GetClientIdAsLong(pair.Key).Value;
 					message.Type = MessageType.Disconnect;
 					server.Messages.Add(message);
 
@@ -106,8 +108,14 @@ namespace Game.Network.Servers
 
 				if (message.Type == MessageType.Data)
 				{
+					// Skip clients that doesnt exist
+					if (!connectionIds.ContainsKey(message.ClientId))
+					{
+						continue;
+					}
+
 					// Reset client timeout value when data recieved
-					byte clientId = server.GetClientIdAsByte(message.ClientId);
+					byte clientId = connectionIds[message.ClientId];
 					if (clientData.ContainsKey(clientId))
 					{
 						clientData[clientId].TimeOut = gameTime.TotalGameTime.Seconds;
@@ -133,13 +141,14 @@ namespace Game.Network.Servers
 					
 					if (args.Type == ClientStatusType.Connected)
 					{
-						args.ClientId = server.CreateClientIdAsByteMapping(message.ClientId);
+						args.ClientId = CreateClientIdAsByteMapping(message.ClientId);
 						clientData.Add(args.ClientId, new ClientData());
 					}
 					else
 					{
-						args.ClientId = server.GetClientIdAsByte(message.ClientId);
+						args.ClientId = connectionIds[message.ClientId];
 						clientData.Remove(args.ClientId);
+						connectionIds.Remove(message.ClientId);
 					}
 
 					BroadcastClientStatusChanged(args);
@@ -172,21 +181,13 @@ namespace Game.Network.Servers
 			server.Writer.Write((byte)GameClientMessageType.ClientStatus);
 			server.Writer.Write(e.ClientId);
 			server.Writer.Write(e.Type == ClientStatusType.Connected);
-//			server.Writer.Write(server.GetClientIdAsLong(e.ClientId));
 
-			long? clientId = server.GetClientIdAsLong(e.ClientId);
-
-			if (clientId == -1)
-			{
-				clientId = null;
-			}
-
-			server.Broadcast(MessageDeliveryMethod.ReliableUnordered, clientId);
+			server.Broadcast(MessageDeliveryMethod.ReliableUnordered, GetClientIdAsLong(e.ClientId));
 		}
 
 		private void SendGameSettings(Message message)
 		{
-			byte clientId = server.GetClientIdAsByte(message.ClientId);
+			byte clientId = connectionIds[message.ClientId];
 
 			server.Writer.WriteNewMessage();
 			server.Writer.Write((byte)GameClientMessageType.GameSettings);
@@ -214,7 +215,7 @@ namespace Game.Network.Servers
 
 			var clientSpatialData = new ClientSpatialData
 			{
-				ClientId = server.GetClientIdAsByte(message.ClientId),
+				ClientId = connectionIds[message.ClientId],
 				Position = messageHelper.ReadVector3(server.Reader),
 				Velocity = messageHelper.ReadVector3(server.Reader),
 				Angle = messageHelper.ReadVector3(server.Reader)
@@ -269,6 +270,54 @@ namespace Game.Network.Servers
 			}
 
 			server.Broadcast(MessageDeliveryMethod.UnreliableSequenced);
+		}
+
+		private byte CreateClientIdAsByteMapping(long clientId)
+		{
+			// Initialize the client id if not already done
+			if (!connectionIds.ContainsKey(clientId))
+			{
+				byte clientByteId = 0;
+
+				// Find a unused id in the range 1-255
+				for (int i = 1; i <= 255; i++)
+				{
+					bool foundNewId = true;
+
+					foreach (var pair in connectionIds)
+					{
+						if (pair.Value == i)
+						{
+							foundNewId = false;
+							break;
+						}
+					}
+
+					if (foundNewId)
+					{
+						clientByteId = (byte)i;
+						break;
+					}
+				}
+
+				// Add the new client id to the lookup table
+				connectionIds.Add(clientId, clientByteId);
+			}
+
+			return connectionIds[clientId];
+		}
+
+		private long? GetClientIdAsLong(byte clientId)
+		{
+			foreach (var connectionId in connectionIds)
+			{
+				if (connectionId.Value == clientId)
+				{
+					return connectionId.Key;
+				}
+			}
+
+			return null;
 		}
 	}
 }

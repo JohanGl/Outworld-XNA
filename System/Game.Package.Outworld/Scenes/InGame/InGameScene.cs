@@ -442,5 +442,10 @@ namespace Outworld.Scenes.InGame
 				}
 			}
 		}
+
+		public void Disconnect()
+		{
+			gameClient.Disconnect("Bye! Bye! :-)");
+		}
 	}
 }

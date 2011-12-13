@@ -148,6 +148,7 @@ namespace Outworld.Scenes.InGame.ChildScenes.InGameMenu
 					break;
 
 				case ButtonCommand.Quit:
+					(Parent as InGameScene).Disconnect();
 					Context.Game.Exit();
 					break;
 			}

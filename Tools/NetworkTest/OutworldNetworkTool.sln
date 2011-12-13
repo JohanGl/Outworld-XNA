@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutworldNetworkTool", "OutworldNetworkTool\OutworldNetworkTool.csproj", "{04F81B4B-A822-47A8-B030-03B9927D9FB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Network", "..\outworld\System\Framework.Network\Framework.Network.csproj", "{B970FFE7-43B4-4D78-9CD3-254BCA6564FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Network", "..\..\System\Framework.Network\Framework.Network.csproj", "{B970FFE7-43B4-4D78-9CD3-254BCA6564FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.Network", "..\outworld\System\Game.Network\Game.Network.csproj", "{816F4C8D-21DE-440A-AE9A-D99E077C3703}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.Network", "..\..\System\Game.Network\Game.Network.csproj", "{816F4C8D-21DE-440A-AE9A-D99E077C3703}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Referensed projects", "Referensed projects", "{2210D284-E75A-4300-8643-9C47DD407015}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Referenced projects", "Referenced projects", "{2210D284-E75A-4300-8643-9C47DD407015}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.World", "..\outworld\System\Game.World\Game.World.csproj", "{05959044-0F61-4D38-89F7-38B2B2D44AD7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.World", "..\..\System\Game.World\Game.World.csproj", "{05959044-0F61-4D38-89F7-38B2B2D44AD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Core", "..\outworld\System\Framework.Core\Framework.Core.csproj", "{F0B86B7F-3493-4EF9-919B-36C8CC4B0A9B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Core", "..\..\System\Framework.Core\Framework.Core.csproj", "{F0B86B7F-3493-4EF9-919B-36C8CC4B0A9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,8 +44,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{B970FFE7-43B4-4D78-9CD3-254BCA6564FA} = {2210D284-E75A-4300-8643-9C47DD407015}
 		{816F4C8D-21DE-440A-AE9A-D99E077C3703} = {2210D284-E75A-4300-8643-9C47DD407015}
+		{B970FFE7-43B4-4D78-9CD3-254BCA6564FA} = {2210D284-E75A-4300-8643-9C47DD407015}
 		{05959044-0F61-4D38-89F7-38B2B2D44AD7} = {2210D284-E75A-4300-8643-9C47DD407015}
 		{F0B86B7F-3493-4EF9-919B-36C8CC4B0A9B} = {2210D284-E75A-4300-8643-9C47DD407015}
 	EndGlobalSection
