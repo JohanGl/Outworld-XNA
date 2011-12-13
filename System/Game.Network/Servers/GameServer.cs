@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Framework.Core.Common;
 using Framework.Core.Diagnostics.Logging;
 using Framework.Network.Messages;
 using Framework.Network.Servers;
@@ -20,11 +22,39 @@ namespace Game.Network.Servers
 		private Dictionary<byte, ClientData> clientData;
 		private double timer;
 
+		private GameTimer clientTimeOutTimer;
+
 		public GameServer()
 		{
 			messageHelper = new MessageHelper();
 			clientData = new Dictionary<byte, ClientData>();
+
+			clientTimeOutTimer = new GameTimer(TimeSpan.FromSeconds(2));
+
 			Logger.RegisterLogLevelsFor<GameServer>(Logger.LogLevels.Adaptive);
+		}
+
+		private void CheckClientTimeOuts(GameTime gameTime)
+		{
+			var clientsToRemove = new List<byte>();
+
+			foreach (var pair in clientData)
+			{
+				if (gameTime.TotalGameTime.Seconds - pair.Value.TimeOut >= 2)
+				{
+					var message = new Message();
+					message.ClientId = server.GetClientIdAsLong(pair.Key);
+					message.Type = MessageType.Disconnect;
+					server.Messages.Add(message);
+
+					clientsToRemove.Add(pair.Key);
+				}
+			}
+
+			for (int i = 0; i < clientsToRemove.Count; i++)
+			{
+				clientData.Remove(clientsToRemove[i]);
+			}
 		}
 
 		public bool IsStarted
@@ -72,6 +102,13 @@ namespace Game.Network.Servers
 
 			for (int i = 0; i < server.Messages.Count; i++)
 			{
+				// Reset client timeout value
+				byte clientId = server.GetClientIdAsByte(server.Messages[i].ClientId);
+				if (clientData.ContainsKey(clientId))
+				{
+					clientData[clientId].TimeOut = gameTime.TotalGameTime.Seconds;
+				}
+
 				if (server.Messages[i].Type == MessageType.Data)
 				{
 					switch ((GameClientMessageType)server.Messages[i].Data[0])
@@ -93,6 +130,15 @@ namespace Game.Network.Servers
 						Type = server.Messages[i].Type == MessageType.Connect ? ClientStatusType.Connected : ClientStatusType.Disconnected
 					};
 
+					if (args.Type == ClientStatusType.Connected)
+					{
+						clientData.Add(args.ClientId, new ClientData());
+					}
+					else
+					{
+						clientData.Remove(args.ClientId);
+					}
+
 					BroadcastClientStatusChanged(args);
 				}
 			}
@@ -109,6 +155,11 @@ namespace Game.Network.Servers
 				}
 
 				World.Update(gameTime);
+			}
+
+			if(clientTimeOutTimer.Update(gameTime))
+			{
+				CheckClientTimeOuts(gameTime);
 			}
 		}
 
@@ -140,7 +191,7 @@ namespace Game.Network.Servers
 			server.Writer.Write(clientId);
 			server.Writer.Write(Settings.World.Seed);
 			messageHelper.WriteVector3(Settings.World.Gravity, server.Writer);
-			server.Writer.Write((byte)clientData.Count);
+			server.Writer.Write((byte)clientData.Count - 1);
 
 			foreach (var pair in clientData)
 			{
@@ -168,7 +219,7 @@ namespace Game.Network.Servers
 
 			if (!clientData.ContainsKey(clientSpatialData.ClientId))
 			{
-				clientData.Add(clientSpatialData.ClientId, new ClientData());
+				return;
 			}
 
 			clientData[clientSpatialData.ClientId].SpatialData.Add(clientSpatialData);
