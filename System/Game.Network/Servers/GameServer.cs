@@ -102,23 +102,25 @@ namespace Game.Network.Servers
 
 			for (int i = 0; i < server.Messages.Count; i++)
 			{
-				// Reset client timeout value
-				byte clientId = server.GetClientIdAsByte(server.Messages[i].ClientId);
-				if (clientData.ContainsKey(clientId))
-				{
-					clientData[clientId].TimeOut = gameTime.TotalGameTime.Seconds;
-				}
+				Message message = server.Messages[i];
 
-				if (server.Messages[i].Type == MessageType.Data)
+				if (message.Type == MessageType.Data)
 				{
-					switch ((GameClientMessageType)server.Messages[i].Data[0])
+					// Reset client timeout value when data recieved
+					byte clientId = server.GetClientIdAsByte(message.ClientId);
+					if (clientData.ContainsKey(clientId))
+					{
+						clientData[clientId].TimeOut = gameTime.TotalGameTime.Seconds;
+					}
+
+					switch ((GameClientMessageType)message.Data[0])
 					{
 						case GameClientMessageType.GameSettings:
-							SendGameSettings(server.Messages[i]);
+							SendGameSettings(message);
 							break;
 
 						case GameClientMessageType.ClientSpatial:
-							ReceivedClientSpatial(server.Messages[i]);
+							ReceivedClientSpatial(message);
 							break;
 					}
 				}
@@ -126,16 +128,17 @@ namespace Game.Network.Servers
 				{
 					var args = new ClientStatusArgs()
 					{
-						ClientId = server.GetClientIdAsByte(server.Messages[i].ClientId),
-						Type = server.Messages[i].Type == MessageType.Connect ? ClientStatusType.Connected : ClientStatusType.Disconnected
+						Type = message.Type == MessageType.Connect ? ClientStatusType.Connected : ClientStatusType.Disconnected
 					};
-
+					
 					if (args.Type == ClientStatusType.Connected)
 					{
+						args.ClientId = server.CreateClientIdAsByteMapping(message.ClientId);
 						clientData.Add(args.ClientId, new ClientData());
 					}
 					else
 					{
+						args.ClientId = server.GetClientIdAsByte(message.ClientId);
 						clientData.Remove(args.ClientId);
 					}
 

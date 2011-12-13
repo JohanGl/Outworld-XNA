@@ -116,7 +116,7 @@ namespace Framework.Network.Servers
 			server.SendToAll((NetOutgoingMessage)Writer.GetMessage(), excluded, GetDeliveryMethod(method), 0);
 		}
 
-		public byte GetClientIdAsByte(long clientId)
+		public byte CreateClientIdAsByteMapping(long clientId)
 		{
 			// Initialize the client id if not already done
 			if (!connectionIds.ContainsKey(clientId))
@@ -149,6 +149,19 @@ namespace Framework.Network.Servers
 			}
 
 			return connectionIds[clientId];
+		}
+
+		public byte GetClientIdAsByte(long clientId)
+		{
+			foreach (var pair in connectionIds)
+			{
+				if (pair.Key == clientId)
+				{
+					return pair.Value;
+				}
+			}
+
+			throw new KeyNotFoundException("The specified clientId does not contain a byte mapping");
 		}
 
 		public long GetClientIdAsLong(byte clientId)

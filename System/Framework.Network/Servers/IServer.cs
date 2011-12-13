@@ -20,6 +20,7 @@ namespace Framework.Network.Servers
 		void Broadcast(MessageDeliveryMethod method, long? excludedClientId = null);
 
 		bool IsStarted { get; }
+		byte CreateClientIdAsByteMapping(long clientId);
 		byte GetClientIdAsByte(long clientId);
 		long GetClientIdAsLong(byte clientId);
 	}
