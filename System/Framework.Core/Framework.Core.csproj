@@ -120,6 +120,9 @@
     <Compile Include="Diagnostics\Logging\Partials\LogHandlerItem.cs" />
     <Compile Include="Diagnostics\Logging\Logger.cs" />
     <Compile Include="Helpers\BoundingBoxHelper.cs" />
+    <Compile Include="Messaging\DefaultMessageHandler.cs" />
+    <Compile Include="Messaging\IMessage.cs" />
+    <Compile Include="Messaging\IMessageHandler.cs" />
     <Compile Include="Packages\GamePackageInfo.cs" />
     <Compile Include="Packages\IGamePackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

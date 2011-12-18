@@ -2,6 +2,7 @@
 using Framework.Core.Common;
 using Framework.Gui;
 using Game.Entities.Outworld.World.SpatialSensor;
+using Game.Network.Clients;
 using Game.World.Terrains.Parts.Areas.Helpers;
 using Outworld.Scenes.InGame.Controls.Hud;
 using Game.World.Terrains.Rendering.MeshPools;
@@ -56,23 +57,30 @@ namespace Outworld.Scenes.InGame
 				healthBar.UpdateProgressBar();
 			}
 
+			UpdateNetworkNotifications(gameTime);
+		}
+
+		private void UpdateNetworkNotifications(GameTime gameTime)
+		{
 			bool connectedPlayers = false;
 			bool disconnectedPlayers = false;
 
-			// Add all newly added notifications from the game client
-			for (int i = 0; i < gameClient.Notifications.Count; i++)
+			if (messageHandler.MessageGroups.ContainsKey("GameClient"))
 			{
-				var notification = gameClient.Notifications[i];
-
-				notifications.AddNotification(notification);
-
-				if (notification.Contains(" disconnected"))
+				for (int i = 0; i < messageHandler.MessageGroups["GameClient"].Count; i++)
 				{
-					disconnectedPlayers = true;
-				}
-				if (notification.Contains(" connected"))
-				{
-					connectedPlayers = true;
+					var message = (NetworkMessage)messageHandler.MessageGroups["GameClient"][i];
+
+					notifications.AddNotification(message.Text);
+
+					if (message.Type == NetworkMessage.MessageType.Connected)
+					{
+						connectedPlayers = true;
+					}
+					else if (message.Type == NetworkMessage.MessageType.Disconnected)
+					{
+						disconnectedPlayers = true;
+					}
 				}
 			}
 

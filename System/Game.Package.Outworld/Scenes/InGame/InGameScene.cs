@@ -6,6 +6,7 @@ using Framework.Animations;
 using Framework.Audio;
 using Framework.Core.Common;
 using Framework.Core.Contexts;
+using Framework.Core.Messaging;
 using Framework.Core.Scenes;
 using Framework.Core.Scenes.Cameras;
 using Framework.Core.Services;
@@ -40,6 +41,7 @@ namespace Outworld.Scenes.InGame
 		private IGameClient gameClient;
 		private IPhysicsRenderer physicsRenderer;
 		private IAudioHandler audioHandler;
+		private IMessageHandler messageHandler;
 		private StringBuilder stringBuilder;
 
 		private BreadCrumbHelper breadCrumbsHelper;
@@ -74,6 +76,7 @@ namespace Outworld.Scenes.InGame
 			stringBuilder = new StringBuilder(100, 500);
 			
 			globalSettings = ServiceLocator.Get<GlobalSettings>();
+			messageHandler = ServiceLocator.Get<IMessageHandler>();
 
 			// Initialize the server and client
 			gameServer = ServiceLocator.Get<IGameServer>();
@@ -281,11 +284,7 @@ namespace Outworld.Scenes.InGame
 			}
 
 			UpdateGui(gameTime);
-
-			// Update models
 			skinnedModelPlayer.Update(gameTime);
-
-			// Update audio
 			audioHandler.Update(gameTime);
 
 			// Update all timers
@@ -306,13 +305,25 @@ namespace Outworld.Scenes.InGame
 
 			if (Context.Input.Keyboard.KeyboardState[Keys.F1].WasJustPressed)
 			{
-				gameClient.Notifications.Add("Player 2 connected! " + DateTime.Now.Second.ToString());
-				//notifications.AddNotification("Player 2 connected! " + DateTime.Now.Second.ToString());
+				// Add a global message for this event
+				var notificationMessage = new NetworkMessage()
+				{
+					Type = NetworkMessage.MessageType.Connected,
+					Text = "Player 2 connected"
+				};
+
+				messageHandler.AddMessage("GameClient", notificationMessage);
 			}
 			else if (Context.Input.Keyboard.KeyboardState[Keys.F2].WasJustPressed)
 			{
-				gameClient.Notifications.Add("Player 2 disconnected! " + DateTime.Now.Second.ToString());
-				//notifications.AddNotification("Player 2 disconnected! " + DateTime.Now.Second.ToString());
+				// Add a global message for this event
+				var notificationMessage = new NetworkMessage()
+				{
+					Type = NetworkMessage.MessageType.Disconnected,
+					Text = "Player 2 disconnected"
+				};
+
+				messageHandler.AddMessage("GameClient", notificationMessage);
 			}
 
 			// Debug tool shortcuts

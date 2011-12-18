@@ -1,5 +1,6 @@
 ﻿using Framework.Audio;
 using Framework.Core.Contexts;
+using Framework.Core.Messaging;
 using Framework.Core.Packages;
 using Framework.Core.Services;
 using Game.Network.Clients;
@@ -39,6 +40,7 @@ namespace Outworld
 		{
 			// Register all globally accessible objects
 			ServiceLocator.Register<GlobalSettings>(new SettingsHandler().GetGlobalSettings());
+			ServiceLocator.Register<IMessageHandler>(CreateMessageHandler());
 			ServiceLocator.Register<GameContext>(gameContext);
 			ServiceLocator.Register<IGameServer>(CreateGameServer());
 			ServiceLocator.Register<IGameClient>(CreateGameClient());
@@ -115,6 +117,11 @@ namespace Outworld
 			};
 
 			return audioHandler;
+		}
+
+		private IMessageHandler CreateMessageHandler()
+		{
+			return new DefaultMessageHandler();
 		}
 	}
 }

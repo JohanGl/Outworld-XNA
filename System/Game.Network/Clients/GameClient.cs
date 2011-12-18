@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Framework.Core.Diagnostics.Logging;
+using Framework.Core.Messaging;
+using Framework.Core.Services;
 using Framework.Network.Clients;
 using Framework.Network.Clients.Configurations;
 using Framework.Network.Messages;
@@ -19,7 +21,6 @@ namespace Game.Network.Clients
 		public WorldContext World { get; set; }
 		public byte ClientId { get; set; }
 		public List<ServerEntity> ServerEntities { get; set; }
-		public List<string> Notifications { get; set; }
 
 		public bool IsConnected
 		{
@@ -31,12 +32,13 @@ namespace Game.Network.Clients
 
 		private IClient client;
 		private readonly MessageHelper messageHelper;
+		private IMessageHandler messageHandler;
 
 		public GameClient()
 		{
 			messageHelper = new MessageHelper();
 			ServerEntities = new List<ServerEntity>();
-			Notifications = new List<string>();
+			messageHandler = ServiceLocator.Get<IMessageHandler>();
 			Logger.RegisterLogLevelsFor<GameClient>(Logger.LogLevels.Adaptive);
 		}
 
@@ -66,7 +68,7 @@ namespace Game.Network.Clients
 		public void Update(GameTime gameTime)
 		{
 			client.Update();
-			Notifications.Clear();
+			messageHandler.Clear("GameClient");
 
 			for (int i = 0; i < client.Messages.Count; i++)
 			{
@@ -108,7 +110,14 @@ namespace Game.Network.Clients
 			byte clientId = client.Reader.ReadByte();
 			bool connected = client.Reader.ReadBool();
 
-			Notifications.Add(string.Format("Player {0} {1}", clientId, connected ? "connected" : "disconnected"));
+			// Add a global message for this event
+			var notificationMessage = new NetworkMessage()
+			{
+				Type = connected ? NetworkMessage.MessageType.Connected : NetworkMessage.MessageType.Disconnected,
+				Text = string.Format("Player {0} {1}", clientId, connected ? "connected" : "disconnected")
+			};
+
+			messageHandler.AddMessage("GameClient", notificationMessage);
 
 			UpdateServerEntities(clientId, connected);
 		}

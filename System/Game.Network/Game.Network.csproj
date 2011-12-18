@@ -92,6 +92,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\NetworkMessage.cs" />
     <Compile Include="Clients\ServerEntity.cs" />
     <Compile Include="Common\ClientSpatialData.cs" />
     <Compile Include="Clients\Events\ClientSpatialEventArgs.cs" />
