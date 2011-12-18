@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Framework.Animations;
+using Framework.Audio;
 using Framework.Core.Common;
 using Framework.Core.Contexts;
 using Framework.Core.Scenes;
@@ -34,10 +35,11 @@ namespace Outworld.Scenes.InGame
 {
 	public partial class InGameScene : SceneBase
 	{
+		private GlobalSettings globalSettings;
 		private IGameServer gameServer;
 		private IGameClient gameClient;
-		private GlobalSettings globalSettings;
 		private IPhysicsRenderer physicsRenderer;
+		private IAudioHandler audioHandler;
 		private StringBuilder stringBuilder;
 
 		private BreadCrumbHelper breadCrumbsHelper;
@@ -86,6 +88,7 @@ namespace Outworld.Scenes.InGame
 			InitializeCamera();
 			InitializePlayer();
 			InitializeTimers();
+			InitializeAudio();
 		}
 
 		private void InitializeHelpers()
@@ -129,6 +132,7 @@ namespace Outworld.Scenes.InGame
 			Context.Input.Keyboard.AddMapping(Keys.Left);
 			Context.Input.Keyboard.AddMapping(Keys.Right);
 			Context.Input.Keyboard.AddMapping(Keys.F1);
+			Context.Input.Keyboard.AddMapping(Keys.F2);
 			Context.Input.Keyboard.AddMapping(Keys.F11);
 			Context.Input.Keyboard.AddMapping(Keys.F12);
 
@@ -175,6 +179,11 @@ namespace Outworld.Scenes.InGame
 			timerUpdateCurrentProcess = new GameTimer(TimeSpan.FromSeconds(2), UpdateCurrentProcess);
 		}
 
+		private void InitializeAudio()
+		{
+			audioHandler = ServiceLocator.Get<IAudioHandler>();
+		}
+
 		public void Respawn()
 		{
 			InitializePlayer();
@@ -214,9 +223,11 @@ namespace Outworld.Scenes.InGame
 			skinnedModelPlayer.Scale = 0.0225f;
 
 			// Sounds
-			Context.Resources.Sounds.Add("Walking1", content.Load<SoundEffect>(@"Sounds\Characters\Walking01"));
-			Context.Resources.Sounds.Add("Walking2", content.Load<SoundEffect>(@"Sounds\Characters\Walking02"));
-			Context.Resources.Sounds.Add("Landing1", content.Load<SoundEffect>(@"Sounds\Characters\Landing01"));
+			audioHandler.LoadSound("Walking1", @"Audio\Sounds\Characters\Walking01");
+			audioHandler.LoadSound("Walking2", @"Audio\Sounds\Characters\Walking02");
+			audioHandler.LoadSound("Landing1", @"Audio\Sounds\Characters\Landing01");
+			audioHandler.LoadSound("Notification1", @"Audio\Sounds\Gui\Notification01");
+			audioHandler.LoadSound("Notification2", @"Audio\Sounds\Gui\Notification02");
 		}
 
 		public override void UnloadContent()
@@ -246,9 +257,7 @@ namespace Outworld.Scenes.InGame
 			resources.Models.Remove("Player2");
 
 			// Sounds
-			Context.Resources.Sounds.Remove("Walking1");
-			Context.Resources.Sounds.Remove("Walking2");
-			Context.Resources.Sounds.Remove("Landing1");
+			audioHandler.UnloadContent();
 		}
 
 		public override void Update(GameTime gameTime)
@@ -263,7 +272,6 @@ namespace Outworld.Scenes.InGame
 			player.Components.Update(gameTime);
 
 			UpdateCamera();
-			UpdateGui(gameTime);
 
 			// Update input
 			if (HasFocus)
@@ -272,8 +280,13 @@ namespace Outworld.Scenes.InGame
 				timerWalkingSounds.Update(gameTime);
 			}
 
+			UpdateGui(gameTime);
+
 			// Update models
 			skinnedModelPlayer.Update(gameTime);
+
+			// Update audio
+			audioHandler.Update(gameTime);
 
 			// Update all timers
 			timerSendDataToServer.Update(gameTime);
@@ -293,7 +306,13 @@ namespace Outworld.Scenes.InGame
 
 			if (Context.Input.Keyboard.KeyboardState[Keys.F1].WasJustPressed)
 			{
-				notifications.AddNotification("Player joined! " + DateTime.Now.Second.ToString());
+				gameClient.Notifications.Add("Player 2 connected! " + DateTime.Now.Second.ToString());
+				//notifications.AddNotification("Player 2 connected! " + DateTime.Now.Second.ToString());
+			}
+			else if (Context.Input.Keyboard.KeyboardState[Keys.F2].WasJustPressed)
+			{
+				gameClient.Notifications.Add("Player 2 disconnected! " + DateTime.Now.Second.ToString());
+				//notifications.AddNotification("Player 2 disconnected! " + DateTime.Now.Second.ToString());
 			}
 
 			// Debug tool shortcuts
@@ -333,11 +352,11 @@ namespace Outworld.Scenes.InGame
 			{
 				if (!walkToggle)
 				{
-					Context.Resources.Sounds["Walking1"].Play(0.25f, 0f, -0.1f);
+					audioHandler.PlaySound("Walking1", 0.25f, 0f, -0.1f);
 				}
 				else
 				{
-					Context.Resources.Sounds["Walking2"].Play(0.25f, 0f, 0.1f);
+					audioHandler.PlaySound("Walking2", 0.25f, 0f, 0.1f);
 				}
 
 				walkToggle = !walkToggle;

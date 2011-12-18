@@ -56,13 +56,37 @@ namespace Outworld.Scenes.InGame
 				healthBar.UpdateProgressBar();
 			}
 
+			bool connectedPlayers = false;
+			bool disconnectedPlayers = false;
+
 			// Add all newly added notifications from the game client
 			for (int i = 0; i < gameClient.Notifications.Count; i++)
 			{
-				notifications.AddNotification(gameClient.Notifications[i]);
+				var notification = gameClient.Notifications[i];
+
+				notifications.AddNotification(notification);
+
+				if (notification.Contains(" disconnected"))
+				{
+					disconnectedPlayers = true;
+				}
+				if (notification.Contains(" connected"))
+				{
+					connectedPlayers = true;
+				}
 			}
 
 			notifications.Update(gameTime);
+
+			if (connectedPlayers)
+			{
+				audioHandler.PlaySound("Notification1");
+			}
+
+			if (disconnectedPlayers)
+			{
+				audioHandler.PlaySound("Notification2");
+			}
 		}
 
 		private void RenderGui()

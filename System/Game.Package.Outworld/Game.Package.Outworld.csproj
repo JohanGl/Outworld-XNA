@@ -114,6 +114,7 @@
     <Compile Include="Scenes\Loading\LoadingScene.cs" />
     <Compile Include="Scenes\Debug\Terrain\TerrainDebugScene.cs" />
     <Compile Include="Scenes\NewGameScene\NewGameScene.cs" />
+    <Compile Include="Settings\Global\Entities\Audio\AudioSettings.cs" />
     <Compile Include="Settings\Global\Entities\Input\InputGamePadSettings.cs" />
     <Compile Include="Settings\Global\Entities\Input\InputKeyboardSettings.cs" />
     <Compile Include="Settings\Global\Entities\Input\InputMouseSettings.cs" />
@@ -140,6 +141,10 @@
     <ProjectReference Include="..\Framework.Animations\Framework.Animations.csproj">
       <Project>{8E74959C-F8B8-41F3-8421-9112CC2CD51B}</Project>
       <Name>Framework.Animations</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Framework.Audio\Framework.Audio.csproj">
+      <Project>{0BE9CE61-C8BB-4AD7-BBCB-D5FEB964957D}</Project>
+      <Name>Framework.Audio</Name>
     </ProjectReference>
     <ProjectReference Include="..\Framework.Core\Framework.Core.csproj">
       <Project>{F0B86B7F-3493-4EF9-919B-36C8CC4B0A9B}</Project>

@@ -1,4 +1,5 @@
-﻿using Framework.Core.Contexts;
+﻿using Framework.Audio;
+using Framework.Core.Contexts;
 using Framework.Core.Packages;
 using Framework.Core.Services;
 using Game.Network.Clients;
@@ -41,6 +42,7 @@ namespace Outworld
 			ServiceLocator.Register<GameContext>(gameContext);
 			ServiceLocator.Register<IGameServer>(CreateGameServer());
 			ServiceLocator.Register<IGameClient>(CreateGameClient());
+			ServiceLocator.Register<IAudioHandler>(CreateAudioHandler());
 
 			// Initialize the default content settings
 			var content = gameContext.Resources.Content;
@@ -99,6 +101,20 @@ namespace Outworld
 			client.Initialize(clientSettings);
 
 			return client;
+		}
+
+		private IAudioHandler CreateAudioHandler()
+		{
+			var gameContext = ServiceLocator.Get<GameContext>();
+			var globalSettings = ServiceLocator.Get<GlobalSettings>();
+
+			var audioHandler = new DefaultAudioHandler(gameContext.Resources.Content)
+			{
+				MusicVolume = globalSettings.Audio.MusicVolume,
+				SoundVolume = globalSettings.Audio.SoundVolume
+			};
+
+			return audioHandler;
 		}
 	}
 }

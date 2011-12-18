@@ -12,6 +12,7 @@ namespace Outworld.Settings.Global
 		public PlayerSettings Player { get; set; }
 		public InputSettings Input { get; set; }
 		public NetworkSettings Network { get; set; }
+		public AudioSettings Audio { get; set; }
 
 		public GlobalSettings(bool initializeDefaults = true)
 		{
@@ -19,6 +20,7 @@ namespace Outworld.Settings.Global
 			Player = new PlayerSettings();
 			Input = new InputSettings();
 			Network = new NetworkSettings();
+			Audio = new AudioSettings();
 
 			if (initializeDefaults)
 			{
@@ -83,6 +85,10 @@ namespace Outworld.Settings.Global
 			Network.ServerPort = 14242;
 			Network.ClientPort = 14242;
 			Network.MaximumConnections = 4;
+
+			// Audio
+			Audio.MusicVolume = 1f;
+			Audio.SoundVolume = 1f;
 		}
 	}
 }
