@@ -427,23 +427,20 @@ namespace Outworld.Scenes.InGame
 
 		private void RenderServerEntities()
 		{
-			//var camera = Context.View.Cameras["Default"];
-			//skinnedModelPlayer.Render(camera.View, camera.Projection, playerSpatial.Position + new Vector3(0, -0.725f, 0), playerSpatial.Angle.X + 180f);
-
 			var camera = Context.View.Cameras["Default"];
 
 			var position = playerSpatial.Position + new Vector3(5f, 0.2f, 0);
 			var angle = new Vector3(0, playerSpatial.Angle.X + 180f, 0);
 			RenderModel(Context.Resources.Models["Player"], camera.View, camera.Projection, position, angle, 0.4f);
 
-			//for (int i = 0; i < gameClient.ServerEntities.Count; i++)
-			//{
-			//    var entity = gameClient.ServerEntities[i];
-			//    RenderPlayer(entity.Position, entity.Angle.X + 180f);
-			//}
+			for (int i = 0; i < gameClient.ServerEntities.Count; i++)
+			{
+				var entity = gameClient.ServerEntities[i];
+				RenderModel(Context.Resources.Models["Player"], camera.View, camera.Projection, entity.Position, new Vector3(entity.Angle.X + 180f, 0, 0), 0.4f);
+			}
 		}
 
-		//private void RenderPlayer(Vector3 position, float angle)
+		//private void RenderSkinnedPlayer(Vector3 position, float angle)
 		//{
 		//    var camera = Context.View.Cameras["Default"];
 		//    RenderModel(Context.Resources.Models["Player2"], position + new Vector3(10f, -0.1f, 0), new Vector3(0, 0, 0));
