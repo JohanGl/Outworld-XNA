@@ -34,9 +34,13 @@ namespace Framework.Audio
 
 		private Dictionary<string, Song> songs = new Dictionary<string, Song>();
 		private Dictionary<string, SoundEffect> sounds = new Dictionary<string, SoundEffect>();
-
+		
 		private Song currentSong;
 		private SoundEffectInstance[] playingSounds = new SoundEffectInstance[MaxSounds];
+
+		// 3d sound
+		private Dictionary<int, SoundEffect3d> playingSounds3d = new Dictionary<int, SoundEffect3d>();
+		private AudioListener listener = new AudioListener();
 
 		private bool isMusicPaused;
 
@@ -93,6 +97,12 @@ namespace Framework.Audio
 			{
 				this.contentManager = new ContentManager(contentManager.ServiceProvider, contentFolder);
 			}
+
+			// Set the scale for 3D audio so it matches the scale of our game world.
+			// DistanceScale controls how much sounds change volume as you move further away.
+			// DopplerScale controls how much sounds change pitch as you move past them.
+			SoundEffect.DistanceScale = 10f;
+			SoundEffect.DopplerScale = 0.1f;
 		}
 
 		/// <summary>
@@ -318,6 +328,63 @@ namespace Framework.Audio
 			}
 		}
 
+		public void PlaySound3d(string key, string soundName, float volume, Vector3 position)
+		{
+			SoundEffect sound;
+
+			if (!sounds.TryGetValue(soundName, out sound))
+			{
+				throw new ArgumentException(string.Format("Sound '{0}' not found", soundName));
+			}
+
+			int index = GetAvailableSoundIndex();
+
+			if (index != -1)
+			{
+				if (!playingSounds3d.ContainsKey(index))
+				{
+					playingSounds3d.Add(index, new SoundEffect3d());
+				}
+
+				playingSounds3d[index].Key = key;
+				playingSounds3d[index].Emitter.Position = position;
+				playingSounds3d[index].Emitter.Forward = Vector3.Forward;
+				playingSounds3d[index].Emitter.Up = Vector3.Up;
+				playingSounds3d[index].Emitter.Velocity = new Vector3(0, 0, 0);
+
+				playingSounds[index] = sound.CreateInstance();
+				playingSounds[index].Volume = volume;
+				playingSounds[index].Apply3D(listener, playingSounds3d[index].Emitter);
+				playingSounds[index].IsLooped = true;
+				playingSounds[index].Play();
+
+				if (!Enabled)
+				{
+					playingSounds[index].Pause();
+				}
+			}
+		}
+
+		public void UpdateSound3d(string key, Vector3 position)
+		{
+			foreach (var soundEffect3D in playingSounds3d.Values)
+			{
+				if (soundEffect3D.Key == key)
+				{
+					soundEffect3D.Emitter.Position = position;
+					playingSounds[soundEffect3D.Index].Apply3D(listener, soundEffect3D.Emitter);
+					break;
+				}
+			}
+		}
+
+		public void UpdateListener(Vector3 position)
+		{
+			listener.Position = position;
+			listener.Up = Vector3.Up;
+			listener.Forward = Vector3.Forward;
+		}
+
 		/// <summary>
 		/// Stops all currently playing sounds.
 		/// </summary>
@@ -453,5 +520,17 @@ namespace Framework.Audio
 		}
 	
 		#endregion
+	}
+
+	internal class SoundEffect3d
+	{
+		public string Key;
+		public int Index;
+		public AudioEmitter Emitter;
+
+		public SoundEffect3d()
+		{
+			Emitter = new AudioEmitter();
+		}
 	}
 }
