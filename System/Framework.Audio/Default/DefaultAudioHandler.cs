@@ -101,7 +101,7 @@ namespace Framework.Audio
 			// Set the scale for 3D audio so it matches the scale of our game world.
 			// DistanceScale controls how much sounds change volume as you move further away.
 			// DopplerScale controls how much sounds change pitch as you move past them.
-			SoundEffect.DistanceScale = 10f;
+			SoundEffect.DistanceScale = 5f;
 			SoundEffect.DopplerScale = 0.1f;
 		}
 
@@ -355,7 +355,7 @@ namespace Framework.Audio
 				playingSounds[index] = sound.CreateInstance();
 				playingSounds[index].Volume = volume;
 				playingSounds[index].Apply3D(listener, playingSounds3d[index].Emitter);
-				playingSounds[index].IsLooped = true;
+				playingSounds[index].IsLooped = false;
 				playingSounds[index].Play();
 
 				if (!Enabled)
