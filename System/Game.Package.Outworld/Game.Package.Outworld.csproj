@@ -101,6 +101,7 @@
   <ItemGroup>
     <Compile Include="GamePackage.cs" />
     <Compile Include="Helpers\EntityFactories\PlayerEntityFactory.cs" />
+    <Compile Include="Scenes\Debug\Audio\AudioScene.cs" />
     <Compile Include="Scenes\Debug\Models\Animations\AnimationClip.cs" />
     <Compile Include="Scenes\Debug\Models\Animations\AnimationPlayer.cs" />
     <Compile Include="Scenes\Debug\Models\Animations\Keyframe.cs" />
