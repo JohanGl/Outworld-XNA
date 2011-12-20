@@ -95,6 +95,11 @@ namespace Game.World.Terrains.Parts.Areas.Collections
 			}
 		}
 
+		public Area GetAreaAt(Vector3i location)
+		{
+			return GetAreaAt(location.X, location.Y, location.Z);
+		}
+
 		public Area GetAreaAt(int x, int y, int z)
 		{
 			lock (CollectionLock)

@@ -1,5 +1,6 @@
 ﻿using System;
 using Framework.Core.Animations;
+using Framework.Core.Common;
 using Framework.Core.Services;
 using Framework.Physics;
 using Framework.Physics.RigidBodies;
@@ -11,6 +12,7 @@ using Game.Entities.System;
 using Game.Entities.System.ComponentModel;
 using Game.Entities.System.EntityModel;
 using Game.World.Terrains.Helpers;
+using Game.World.Terrains.Parts.Areas.Helpers;
 using Game.World.Terrains.Parts.Tiles;
 using Microsoft.Xna.Framework;
 using Outworld.Scenes.InGame;
@@ -83,6 +85,8 @@ namespace Outworld.Players
 
 		public void Update(GameTime gameTime)
 		{
+			AreaHelper.FindAreaLocation(spatial.Position, ref spatial.Area);
+
 			// Handle death animations
 			if (isDying)
 			{

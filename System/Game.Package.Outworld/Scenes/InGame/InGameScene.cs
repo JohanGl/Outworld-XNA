@@ -361,16 +361,28 @@ namespace Outworld.Scenes.InGame
 			// Walking sounds
 			if (playerSpatialSensor.State[SpatialSensorState.HorizontalMovement] && !playerSpatialSensor.State[SpatialSensorState.VerticalMovement])
 			{
-				if (!walkToggle)
+				var area = gameClient.World.TerrainContext.Visibility.AreaCollection.GetAreaAt(playerSpatial.Area);
+
+				if (area == null)
 				{
-					audioHandler.PlaySound("Walking1", 0.25f, 0f, -0.1f);
-				}
-				else
-				{
-					audioHandler.PlaySound("Walking2", 0.25f, 0f, 0.1f);
+					return;
 				}
 
-				walkToggle = !walkToggle;
+				Vector3 playerPosition = new Vector3(playerSpatial.Position.X, playerSpatial.Position.Y - (globalSettings.Player.Spatial.Size.Y + 0.01f), playerSpatial.Position.Z);
+
+				if (gameClient.World.TerrainContext.TileCollisionHelper.GetIntersectingTile(area, playerPosition).Type != TileType.Empty)
+				{
+					if (!walkToggle)
+					{
+						audioHandler.PlaySound("Walking1", 0.25f, 0f, -0.1f);
+					}
+					else
+					{
+						audioHandler.PlaySound("Walking2", 0.25f, 0f, 0.1f);
+					}
+
+					walkToggle = !walkToggle;
+				}
 			}
 			else
 			{
