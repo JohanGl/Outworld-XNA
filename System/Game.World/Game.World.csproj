@@ -125,6 +125,7 @@
     <Compile Include="Terrains\Helpers\CollisionTile.cs" />
     <Compile Include="Terrains\Helpers\TerrainContextCollisionHelper.cs" />
     <Compile Include="Terrains\Helpers\ImageExporter.cs" />
+    <Compile Include="Terrains\Helpers\TileCollisionHelper.cs" />
     <Compile Include="Terrains\Parts\Areas\AreaModels\AreaModelHandler.cs" />
     <Compile Include="Terrains\Parts\Areas\AreaModels\Builders\AreaModelBuilder.cs" />
     <Compile Include="Terrains\Parts\Areas\AreaModels\Builders\TerrainMeshBuildInfo.cs" />

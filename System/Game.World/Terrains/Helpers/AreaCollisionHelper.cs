@@ -35,9 +35,9 @@ namespace Game.World.Terrains.Helpers
 		/// <param name="area"></param>
 		public void SetArea(Area area)
 		{
-			this.collisionArea = area;
+			collisionArea = area;
 		}
-
+		
 		public List<CollisionTile> GetIntersectingTiles(BoundingBox box)
 		{
 			boxCollisionPoints.Clear();

@@ -16,6 +16,7 @@ namespace Game.World.Terrains.Contexts
 		public TerrainRenderer Renderer;
 		public TerrainVisibility Visibility;
 		public TerrainContextCollisionHelper TerrainContextCollisionHelper;
+		public TileCollisionHelper TileCollisionHelper;
 
 		public TerrainContext(GameContext context, Vector2i viewDistance, int seed)
 		{
@@ -23,6 +24,7 @@ namespace Game.World.Terrains.Contexts
 			Renderer = new TerrainRenderer();
 			Visibility = new TerrainVisibility();
 			TerrainContextCollisionHelper = new TerrainContextCollisionHelper(this);
+			TileCollisionHelper = new TileCollisionHelper();
 
 			Renderer.Initialize(Visibility, context);
 			Visibility.Initialize(viewDistance, this);
