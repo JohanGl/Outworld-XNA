@@ -366,17 +366,23 @@ namespace Outworld.Scenes.InGame
 			// Walking sounds
 			if (playerSpatialSensor.State[SpatialSensorState.HorizontalMovement] && !playerSpatialSensor.State[SpatialSensorState.VerticalMovement])
 			{
+				System.Diagnostics.Debug.WriteLine("UpdateWalkingSounds player NOT ascending or descending");
+				System.Diagnostics.Debug.WriteLine("playerSpatial.Area:" + playerSpatial.Area.ToString());
 				var area = gameClient.World.TerrainContext.Visibility.AreaCollection.GetAreaAt(playerSpatial.Area);
 
 				if (area == null)
 				{
+					System.Diagnostics.Debug.WriteLine("area == null");
 					return;
 				}
 
+				System.Diagnostics.Debug.WriteLine("playerSpatial.Position.Y:" + playerSpatial.Position.Y.ToString() + " (globalSettings.Player.Spatial.Size.Y + 0.01f):" + (globalSettings.Player.Spatial.Size.Y + 0.01f).ToString() + " Y:" + (playerSpatial.Position.Y - (globalSettings.Player.Spatial.Size.Y + 0.01f)).ToString());
 				Vector3 playerPosition = new Vector3(playerSpatial.Position.X, playerSpatial.Position.Y - (globalSettings.Player.Spatial.Size.Y + 0.01f), playerSpatial.Position.Z);
+
 
 				if (gameClient.World.TerrainContext.TileCollisionHelper.GetIntersectingTile(area, playerPosition).Type != TileType.Empty)
 				{
+					System.Diagnostics.Debug.WriteLine("TileType != TileType.Empty");
 					if (!walkToggle)
 					{
 						audioHandler.PlaySound("Walking1", 0.25f, 0f, -0.1f);
@@ -391,6 +397,7 @@ namespace Outworld.Scenes.InGame
 			}
 			else
 			{
+				System.Diagnostics.Debug.WriteLine("UpdateWalkingSounds player ascending or descending");
 				walkToggle = false;
 			}
 
