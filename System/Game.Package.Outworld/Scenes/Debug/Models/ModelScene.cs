@@ -1,10 +1,9 @@
 ﻿using System.Text;
+using Framework.Animations;
 using Framework.Core.Contexts;
 using Framework.Core.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Outworld.Scenes.Debug.Models.Animations;
-using Graphics = Microsoft.Xna.Framework.Graphics;
 
 namespace Outworld.Scenes.Debug.Models
 {
@@ -12,9 +11,6 @@ namespace Outworld.Scenes.Debug.Models
 	{
 		private Vector3 Position = Vector3.Zero;
 		private float angle;
-
-		Model currentModel;
-		AnimationPlayer animationPlayer;
 
 		public override void Initialize(GameContext context)
 		{
@@ -25,11 +21,13 @@ namespace Outworld.Scenes.Debug.Models
 		{
 			var content = Context.Resources.Content;
 			Context.Resources.Models.Add("weapon", content.Load<Model>(@"Models\Weapons\Pistol01"));
+			Context.Resources.Models.Add("Chibi", content.Load<Model>(@"Models\Characters\Chibi\Chibi"));
 		}
 
 		public override void UnloadContent()
 		{
 			Context.Resources.Models.Remove("weapon");
+			Context.Resources.Models.Remove("Chibi");
 		}
 
 		public override void Update(GameTime gameTime)
@@ -39,7 +37,7 @@ namespace Outworld.Scenes.Debug.Models
 
 		public override void Render(GameTime gameTime)
 		{
-			DrawModel(Context.Resources.Models["weapon"]);
+			DrawModel(Context.Resources.Models["Chibi"]);
 		}
 
 		private void DrawModel(Model m)

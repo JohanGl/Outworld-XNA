@@ -250,9 +250,9 @@ namespace Outworld.Scenes.InGame
 
 		public override void Render(GameTime gameTime)
 		{
-			gui.Render();
+			Context.Graphics.Device.Clear(Color.Black);
 
-			//hasRenderedContent = true;
+			gui.Render();
 		}
 
 		private void GetGameSettings()

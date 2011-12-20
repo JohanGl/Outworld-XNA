@@ -62,11 +62,11 @@ namespace Outworld.Scenes.InGame
 
 		private void UpdateNetworkNotifications(GameTime gameTime)
 		{
-			bool connectedPlayers = false;
-			bool disconnectedPlayers = false;
-
 			if (messageHandler.MessageGroups.ContainsKey("GameClient"))
 			{
+				bool connectedPlayers = false;
+				bool disconnectedPlayers = false;
+
 				for (int i = 0; i < messageHandler.MessageGroups["GameClient"].Count; i++)
 				{
 					var message = (NetworkMessage)messageHandler.MessageGroups["GameClient"][i];
@@ -82,19 +82,19 @@ namespace Outworld.Scenes.InGame
 						disconnectedPlayers = true;
 					}
 				}
+
+				if (connectedPlayers)
+				{
+					audioHandler.PlaySound("Notification1");
+				}
+
+				if (disconnectedPlayers)
+				{
+					audioHandler.PlaySound("Notification2");
+				}
 			}
 
 			notifications.Update(gameTime);
-
-			if (connectedPlayers)
-			{
-				audioHandler.PlaySound("Notification1");
-			}
-
-			if (disconnectedPlayers)
-			{
-				audioHandler.PlaySound("Notification2");
-			}
 		}
 
 		private void RenderGui()

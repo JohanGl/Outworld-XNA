@@ -31,7 +31,7 @@ namespace Outworld.Settings.Global
 		public void InitializeDefaults()
 		{
 			// World (seed 500 = buggy)
-			World.Seed = 0;
+			World.Seed = 1;
 			World.Fog = false;
 			World.Gravity = new Vector3(0, -30, 0);
 			World.ViewDistance = new Vector2i(1, 1);
