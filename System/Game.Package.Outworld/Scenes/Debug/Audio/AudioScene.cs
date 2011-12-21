@@ -38,10 +38,11 @@ namespace Outworld.Scenes.Debug.Audio
 			if (soundTimer.Update(gameTime))
 			{
 				angle += 15f;
-				float x = 50f * (float)Math.Sin(MathHelper.ToRadians((int)angle));
+				//float x = 50f * (float)Math.Sin(MathHelper.ToRadians((int)angle));
 
 				audioHandler.UpdateListener(new Vector3(0, 0, 0));
-				audioHandler.PlaySound3d("a", "Sound1", 1f, new Vector3(x, 0, 0));
+
+				audioHandler.PlaySound3d(1, "Sound1", 1f, new Vector3(0, 0, 1), new Vector3(0, 0, -1));
 			}
 
 			audioHandler.Update(gameTime);

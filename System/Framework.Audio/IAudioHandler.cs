@@ -133,11 +133,14 @@ namespace Framework.Audio
 		/// <param name="pan">Pan, -1.0f (full left) to 1.0f (full right)</param>
 		void PlaySound(string soundName, float volume, float pitch, float pan);
 
-		void PlaySound3d(string key, string soundName, float volume, Vector3 position);
+		void PlaySound3d(int key, string soundName, float volume, Vector3 position);
+		void PlaySound3d(int key, string soundName, float volume, Vector3 position, Vector3 velocity);
 
-		void UpdateSound3d(string key, Vector3 position);
+		void UpdateSound3d(int key, Vector3 position);
+		void UpdateSound3d(int key, Vector3 position, Vector3 velocity);
 
 		void UpdateListener(Vector3 position);
+		void UpdateListener(Vector3 position, Vector3 velocity);
 
 		/// <summary>
 		/// Stops all currently playing sounds.

@@ -314,7 +314,7 @@ namespace Outworld.Scenes.InGame
 
 			if (Context.Input.Keyboard.KeyboardState[Keys.F1].WasJustPressed)
 			{
-				audioHandler.PlaySound3d("a", "Walking1", 1f, playerSpatial.Position);
+				//audioHandler.PlaySound3d("a", "Walking1", 1f, playerSpatial.Position);
 
 				//// Add a global message for this event
 				//var notificationMessage = new NetworkMessage()
@@ -380,35 +380,28 @@ namespace Outworld.Scenes.InGame
 				}
 				
 				Vector3 playerPosition = new Vector3(playerSpatial.Position.X, playerSpatial.Position.Y - tileBelowPlayerFeetOffsetY, playerSpatial.Position.Z);
-
 				TileType tileTypeBelowPlayer = gameClient.World.TerrainContext.TileCollisionHelper.GetIntersectingTile(area, playerPosition).Type;
 
-				if (tileTypeBelowPlayer != TileType.Empty && !tileTypeBelowPlayer.ToString().Contains("Stone"))
+				if (tileTypeBelowPlayer == TileType.Empty)
 				{
-					if (!walkToggle)
-					{
-						audioHandler.PlaySound("Walking1", 0.25f, 0f, -0.1f);
-					}
-					else
-					{
-						audioHandler.PlaySound("Walking2", 0.25f, 0f, 0.1f);
-					}
-
-					walkToggle = !walkToggle;
+					return;
 				}
-				else if (tileTypeBelowPlayer != TileType.Empty)
+
+				string soundName;
+
+				if (tileTypeBelowPlayer == TileType.Stone ||
+					tileTypeBelowPlayer == TileType.Stone2)
 				{
-					if (!walkToggle)
-					{
-						audioHandler.PlaySound("WalkingOnSnow1", 0.25f, 0f, -0.1f);
-					}
-					else
-					{
-						audioHandler.PlaySound("WalkingOnSnow2", 0.25f, 0f, 0.1f);
-					}
-
-					walkToggle = !walkToggle;
+					soundName = (!walkToggle) ? "WalkingOnSnow1" : "WalkingOnSnow2";
 				}
+				else
+				{
+					soundName = (!walkToggle) ? "Walking1" : "Walking2";
+				}
+
+				audioHandler.PlaySound(soundName, 0.25f, 0f, -0.1f);
+
+				walkToggle = !walkToggle;
 			}
 			else
 			{

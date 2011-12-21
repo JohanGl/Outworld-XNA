@@ -328,7 +328,12 @@ namespace Framework.Audio
 			}
 		}
 
-		public void PlaySound3d(string key, string soundName, float volume, Vector3 position)
+		public void PlaySound3d(int key, string soundName, float volume, Vector3 position)
+		{
+			PlaySound3d(key, soundName, volume, position, new Vector3(0));
+		}
+
+		public void PlaySound3d(int key, string soundName, float volume, Vector3 position, Vector3 velocity)
 		{
 			SoundEffect sound;
 
@@ -343,14 +348,16 @@ namespace Framework.Audio
 			{
 				if (!playingSounds3d.ContainsKey(index))
 				{
-					playingSounds3d.Add(index, new SoundEffect3d());
+					var soundEffect = new SoundEffect3d();
+					soundEffect.Emitter.Forward = Vector3.Forward;
+					soundEffect.Emitter.Up = Vector3.Up;
+
+					playingSounds3d.Add(index, soundEffect);
 				}
 
 				playingSounds3d[index].Key = key;
 				playingSounds3d[index].Emitter.Position = position;
-				playingSounds3d[index].Emitter.Forward = Vector3.Forward;
-				playingSounds3d[index].Emitter.Up = Vector3.Up;
-				playingSounds3d[index].Emitter.Velocity = new Vector3(0, 0, 0);
+				playingSounds3d[index].Emitter.Velocity = velocity;
 
 				playingSounds[index] = sound.CreateInstance();
 				playingSounds[index].Volume = volume;
@@ -365,13 +372,19 @@ namespace Framework.Audio
 			}
 		}
 
-		public void UpdateSound3d(string key, Vector3 position)
+		public void UpdateSound3d(int key, Vector3 position)
+		{
+			UpdateSound3d(key, position, new Vector3(0));
+		}
+
+		public void UpdateSound3d(int key, Vector3 position, Vector3 velocity)
 		{
 			foreach (var soundEffect3D in playingSounds3d.Values)
 			{
 				if (soundEffect3D.Key == key)
 				{
 					soundEffect3D.Emitter.Position = position;
+					soundEffect3D.Emitter.Velocity = velocity;
 					playingSounds[soundEffect3D.Index].Apply3D(listener, soundEffect3D.Emitter);
 					break;
 				}
@@ -380,7 +393,13 @@ namespace Framework.Audio
 
 		public void UpdateListener(Vector3 position)
 		{
+			UpdateListener(position, new Vector3(0));
+		}
+
+		public void UpdateListener(Vector3 position, Vector3 velocity)
+		{
 			listener.Position = position;
+			listener.Velocity = velocity;
 			listener.Up = Vector3.Up;
 			listener.Forward = Vector3.Forward;
 		}
@@ -524,7 +543,7 @@ namespace Framework.Audio
 
 	internal class SoundEffect3d
 	{
-		public string Key;
+		public int Key;
 		public int Index;
 		public AudioEmitter Emitter;
 
