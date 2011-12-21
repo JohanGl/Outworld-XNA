@@ -67,13 +67,15 @@ namespace Outworld.Scenes.InGame
 		private SkinnedModel skinnedModelPlayer;
 		private Vector3 soundPosition;
 
+		private float tileBelowPlayerFeetOffsetY;
+
 		// Sounds
 		private bool walkToggle;
 
 		public override void Initialize(GameContext context)
 		{
 			base.Initialize(context);
-
+			
 			stringBuilder = new StringBuilder(100, 500);
 			
 			globalSettings = ServiceLocator.Get<GlobalSettings>();
@@ -93,6 +95,8 @@ namespace Outworld.Scenes.InGame
 			InitializePlayer();
 			InitializeTimers();
 			InitializeAudio();
+
+			tileBelowPlayerFeetOffsetY = ((globalSettings.Player.Spatial.Size.Y * 0.5f) + 0.01f);
 		}
 
 		private void InitializeHelpers()
@@ -229,6 +233,8 @@ namespace Outworld.Scenes.InGame
 			// Sounds
 			audioHandler.LoadSound("Walking1", @"Audio\Sounds\Characters\Walking01");
 			audioHandler.LoadSound("Walking2", @"Audio\Sounds\Characters\Walking02");
+			audioHandler.LoadSound("WalkingOnSnow1", @"Audio\Sounds\Characters\Walking_Snow01");
+			audioHandler.LoadSound("WalkingOnSnow2", @"Audio\Sounds\Characters\Walking_Snow02");
 			audioHandler.LoadSound("Landing1", @"Audio\Sounds\Characters\Landing01");
 			audioHandler.LoadSound("Notification1", @"Audio\Sounds\Gui\Notification01");
 			audioHandler.LoadSound("Notification2", @"Audio\Sounds\Gui\Notification02");
@@ -366,23 +372,19 @@ namespace Outworld.Scenes.InGame
 			// Walking sounds
 			if (playerSpatialSensor.State[SpatialSensorState.HorizontalMovement] && !playerSpatialSensor.State[SpatialSensorState.VerticalMovement])
 			{
-				System.Diagnostics.Debug.WriteLine("UpdateWalkingSounds player NOT ascending or descending");
-				System.Diagnostics.Debug.WriteLine("playerSpatial.Area:" + playerSpatial.Area.ToString());
 				var area = gameClient.World.TerrainContext.Visibility.AreaCollection.GetAreaAt(playerSpatial.Area);
 
 				if (area == null)
 				{
-					System.Diagnostics.Debug.WriteLine("area == null");
 					return;
 				}
+				
+				Vector3 playerPosition = new Vector3(playerSpatial.Position.X, playerSpatial.Position.Y - tileBelowPlayerFeetOffsetY, playerSpatial.Position.Z);
 
-				System.Diagnostics.Debug.WriteLine("playerSpatial.Position.Y:" + playerSpatial.Position.Y.ToString() + " (globalSettings.Player.Spatial.Size.Y + 0.01f):" + (globalSettings.Player.Spatial.Size.Y + 0.01f).ToString() + " Y:" + (playerSpatial.Position.Y - (globalSettings.Player.Spatial.Size.Y + 0.01f)).ToString());
-				Vector3 playerPosition = new Vector3(playerSpatial.Position.X, playerSpatial.Position.Y - (globalSettings.Player.Spatial.Size.Y + 0.01f), playerSpatial.Position.Z);
+				TileType tileTypeBelowPlayer = gameClient.World.TerrainContext.TileCollisionHelper.GetIntersectingTile(area, playerPosition).Type;
 
-
-				if (gameClient.World.TerrainContext.TileCollisionHelper.GetIntersectingTile(area, playerPosition).Type != TileType.Empty)
+				if (tileTypeBelowPlayer != TileType.Empty && !tileTypeBelowPlayer.ToString().Contains("Stone"))
 				{
-					System.Diagnostics.Debug.WriteLine("TileType != TileType.Empty");
 					if (!walkToggle)
 					{
 						audioHandler.PlaySound("Walking1", 0.25f, 0f, -0.1f);
@@ -394,10 +396,22 @@ namespace Outworld.Scenes.InGame
 
 					walkToggle = !walkToggle;
 				}
+				else if (tileTypeBelowPlayer != TileType.Empty)
+				{
+					if (!walkToggle)
+					{
+						audioHandler.PlaySound("WalkingOnSnow1", 0.25f, 0f, -0.1f);
+					}
+					else
+					{
+						audioHandler.PlaySound("WalkingOnSnow2", 0.25f, 0f, 0.1f);
+					}
+
+					walkToggle = !walkToggle;
+				}
 			}
 			else
 			{
-				System.Diagnostics.Debug.WriteLine("UpdateWalkingSounds player ascending or descending");
 				walkToggle = false;
 			}
 
