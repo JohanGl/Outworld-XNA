@@ -17,6 +17,12 @@ namespace Framework.Animations.Pipeline
 	[ContentProcessor(DisplayName = "SkinnedModel - Framework.Animations.Pipeline")]
 	public class SkinnedModelProcessor : ModelProcessor
 	{
+		// Example of a custom property
+		//[DefaultValue(23.0f)]
+		//[DisplayName("Number of cats")]
+		//[Description("Sets how many cats you wish to splice afore the mizzen")]
+		//public float NumberOfCats { get; set; }
+
 		/// <summary>
 		/// The main Process method converts an intermediate format content pipeline
 		/// NodeContent tree to a ModelContent object with embedded animation data.

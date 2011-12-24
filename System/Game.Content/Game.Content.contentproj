@@ -327,6 +327,7 @@
       <Name>Chibi</Name>
       <Importer>FbxImporter</Importer>
       <Processor>ModelProcessor</Processor>
+      <ProcessorParameters_Scale>0.4</ProcessorParameters_Scale>
     </Compile>
   </ItemGroup>
   <ItemGroup>

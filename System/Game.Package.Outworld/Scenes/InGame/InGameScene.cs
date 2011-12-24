@@ -445,12 +445,12 @@ namespace Outworld.Scenes.InGame
 
 			var position = playerSpatial.Position + new Vector3(5f, 0.2f, 0);
 			var angle = new Vector3(0, playerSpatial.Angle.X + 180f, 0);
-			RenderModel(Context.Resources.Models["Player"], camera.View, camera.Projection, position, angle, 0.4f);
+			RenderModel(Context.Resources.Models["Player"], camera.View, camera.Projection, position, angle);
 
 			for (int i = 0; i < gameClient.ServerEntities.Count; i++)
 			{
 				var entity = gameClient.ServerEntities[i];
-				RenderModel(Context.Resources.Models["Player"], camera.View, camera.Projection, entity.Position, new Vector3(entity.Angle.X + 180f, 0, 0), 0.4f);
+				RenderModel(Context.Resources.Models["Player"], camera.View, camera.Projection, entity.Position, new Vector3(entity.Angle.X + 180f, 0, 0));
 			}
 		}
 
