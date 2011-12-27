@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace Framework.Core.Diagnostics.Logging
 {
+	/// <summary>
+	/// Logger which enables type-sensitive logging functionality and multiple output sources
+	/// </summary>
 	public static partial class Logger
 	{
 		public static bool OnlyLogRegisteredTypes;

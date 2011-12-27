@@ -67,9 +67,11 @@ namespace Outworld.Scenes.InGame
 				bool connectedPlayers = false;
 				bool disconnectedPlayers = false;
 
-				for (int i = 0; i < messageHandler.MessageGroups["GameClient"].Count; i++)
+				var messages = messageHandler.GetMessages<NetworkMessage>("GameClient");
+
+				for (int i = 0; i < messages.Count; i++)
 				{
-					var message = (NetworkMessage)messageHandler.MessageGroups["GameClient"][i];
+					var message = messages[i];
 
 					notifications.AddNotification(message.Text);
 

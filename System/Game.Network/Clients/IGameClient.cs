@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Game.Network.Clients.Events;
 using Game.Network.Clients.Settings;
+using Game.Network.Common;
 using Game.World;
 using Microsoft.Xna.Framework;
 
@@ -25,5 +26,9 @@ namespace Game.Network.Clients
 		void GetGameSettings();
 		void GetClientSpatial();
 		void SendClientSpatial(Vector3 position, Vector3 velocity, Vector3 angle);
+		void SendClientActions(List<ClientAction> actions);
+
+		void BeginCombinedMessage();
+		void EndCombinedMessage();
 	}
 }

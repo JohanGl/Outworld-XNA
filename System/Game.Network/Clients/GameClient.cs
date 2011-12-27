@@ -34,6 +34,10 @@ namespace Game.Network.Clients
 		private readonly MessageHelper messageHelper;
 		private IMessageHandler messageHandler;
 
+		// Handled combined messages
+		private bool isCombined;
+		private bool isCombinedInitialized;
+
 		public GameClient()
 		{
 			messageHelper = new MessageHelper();
@@ -74,17 +78,17 @@ namespace Game.Network.Clients
 			{
 				var message = client.Messages[i];
 
-				switch ((GameClientMessageType)message.Data[0])
+				switch ((PacketType)message.Data[0])
 				{
-					case GameClientMessageType.ClientStatus:
+					case PacketType.ClientStatus:
 						ReceivedClientStatus(message);
 						break;
 
-					case GameClientMessageType.GameSettings:
+					case PacketType.GameSettings:
 						ReceivedGameSettings(message);
 						break;
 
-					case GameClientMessageType.ClientSpatial:
+					case PacketType.ClientSpatial:
 						ReceivedClientSpatial(message);
 						break;
 				}
@@ -160,7 +164,7 @@ namespace Game.Network.Clients
 		public void GetGameSettings()
 		{
 			client.Writer.WriteNewMessage();
-			client.Writer.Write((byte)GameClientMessageType.GameSettings);
+			client.Writer.Write((byte)PacketType.GameSettings);
 			client.Send(MessageDeliveryMethod.ReliableUnordered);
 		}
 
@@ -195,7 +199,7 @@ namespace Game.Network.Clients
 		public void GetClientSpatial()
 		{
 			client.Writer.WriteNewMessage();
-			client.Writer.Write((byte)GameClientMessageType.ClientSpatial);
+			client.Writer.Write((byte)PacketType.ClientSpatial);
 			client.Send(MessageDeliveryMethod.UnreliableSequenced);
 		}
 
@@ -221,7 +225,7 @@ namespace Game.Network.Clients
 					data.ClientId = client.Reader.ReadByte();
 					data.Position = messageHelper.ReadVector3(client.Reader);
 					data.Velocity = messageHelper.ReadVector3(client.Reader);
-					data.Angle = messageHelper.ReadVector3(client.Reader);
+					data.Angle = messageHelper.ReadVector3FromVector3b(client.Reader);
 
 					args.ClientData[i] = data;
 				}
@@ -232,12 +236,60 @@ namespace Game.Network.Clients
 
 		public void SendClientSpatial(Vector3 position, Vector3 velocity, Vector3 angle)
 		{
-			client.Writer.WriteNewMessage();
-			client.Writer.Write((byte)GameClientMessageType.ClientSpatial);
+			InitializeMessageWriter();
+			client.Writer.Write((byte)PacketType.ClientSpatial);
 			messageHelper.WriteVector3(position, client.Writer);
 			messageHelper.WriteVector3(velocity, client.Writer);
-			messageHelper.WriteVector3(angle, client.Writer);
+			messageHelper.WriteVector3AsVector3b(angle, client.Writer);
+			SendMessage();
+		}
+
+		public void SendClientActions(List<ClientAction> actions)
+		{
+			InitializeMessageWriter();
+			client.Writer.Write((byte)PacketType.ClientActions);
+			client.Writer.Write((byte)actions.Count);
+
+			for (int i = 0; i < actions.Count; i++)
+			{
+				client.Writer.Write((byte)actions[i].Type);
+			}
+
+			SendMessage();
+		}
+
+		private void InitializeMessageWriter()
+		{
+			if (!isCombined)
+			{
+				client.Writer.WriteNewMessage();
+			}
+			else if (isCombined && !isCombinedInitialized)
+			{
+				client.Writer.WriteNewMessage();
+				client.Writer.Write((byte)PacketType.Combined);
+				isCombinedInitialized = true;
+			}
+		}
+
+		private void SendMessage()
+		{
+			if (!isCombined)
+			{
+				client.Send(MessageDeliveryMethod.Unreliable);
+			}
+		}
+
+		public void BeginCombinedMessage()
+		{
+			isCombined = true;
+			isCombinedInitialized = false;
+		}
+
+		public void EndCombinedMessage()
+		{
 			client.Send(MessageDeliveryMethod.Unreliable);
+			isCombined = false;
 		}
 	}
 }

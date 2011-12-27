@@ -5,13 +5,15 @@ namespace Game.Network.Servers
 {
 	public class ClientData
 	{
+		public int Timeout;
 		public List<ClientSpatialData> SpatialData { get; set; }
-		public int TimeOut;
+		public List<ClientAction> Actions { get; set; }
 
 		public ClientData()
 		{
-			SpatialData = new List<ClientSpatialData>();
-			TimeOut = int.MaxValue;
+			SpatialData = new List<ClientSpatialData>(10);
+			Actions = new List<ClientAction>(10);
+			Timeout = int.MaxValue;
 		}
 	}
 }

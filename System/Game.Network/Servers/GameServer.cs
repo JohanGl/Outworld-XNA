@@ -20,29 +20,29 @@ namespace Game.Network.Servers
 		private IServer server;
 		private Dictionary<long, byte> connectionIds;
 		private MessageHelper messageHelper;
-		private Dictionary<byte, ClientData> clientData;
-		private double timer;
-
-		private GameTimer clientTimeOutTimer;
+		private Dictionary<byte, ClientData> clients;
+		private GameTimer tickrateTimer;
+		private GameTimer checkClientTimeoutsTimer;
 
 		public GameServer()
 		{
 			messageHelper = new MessageHelper();
-			clientData = new Dictionary<byte, ClientData>();
+			clients = new Dictionary<byte, ClientData>();
 			connectionIds = new Dictionary<long, byte>();
 
-			clientTimeOutTimer = new GameTimer(TimeSpan.FromSeconds(2));
+			tickrateTimer = new GameTimer(TimeSpan.FromMilliseconds(1000 / 30));
+			checkClientTimeoutsTimer = new GameTimer(TimeSpan.FromSeconds(2));
 
 			Logger.RegisterLogLevelsFor<GameServer>(Logger.LogLevels.Adaptive);
 		}
 
-		private void CheckClientTimeOuts(GameTime gameTime)
+		private void CheckClientTimeouts(GameTime gameTime)
 		{
 			var clientsToRemove = new List<byte>();
 
-			foreach (var pair in clientData)
+			foreach (var pair in clients)
 			{
-				if (gameTime.TotalGameTime.Seconds - pair.Value.TimeOut >= 2)
+				if (gameTime.TotalGameTime.Seconds - pair.Value.Timeout >= 2)
 				{
 					var message = new Message();
 					message.ClientId = GetClientIdAsLong(pair.Key).Value;
@@ -57,7 +57,7 @@ namespace Game.Network.Servers
 
 			for (int i = 0; i < clientsToRemove.Count; i++)
 			{
-				clientData.Remove(clientsToRemove[i]);
+				clients.Remove(clientsToRemove[i]);
 			}
 		}
 
@@ -82,7 +82,7 @@ namespace Game.Network.Servers
 			server = new LidgrenServer();
 			server.Initialize(configuration);
 
-			clientData.Clear();
+			clients.Clear();
 		}
 
 		public void Start()
@@ -90,97 +90,116 @@ namespace Game.Network.Servers
 			World = new WorldSimulation();
 			World.Initialize(Settings.World.Gravity, Settings.World.Seed);
 
-			clientData.Clear();
+			clients.Clear();
 			server.Start();
 		}
 
 		public void Stop(string message = null)
 		{
 			server.Stop(message);
-			clientData.Clear();
+			clients.Clear();
 		}
 
 		public void Update(GameTime gameTime)
 		{
+			if (!server.IsStarted)
+			{
+				return;
+			}
+
+			if (checkClientTimeoutsTimer.Update(gameTime))
+			{
+				CheckClientTimeouts(gameTime);
+			}
+
+			// Skip the packet updates below if the tickrate hasnt been reached
+			if (!tickrateTimer.Update(gameTime))
+			{
+				return;
+			}
+
+			// Check for new messages and store them if available
 			server.Update();
 
+			// Process all stored messages
 			for (int i = 0; i < server.Messages.Count; i++)
 			{
-				Message message = server.Messages[i];
+				ProcessMessage(gameTime, server.Messages[i]);
+			}
 
-				if (message.Type == MessageType.Data)
+			// Clear all previously stored messages
+			server.Messages.Clear();
+
+			// Send updates to the clients
+			BroadcastClientSpatial();
+
+			// Update the world
+			World.Update(gameTime);
+		}
+
+		private void ProcessMessage(GameTime gameTime, Message message)
+		{
+			if (message.Type == MessageType.Data)
+			{
+				// Skip clients that doesnt exist
+				if (!connectionIds.ContainsKey(message.ClientId))
 				{
-					// Skip clients that doesnt exist
-					if (!connectionIds.ContainsKey(message.ClientId))
-					{
-						continue;
-					}
+					return;
+				}
 
-					// Reset client timeout value when data recieved
-					byte clientId = connectionIds[message.ClientId];
-					if (clientData.ContainsKey(clientId))
-					{
-						clientData[clientId].TimeOut = gameTime.TotalGameTime.Seconds;
-					}
+				// Reset the client timeout counter every time data has been received
+				byte clientId = connectionIds[message.ClientId];
+				if (clients.ContainsKey(clientId))
+				{
+					clients[clientId].Timeout = gameTime.TotalGameTime.Seconds;
+				}
 
-					switch ((GameClientMessageType)message.Data[0])
-					{
-						case GameClientMessageType.GameSettings:
-							SendGameSettings(message);
-							break;
+				switch ((PacketType)message.Data[0])
+				{
+					case PacketType.GameSettings:
+						SendGameSettings(message);
+						break;
 
-						case GameClientMessageType.ClientSpatial:
-							ReceivedClientSpatial(message);
-							break;
-					}
+					case PacketType.ClientSpatial:
+						ReceivedClientSpatial(message);
+						break;
+
+					case PacketType.ClientActions:
+						ReceivedClientActions(message);
+						break;
+
+					case PacketType.Combined:
+						ReceivedCombinedMessage(message);
+						break;
+				}
+			}
+			else
+			{
+				var args = new ClientStatusArgs()
+				{
+					Type = message.Type == MessageType.Connect ? ClientStatusType.Connected : ClientStatusType.Disconnected
+				};
+
+				if (args.Type == ClientStatusType.Connected)
+				{
+					args.ClientId = CreateClientIdAsByteMapping(message.ClientId);
+					clients.Add(args.ClientId, new ClientData());
 				}
 				else
 				{
-					var args = new ClientStatusArgs()
-					{
-						Type = message.Type == MessageType.Connect ? ClientStatusType.Connected : ClientStatusType.Disconnected
-					};
-					
-					if (args.Type == ClientStatusType.Connected)
-					{
-						args.ClientId = CreateClientIdAsByteMapping(message.ClientId);
-						clientData.Add(args.ClientId, new ClientData());
-					}
-					else
-					{
-						args.ClientId = connectionIds[message.ClientId];
-						clientData.Remove(args.ClientId);
-						connectionIds.Remove(message.ClientId);
-					}
-
-					BroadcastClientStatusChanged(args);
-				}
-			}
-
-			server.Messages.Clear();
-
-			if (server.IsStarted)
-			{
-				if (gameTime.TotalGameTime.TotalMilliseconds > timer)
-				{
-					BroadcastClientSpatial();
-
-					timer = gameTime.TotalGameTime.TotalMilliseconds + 33;
+					args.ClientId = connectionIds[message.ClientId];
+					clients.Remove(args.ClientId);
+					connectionIds.Remove(message.ClientId);
 				}
 
-				World.Update(gameTime);
-			}
-
-			if(clientTimeOutTimer.Update(gameTime))
-			{
-				CheckClientTimeOuts(gameTime);
+				BroadcastClientStatusChanged(args);
 			}
 		}
 
 		private void BroadcastClientStatusChanged(ClientStatusArgs e)
 		{
 			server.Writer.WriteNewMessage();
-			server.Writer.Write((byte)GameClientMessageType.ClientStatus);
+			server.Writer.Write((byte)PacketType.ClientStatus);
 			server.Writer.Write(e.ClientId);
 			server.Writer.Write(e.Type == ClientStatusType.Connected);
 
@@ -192,14 +211,14 @@ namespace Game.Network.Servers
 			byte clientId = connectionIds[message.ClientId];
 
 			server.Writer.WriteNewMessage();
-			server.Writer.Write((byte)GameClientMessageType.GameSettings);
+			server.Writer.Write((byte)PacketType.GameSettings);
 
 			server.Writer.Write(clientId);
 			server.Writer.Write(Settings.World.Seed);
 			messageHelper.WriteVector3(Settings.World.Gravity, server.Writer);
-			server.Writer.Write((byte)clientData.Count - 1);
+			server.Writer.Write((byte)clients.Count - 1);
 
-			foreach (var pair in clientData)
+			foreach (var pair in clients)
 			{
 				if (pair.Key != clientId)
 				{
@@ -212,46 +231,90 @@ namespace Game.Network.Servers
 
 		private void ReceivedClientSpatial(Message message)
 		{
+			byte clientId = connectionIds[message.ClientId];
+
+			if (!clients.ContainsKey(clientId))
+			{
+				return;
+			}
+
 			server.Reader.ReadNewMessage(message);
 			server.Reader.ReadByte();
 
 			var clientSpatialData = new ClientSpatialData
 			{
-				ClientId = connectionIds[message.ClientId],
+				ClientId = clientId,
 				Position = messageHelper.ReadVector3(server.Reader),
 				Velocity = messageHelper.ReadVector3(server.Reader),
-				Angle = messageHelper.ReadVector3(server.Reader)
+				Angle = messageHelper.ReadVector3FromVector3b(server.Reader)
 			};
 
-			if (!clientData.ContainsKey(clientSpatialData.ClientId))
+			clients[clientSpatialData.ClientId].SpatialData.Add(clientSpatialData);
+
+			// Keep a maximum of 2 entries
+			if (clients[clientSpatialData.ClientId].SpatialData.Count > 2)
+			{
+				clients[clientSpatialData.ClientId].SpatialData.RemoveAt(0);
+			}
+		}
+
+		private void ReceivedClientActions(Message message)
+		{
+			byte clientId = connectionIds[message.ClientId];
+
+			if (!clients.ContainsKey(clientId))
 			{
 				return;
 			}
 
-			clientData[clientSpatialData.ClientId].SpatialData.Add(clientSpatialData);
+			server.Reader.ReadNewMessage(message);
+			server.Reader.ReadByte();
+			
+			int actions = server.Reader.ReadByte();
 
-			// Keep a maximum of 2 entries
-			if (clientData[clientSpatialData.ClientId].SpatialData.Count > 2)
+			for (int i = 0; i < actions; i++)
 			{
-				clientData[clientSpatialData.ClientId].SpatialData.RemoveAt(0);
+				var type = (PacketActionType)server.Reader.ReadByte();
+				clients[clientId].Actions.Add(new ClientAction() { Type = type });
+
+				// Keep a maximum of 5 entries
+				if (clients[clientId].Actions.Count > 5)
+				{
+					clients[clientId].Actions.RemoveAt(0);
+				}
 			}
+		}
+
+		private void ReceivedCombinedMessage(Message message)
+		{
+			byte clientId = connectionIds[message.ClientId];
+
+			if (!clients.ContainsKey(clientId))
+			{
+				return;
+			}
+
+			server.Reader.ReadNewMessage(message);
+			server.Reader.ReadByte();
+
+			// TODO: Split up all combined messages
 		}
 
 		private void BroadcastClientSpatial()
 		{
-			if (clientData.Count < 2)
+			if (clients.Count < 2)
 			{
 				return;
 			}
 
 			server.Writer.WriteNewMessage();
-			server.Writer.Write((byte)GameClientMessageType.ClientSpatial);
+			server.Writer.Write((byte)PacketType.ClientSpatial);
 
 			// Total number of clients in the message
-			server.Writer.Write((byte)clientData.Count);
+			server.Writer.Write((byte)clients.Count);
 
 			// Write all client positions
-			foreach (var pair in clientData)
+			foreach (var pair in clients)
 			{
 				int length = pair.Value.SpatialData.Count - 1;
 

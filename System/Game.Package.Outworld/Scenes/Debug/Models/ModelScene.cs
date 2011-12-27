@@ -11,6 +11,7 @@ namespace Outworld.Scenes.Debug.Models
 	{
 		private Vector3 Position = Vector3.Zero;
 		private float angle;
+		private SkinnedModel skinnedModel;
 
 		public override void Initialize(GameContext context)
 		{
@@ -22,22 +23,41 @@ namespace Outworld.Scenes.Debug.Models
 			var content = Context.Resources.Content;
 			Context.Resources.Models.Add("weapon", content.Load<Model>(@"Models\Weapons\Pistol01"));
 			Context.Resources.Models.Add("Chibi", content.Load<Model>(@"Models\Characters\Chibi\Chibi"));
+			Context.Resources.Models.Add("Chibi2", content.Load<Model>(@"Models\Characters\Chibi\HeroRun"));
+
+			skinnedModel = new SkinnedModel();
+			skinnedModel.Initialize(Context.Resources.Models["Chibi2"]);
+			skinnedModel.SetAnimationClip("Default Take");
 		}
 
 		public override void UnloadContent()
 		{
 			Context.Resources.Models.Remove("weapon");
 			Context.Resources.Models.Remove("Chibi");
+			Context.Resources.Models.Remove("Chibi2");
 		}
 
 		public override void Update(GameTime gameTime)
 		{
 			angle += 60f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+			skinnedModel.Update(gameTime);
 		}
 
 		public override void Render(GameTime gameTime)
 		{
-			DrawModel(Context.Resources.Models["Chibi"]);
+			DrawSkinnedModel(skinnedModel);
+
+			//DrawModel(Context.Resources.Models["Chibi"]);
+		}
+
+		private void DrawSkinnedModel(SkinnedModel skinnedModel)
+		{
+			float aspectRatio = Context.Graphics.Device.Viewport.AspectRatio;
+			Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45.0f), aspectRatio, 1.0f, 10000.0f);
+			Matrix view = Matrix.CreateLookAt(new Vector3(0.0f, 1.0f, 6f), Vector3.Zero, Vector3.Up);
+
+			skinnedModel.Render(view, projection, new Vector3(0), angle);
 		}
 
 		private void DrawModel(Model m)

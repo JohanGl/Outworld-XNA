@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -17,12 +18,12 @@ using Game.Entities.Outworld.World;
 using Game.Entities.Outworld.World.SpatialSensor;
 using Game.Network.Clients;
 using Game.Network.Clients.Events;
+using Game.Network.Common;
 using Game.Network.Servers;
 using Game.World.Terrains.Helpers;
 using Game.World.Terrains.Parts.Areas;
 using Game.World.Terrains.Parts.Areas.Helpers;
 using Game.World.Terrains.Parts.Tiles;
-using Microsoft.Xna.Framework.Audio;
 using Outworld.Players;
 using Outworld.Scenes.InGame.Helpers.BreadCrumbs;
 using Microsoft.Xna.Framework;
@@ -314,16 +315,10 @@ namespace Outworld.Scenes.InGame
 
 			if (Context.Input.Keyboard.KeyboardState[Keys.F1].WasJustPressed)
 			{
+				//messageHandler.AddMessage("ServerUpdates", new PlayerMessage() { Type = PacketActionType.Damaged });
+				messageHandler.AddMessage("ServerUpdates", new PlayerMessage() { Type = PacketActionType.Dead });
+
 				//audioHandler.PlaySound3d("a", "Walking1", 1f, playerSpatial.Position);
-
-				//// Add a global message for this event
-				//var notificationMessage = new NetworkMessage()
-				//{
-				//    Type = NetworkMessage.MessageType.Connected,
-				//    Text = "Player 2 connected"
-				//};
-
-				//messageHandler.AddMessage("GameClient", notificationMessage);
 			}
 			else if (Context.Input.Keyboard.KeyboardState[Keys.F2].WasJustPressed)
 			{
@@ -495,9 +490,30 @@ namespace Outworld.Scenes.InGame
 		{
 			if (gameClient.IsConnected)
 			{
-				// Sends our current position to the server
-				gameClient.SendClientSpatial(playerSpatial.Position, playerSpatial.Velocity, playerSpatial.Angle);
+				var messages = messageHandler.GetMessages<PlayerMessage>("ServerUpdates");
+
+				if (messages.Count > 0)
+				{
+					var actions = new List<ClientAction>();
+
+					for (int i = 0; i < messages.Count; i++)
+					{
+						actions.Add(new ClientAction() { Type = messages[i].Type });
+					}
+
+					gameClient.BeginCombinedMessage();
+					gameClient.SendClientSpatial(playerSpatial.Position, playerSpatial.Velocity, playerSpatial.Angle);
+					gameClient.SendClientActions(actions);
+					gameClient.EndCombinedMessage();
+				}
+				else
+				{
+					// Sends our current spatial data to the server
+					gameClient.SendClientSpatial(playerSpatial.Position, playerSpatial.Velocity, playerSpatial.Angle);
+				}
 			}
+
+			messageHandler.Clear("ServerUpdates");
 		}
 
 		private void SaveBreadCrumb()

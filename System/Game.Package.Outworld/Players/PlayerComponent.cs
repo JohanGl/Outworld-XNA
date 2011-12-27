@@ -1,6 +1,6 @@
 ﻿using System;
 using Framework.Core.Animations;
-using Framework.Core.Common;
+using Framework.Core.Messaging;
 using Framework.Core.Services;
 using Framework.Physics;
 using Framework.Physics.RigidBodies;
@@ -11,6 +11,8 @@ using Game.Entities.Outworld.World.SpatialSensor;
 using Game.Entities.System;
 using Game.Entities.System.ComponentModel;
 using Game.Entities.System.EntityModel;
+using Game.Network.Clients;
+using Game.Network.Common;
 using Game.World.Terrains.Helpers;
 using Game.World.Terrains.Parts.Areas.Helpers;
 using Game.World.Terrains.Parts.Tiles;
@@ -34,8 +36,9 @@ namespace Outworld.Players
 		// Components
 		private SpatialComponent spatial;
 		private SpatialSensorComponent spatialSensor;
-		private HealthComponent health;
-		private PlayerInputComponent input;
+		private HealthComponent healthComponent;
+		private PlayerInputComponent inputComponent;
+		private IMessageHandler messageHandler;
 
 		private IPhysicsHandler physicsHandler;
 		private TerrainContextCollisionHelper terrainContextCollisionHelper;
@@ -50,6 +53,7 @@ namespace Outworld.Players
 			this.terrainContextCollisionHelper = terrainContextCollisionHelper;
 
 			globalSettings = ServiceLocator.Get<GlobalSettings>();
+			messageHandler = ServiceLocator.Get<IMessageHandler>();
 
 			CameraOffsetY = globalSettings.Player.CameraOffsetY;
 			float cameraCrouchingOffsetY = globalSettings.Player.CameraCrouchingOffsetY;
@@ -77,10 +81,10 @@ namespace Outworld.Players
 			spatialSensor = Owner.Components.Get<SpatialSensorComponent>();
 
 			// Health
-			health = Owner.Components.Get<HealthComponent>();
+			healthComponent = Owner.Components.Get<HealthComponent>();
 
 			// Input
-			input = Owner.Components.Get<PlayerInputComponent>();
+			inputComponent = Owner.Components.Get<PlayerInputComponent>();
 		}
 
 		public void Update(GameTime gameTime)
@@ -124,9 +128,9 @@ namespace Outworld.Players
 			{
 				float impactDepth = (1.0f + spatialSensor.ImpactDepth.Y);
 				float damage = (float)Math.Pow(impactDepth, 8);
-				health.Subtract(Math.Abs(damage * 2f));
+				healthComponent.Subtract(Math.Abs(damage * 2f));
 
-				if (health.Health == 0)
+				if (healthComponent.Health == 0)
 				{
 					Kill();
 				}
@@ -143,7 +147,7 @@ namespace Outworld.Players
 
 		public void Kill()
 		{
-			input.IsEnabled = false;
+			inputComponent.IsEnabled = false;
 			IsDead = true;
 			isDying = true;
 
@@ -151,6 +155,8 @@ namespace Outworld.Players
 			AnimationHandler.Animations[AnimationType.DeathCameraRoll].Start();
 			AnimationHandler.Animations[AnimationType.DeathCameraTilt].Start();
 			AnimationHandler.Animations[AnimationType.DeathCameraOffsetY].Start();
+
+			messageHandler.AddMessage("ServerUpdates", new PlayerMessage() { Type = PacketActionType.Dead });
 		}
 
 		public void ToggleStandCrouch()

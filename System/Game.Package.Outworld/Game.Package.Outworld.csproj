@@ -101,12 +101,8 @@
   <ItemGroup>
     <Compile Include="GamePackage.cs" />
     <Compile Include="Helpers\EntityFactories\PlayerEntityFactory.cs" />
+    <Compile Include="Players\PlayerMessage.cs" />
     <Compile Include="Scenes\Debug\Audio\AudioScene.cs" />
-    <Compile Include="Scenes\Debug\Models\Animations\AnimationClip.cs" />
-    <Compile Include="Scenes\Debug\Models\Animations\AnimationPlayer.cs" />
-    <Compile Include="Scenes\Debug\Models\Animations\Keyframe.cs" />
-    <Compile Include="Scenes\Debug\Models\Animations\SkinnedModelProcessor.cs" />
-    <Compile Include="Scenes\Debug\Models\Animations\SkinningData.cs" />
     <Compile Include="Scenes\Debug\Models\ModelScene.cs" />
     <Compile Include="Scenes\InGame\ChildScenes\InGameMenu\InGameMenuScene.cs" />
     <Compile Include="Scenes\InGame\Controls\Hud\Notifications.cs" />
