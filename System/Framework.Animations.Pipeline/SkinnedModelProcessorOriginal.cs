@@ -15,7 +15,7 @@ namespace Framework.Animations.Pipeline
 	/// adding animation support.
 	/// </summary>
 	[ContentProcessor(DisplayName = "SkinnedModel - Framework.Animations.Pipeline")]
-	public class SkinnedModelProcessor : ModelProcessor
+	public class SkinnedModelProcessorOriginal : ModelProcessor
 	{
 		// Example of a custom property
 		//[DefaultValue(23.0f)]
@@ -30,6 +30,8 @@ namespace Framework.Animations.Pipeline
 		public override ModelContent Process(NodeContent input, ContentProcessorContext context)
 		{
 			ValidateMesh(input, context, null);
+
+			//ReadOpaqueData(input);
 
 			// Find the skeleton.
 			BoneContent skeleton = MeshHelper.FindSkeleton(input);
@@ -72,6 +74,16 @@ namespace Framework.Animations.Pipeline
 			model.Tag = new SkinningData(animationClips, bindPose, inverseBindPose, skeletonHierarchy);
 
 			return model;
+		}
+
+		// TODO: Use for sub-animations
+		private void ReadOpaqueData(NodeContent node)
+		{
+			if (node.OpaqueData.Count > 0)
+			{
+				int a = 10;
+				//var a = node.OpaqueData.GetValue<string>("AnimName", null);
+			}
 		}
 
 		/// <summary>

@@ -27,7 +27,9 @@ namespace Outworld.Scenes.Debug.Models
 
 			skinnedModel = new SkinnedModel();
 			skinnedModel.Initialize(Context.Resources.Models["Chibi2"]);
-			skinnedModel.SetAnimationClip("Take 001");
+			//skinnedModel.SetAnimationClip("Idle");
+			skinnedModel.SetAnimationClip("Run");
+			//skinnedModel.SetAnimationClip("Take 001");
 			//skinnedModel.SetAnimationClip("Default Take");
 		}
 

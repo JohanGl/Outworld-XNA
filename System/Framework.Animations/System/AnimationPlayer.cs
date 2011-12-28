@@ -95,17 +95,17 @@ namespace Framework.Animations.System
 				throw new ArgumentOutOfRangeException("time");
 			}
 
+			// Read keyframe matrices.
+			IList<Keyframe> keyframes = currentClipValue.Keyframes;
+
 			// If the position moved backwards, reset the keyframe index.
 			if (time < currentTimeValue)
 			{
 				currentKeyframe = 0;
-				skinningDataValue.BindPose.CopyTo(boneTransforms, 0);
+				boneTransforms[keyframes[0].Bone] = keyframes[0].Transform;
 			}
 
 			currentTimeValue = time;
-
-			// Read keyframe matrices.
-			IList<Keyframe> keyframes = currentClipValue.Keyframes;
 
 			while (currentKeyframe < keyframes.Count)
 			{

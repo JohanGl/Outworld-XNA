@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using Framework.Animations.System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

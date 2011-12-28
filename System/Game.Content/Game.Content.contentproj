@@ -213,7 +213,7 @@
     <Compile Include="Models\Characters\Dude\dude.fbx">
       <Name>dude</Name>
       <Importer>FbxImporter</Importer>
-      <Processor>SkinnedModelProcessor</Processor>
+      <Processor>SkinnedModelProcessorOriginal</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -325,7 +325,7 @@
     <Compile Include="Models\Characters\Chibi\HeroRun.fbx">
       <Name>HeroRun</Name>
       <Importer>FbxImporter</Importer>
-      <Processor>SkinnedModelProcessor</Processor>
+      <Processor>SkinnedModelProcessorNew</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -341,6 +341,13 @@
       <Name>chibiSpaceMarineDiffuse</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Models\Characters\Chibi\HeroRun_Anims.xml">
+      <Name>HeroRun_Anims</Name>
+      <Importer>XmlImporter</Importer>
+      <Processor>PassThroughProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

@@ -95,6 +95,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SkinnedModel.cs" />
     <Compile Include="System\AnimationClip.cs" />
+    <Compile Include="System\AnimationEvent.cs" />
     <Compile Include="System\AnimationPlayer.cs" />
     <Compile Include="System\Keyframe.cs" />
     <Compile Include="System\SkinningData.cs" />
