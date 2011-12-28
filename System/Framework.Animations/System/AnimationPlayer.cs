@@ -43,7 +43,7 @@ namespace Framework.Animations.System
 		/// <summary>
 		/// Starts decoding the specified animation clip.
 		/// </summary>
-		public void StartClip(Framework.Animations.System.AnimationClip clip)
+		public void StartClip(AnimationClip clip)
 		{
 			if (clip == null)
 			{
