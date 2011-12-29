@@ -41,7 +41,7 @@ namespace Game.World.Terrains.Generators.Areas.Tiles
 					{
 						int currentIndex = currentY + currentZ + tileX;
 						int currentSurfaceIndex = currentZ + tileX;
-						int currentSurfaceY = surface[currentSurfaceIndex];
+						int currentSurfaceY = surface[currentSurfaceIndex] - 1;
 
 						// Above the ground?
 						if (currentTileY > currentSurfaceY)

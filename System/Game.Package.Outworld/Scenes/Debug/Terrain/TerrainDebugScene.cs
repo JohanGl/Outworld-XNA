@@ -50,7 +50,7 @@ namespace Outworld.Scenes.Debug.Terrain
 			spatialComponent.Position = new Vector3(18, 80, 80);
 			spatialComponent.Angle = new Vector3(180, -20, 0);
 
-			var globalSettings = ServiceLocator.Get<GlobalSettings>();
+			//var globalSettings = ServiceLocator.Get<GlobalSettings>();
 			InitializeInput();
 
 			gui = new GuiManager(Context.Input, Context.Graphics.Device, Context.Graphics.SpriteBatch);
@@ -151,15 +151,23 @@ namespace Outworld.Scenes.Debug.Terrain
 													0);
 			Context.Graphics.SpriteBatch.End();
 
-			gui.Render();
+			//gui.Render();
 		}
 
 		private void InitializeInput()
 		{
 			Context.Input.Keyboard.ClearMappings();
+			Context.Input.Keyboard.AddMapping(Keys.W);
+			Context.Input.Keyboard.AddMapping(Keys.A);
+			Context.Input.Keyboard.AddMapping(Keys.S);
+			Context.Input.Keyboard.AddMapping(Keys.D);
+			Context.Input.Keyboard.AddMapping(Keys.E);
+			Context.Input.Keyboard.AddMapping(Keys.C);
 
-			Context.Input.Mouse.AutoCenter = false;
-			Context.Input.Mouse.ShowCursor = true;
+			Context.Input.Mouse.AutoCenter = true;
+			Context.Input.Mouse.ShowCursor = false;
+
+			spatialComponent.Angle.Y = -45;
 		}
 
 		private void InitializeCamera()
@@ -238,31 +246,31 @@ namespace Outworld.Scenes.Debug.Terrain
 		private void HandleInputMove()
 		{
 			// Forward / backward
-			if (inputContext.GamePadState[Buttons.LeftThumbstickUp].Pressed)
+			if (inputContext.Keyboard.KeyboardState[Keys.W].Pressed)
 			{
 				spatialComponent.Position += GetVelocity(-90);
 			}
-			else if (inputContext.GamePadState[Buttons.LeftThumbstickDown].Pressed)
+			else if (inputContext.Keyboard.KeyboardState[Keys.S].Pressed)
 			{
 				spatialComponent.Position -= GetVelocity(-90);
 			}
 
 			// Ascend / Descend
-			if (inputContext.GamePadState[Buttons.DPadUp].Pressed)
+			if (inputContext.Keyboard.KeyboardState[Keys.E].Pressed)
 			{
 				spatialComponent.Position = new Vector3(spatialComponent.Position.X, spatialComponent.Position.Y + 0.5f, spatialComponent.Position.Z);
 			}
-			else if (inputContext.GamePadState[Buttons.DPadDown].Pressed)
+			else if (inputContext.Keyboard.KeyboardState[Keys.C].Pressed)
 			{
 				spatialComponent.Position = new Vector3(spatialComponent.Position.X, spatialComponent.Position.Y - 0.5f, spatialComponent.Position.Z);
 			}
 
 			// Strafe left / right
-			if (inputContext.GamePadState[Buttons.LeftThumbstickLeft].Pressed)
+			if (inputContext.Keyboard.KeyboardState[Keys.A].Pressed)
 			{
 				spatialComponent.Position += GetVelocity(0);
 			}
-			else if (inputContext.GamePadState[Buttons.LeftThumbstickRight].Pressed)
+			else if (inputContext.Keyboard.KeyboardState[Keys.D].Pressed)
 			{
 				spatialComponent.Position -= GetVelocity(0);
 			}
@@ -279,20 +287,20 @@ namespace Outworld.Scenes.Debug.Terrain
 		private void HandleInputLookAround()
 		{
 			// Look up
-			if (inputContext.GamePadState[Buttons.RightThumbstickUp].Pressed)
+			if (inputContext.Mouse.MouseState[MouseInputType.MoveUp].Pressed)
 			{
-				spatialComponent.Angle.Y += inputContext.GamePadState[Buttons.RightThumbstickUp].Value * lookAroundAmplifier.Y;
+				spatialComponent.Angle.Y += inputContext.Mouse.MouseState[MouseInputType.MoveUp].Value * lookAroundAmplifier.Y;
 			}
 			// Look down
-			else if (inputContext.GamePadState[Buttons.RightThumbstickDown].Pressed)
+			else if (inputContext.Mouse.MouseState[MouseInputType.MoveDown].Pressed)
 			{
-				spatialComponent.Angle.Y -= inputContext.GamePadState[Buttons.RightThumbstickDown].Value * lookAroundAmplifier.Y;
+				spatialComponent.Angle.Y -= inputContext.Mouse.MouseState[MouseInputType.MoveDown].Value * lookAroundAmplifier.Y;
 			}
 
 			// Look left
-			if (inputContext.GamePadState[Buttons.RightThumbstickLeft].Pressed)
+			if (inputContext.Mouse.MouseState[MouseInputType.MoveLeft].Pressed)
 			{
-				spatialComponent.Angle.X -= inputContext.GamePadState[Buttons.RightThumbstickLeft].Value * lookAroundAmplifier.X;
+				spatialComponent.Angle.X -= inputContext.Mouse.MouseState[MouseInputType.MoveLeft].Value * lookAroundAmplifier.X;
 
 				if (spatialComponent.Angle.X < 0)
 				{
@@ -300,9 +308,9 @@ namespace Outworld.Scenes.Debug.Terrain
 				}
 			}
 			// Look right
-			else if (inputContext.GamePadState[Buttons.RightThumbstickRight].Pressed)
+			else if (inputContext.Mouse.MouseState[MouseInputType.MoveRight].Pressed)
 			{
-				spatialComponent.Angle.X += inputContext.GamePadState[Buttons.RightThumbstickRight].Value * lookAroundAmplifier.X;
+				spatialComponent.Angle.X += inputContext.Mouse.MouseState[MouseInputType.MoveRight].Value * lookAroundAmplifier.X;
 
 				if (spatialComponent.Angle.X > 359)
 				{

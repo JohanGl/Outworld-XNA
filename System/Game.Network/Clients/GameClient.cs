@@ -248,7 +248,6 @@ namespace Game.Network.Clients
 		{
 			InitializeMessageWriter();
 			client.Writer.Write((byte)PacketType.ClientActions);
-			client.Writer.Write((byte)actions.Count);
 
 			for (int i = 0; i < actions.Count; i++)
 			{
