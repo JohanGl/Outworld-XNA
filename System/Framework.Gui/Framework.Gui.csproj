@@ -98,6 +98,7 @@
   <ItemGroup>
     <Compile Include="Elements\Button.cs" />
     <Compile Include="Elements\ChatBox.cs" />
+    <Compile Include="Elements\ImageButton.cs" />
     <Compile Include="Elements\TextBox.cs" />
     <Compile Include="Elements\StackPanel.cs" />
     <Compile Include="Elements\Grid.cs" />
