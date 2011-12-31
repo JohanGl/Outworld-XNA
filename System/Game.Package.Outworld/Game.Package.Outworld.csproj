@@ -110,6 +110,7 @@
     <Compile Include="Scenes\InGame\Helpers\BreadCrumbs\BreadCrumbHelper.cs" />
     <Compile Include="Scenes\Loading\LoadingScene.cs" />
     <Compile Include="Scenes\Debug\Terrain\TerrainDebugScene.cs" />
+    <Compile Include="Scenes\MainMenu\ChildScenes\NewGameScene.cs" />
     <Compile Include="Scenes\MainMenu\MainMenuScene.cs" />
     <Compile Include="Scenes\NewGameScene\NewGameScene.cs" />
     <Compile Include="Settings\Global\Entities\Audio\AudioSettings.cs" />

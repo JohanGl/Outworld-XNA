@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Timers;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace Framework.Gui
@@ -14,22 +14,20 @@ namespace Framework.Gui
 
 		public event EventHandler Click;
 
-		private Rectangle defaultState;
-		private Rectangle hoverState;
-		private Rectangle focusedState;
+		private ButtonStates buttonStates;
 		private Timer timerPressedDuration;
+		private Timer timerClickEventPauseDuration;
 
 		public ImageButton()
 		{
 			Initialize();
 		}
 
-		public ImageButton(Texture2D texture, Rectangle defaultState, Rectangle hoverState, Rectangle focusedState)
+		public ImageButton(Texture2D texture, ButtonStates buttonStates)
 		{
 			this.texture = texture;
-			this.defaultState = defaultState;
-			this.hoverState = hoverState;
-			this.focusedState = focusedState;
+			this.buttonStates = buttonStates;
+			this.buttonStates.Validate();
 
 			Opacity = 1.0f;
 
@@ -39,7 +37,10 @@ namespace Framework.Gui
 		private void Initialize()
 		{
 			timerPressedDuration = new Timer(100);
-			timerPressedDuration.Elapsed += timer_Elapsed;
+			timerPressedDuration.Elapsed += timerPressedDuration_Elapsed;
+
+			timerClickEventPauseDuration = new Timer(200);
+			timerClickEventPauseDuration.Elapsed += timerClickEventPauseDuration_Elapsed;
 		}
 
 		public override void SetFocus(bool state)
@@ -49,8 +50,8 @@ namespace Framework.Gui
 
 		public override void UpdateLayout(GuiManager guiManager, Rectangle availableSize)
 		{
-			Width = defaultState.Width;
-			Height = defaultState.Height;
+			Width = buttonStates.Default.Width;
+			Height = buttonStates.Default.Height;
 
 			guiManager.Arrange(this, availableSize);
 		}
@@ -70,15 +71,19 @@ namespace Framework.Gui
 		{
 			if (IsPressed)
 			{
-				spriteBatch.Draw(texture, Position, focusedState, Color.White * Opacity);
+				spriteBatch.Draw(texture, Position, buttonStates.Pressed, Color.White * Opacity);
 			}
 			else if (IsFocused)
 			{
-				spriteBatch.Draw(texture, Position, focusedState, Color.White * Opacity);
+				spriteBatch.Draw(texture, Position, buttonStates.Focused, Color.White * Opacity);
+			}
+			else if (IsHighlighted)
+			{
+				spriteBatch.Draw(texture, Position, buttonStates.Highlighted, Color.White * Opacity);
 			}
 			else
 			{
-				spriteBatch.Draw(texture, Position, defaultState, Color.White * Opacity);
+				spriteBatch.Draw(texture, Position, buttonStates.Default, Color.White * Opacity);
 			}
 		}
 
@@ -86,17 +91,23 @@ namespace Framework.Gui
 		{
 			IsPressed = true;
 			timerPressedDuration.Start();
+			timerClickEventPauseDuration.Start();
+		}
+
+		private void timerPressedDuration_Elapsed(object sender, ElapsedEventArgs e)
+		{
+			IsPressed = false;
+			timerPressedDuration.Stop();
+		}
+
+		private void timerClickEventPauseDuration_Elapsed(object sender, ElapsedEventArgs elapsedEventArgs)
+		{
+			timerClickEventPauseDuration.Stop();
 
 			if (Click != null)
 			{
 				Click(this, EventArgs.Empty);
 			}
-		}
-
-		private void timer_Elapsed(object sender, ElapsedEventArgs e)
-		{
-			IsPressed = false;
-			timerPressedDuration.Stop();
 		}
 	}
 }

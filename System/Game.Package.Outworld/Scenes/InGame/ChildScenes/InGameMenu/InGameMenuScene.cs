@@ -156,9 +156,7 @@ namespace Outworld.Scenes.InGame.ChildScenes.InGameMenu
 
 		private void UpdateInputs()
 		{
-			
-
-			// Select previous GUI-item
+			// Select the previous GUI-item
 			if (Context.Input.GamePadState[Buttons.LeftThumbstickUp].WasJustPressed ||
 				Context.Input.GamePadState[Buttons.DPadUp].WasJustPressed ||
 				Context.Input.Keyboard.KeyboardState[Keys.Up].WasJustPressed)
@@ -173,7 +171,7 @@ namespace Outworld.Scenes.InGame.ChildScenes.InGameMenu
 				UpdateFocus();
 			}
 
-			// Select next GUI-item
+			// Select the next GUI-item
 			if (Context.Input.GamePadState[Buttons.LeftThumbstickDown].WasJustPressed || 
 				Context.Input.GamePadState[Buttons.DPadDown].WasJustPressed ||
 				Context.Input.Keyboard.KeyboardState[Keys.Down].WasJustPressed)
@@ -210,8 +208,6 @@ namespace Outworld.Scenes.InGame.ChildScenes.InGameMenu
 			}
 
 			buttons[buttonIndex].IsFocused = true;
-
-			//gui.FocusElement(buttons[buttonIndex]);
 		}
 
 		private void ExitScene()

@@ -96,7 +96,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\ElementStateChangeArgs.cs" />
     <Compile Include="Elements\Button.cs" />
+    <Compile Include="Common\ButtonStates.cs" />
     <Compile Include="Elements\ChatBox.cs" />
     <Compile Include="Elements\ImageButton.cs" />
     <Compile Include="Elements\TextBox.cs" />
