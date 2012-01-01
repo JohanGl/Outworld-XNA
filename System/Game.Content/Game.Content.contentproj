@@ -368,8 +368,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\Scenes\MainMenu\MenuOptions.png">
-      <Name>MenuOptions</Name>
+    <Compile Include="Gui\Scenes\MainMenu\MainOptions.png">
+      <Name>MainOptions</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -379,6 +379,13 @@
       <Name>ButtonPress01</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Gui\Scenes\MainMenu\NewGameOptions.png">
+      <Name>NewGameOptions</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

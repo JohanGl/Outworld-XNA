@@ -5,15 +5,17 @@ using Microsoft.Xna.Framework;
 
 namespace Outworld.Scenes.MainMenu.ChildScenes
 {
-	public class NewGameScene : SceneBase
+	public class MainScene : SceneBase
 	{
 		private StackPanel menuOptions;
 
 		private enum ButtonCommand
 		{
-			HostGame,
-			JoinGame,
-			Return
+			NewGame,
+			LoadGame,
+			Options,
+			Credits,
+			Quit
 		}
 
 		public override void LoadContent()
@@ -36,7 +38,7 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			menuOptions.Visibility = Visibility.Visible;
 			gui.Elements.Add(menuOptions);
 
-			for (int i = 0; i < 3; i++)
+			for (int i = 0; i < 5; i++)
 			{
 				menuOptions.Children.Add(GetMenuOption(i));
 			}
@@ -54,17 +56,27 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			switch (row)
 			{
 				case 1:
-					buttonCommand = ButtonCommand.JoinGame;
+					buttonCommand = ButtonCommand.LoadGame;
 					offsetY = 58;
 					break;
 
 				case 2:
-					buttonCommand = ButtonCommand.Return;
+					buttonCommand = ButtonCommand.Options;
 					offsetY = 115;
 					break;
 
+				case 3:
+					buttonCommand = ButtonCommand.Credits;
+					offsetY = 173;
+					break;
+
+				case 4:
+					buttonCommand = ButtonCommand.Quit;
+					offsetY = 231;
+					break;
+
 				default:
-					buttonCommand = ButtonCommand.HostGame;
+					buttonCommand = ButtonCommand.NewGame;
 					break;
 			}
 
@@ -74,7 +86,7 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			buttonStates.Focused = new Rectangle(352, offsetY, optionWidth, optionHeight);
 			buttonStates.Pressed = buttonStates.Default;
 
-			var result = new ImageButton(Context.Resources.Textures["MainMenu.NewGameOptions"], buttonStates);
+			var result = new ImageButton(Context.Resources.Textures["MainMenu.MainOptions"], buttonStates);
 			result.HorizontalAlignment = HorizontalAlignment.Left;
 			result.VerticalAlignment = VerticalAlignment.Top;
 			result.Click += MenuOptionOnClick;
@@ -89,14 +101,21 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 
 			switch ((ButtonCommand)button.Tag)
 			{
-				case ButtonCommand.HostGame:
+				case ButtonCommand.NewGame:
+					((MainMenuScene)Parent).ShowScene(SceneType.NewGame);
 					break;
 
-				case ButtonCommand.JoinGame:
+				case ButtonCommand.LoadGame:
 					break;
 
-				case ButtonCommand.Return:
-					((MainMenuScene)Parent).ShowScene(SceneType.Main);
+				case ButtonCommand.Options:
+					break;
+
+				case ButtonCommand.Credits:
+					break;
+
+				case ButtonCommand.Quit:
+					Context.Game.Exit();
 					break;
 			}
 		}
