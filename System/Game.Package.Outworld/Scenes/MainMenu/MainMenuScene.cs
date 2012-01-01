@@ -12,7 +12,8 @@ namespace Outworld.Scenes.MainMenu
 	public enum SceneType
 	{
 		Main = 0,
-		NewGame
+		NewGame,
+		JoinGame
 	}
 
 	public class MainMenuScene : SceneBase
@@ -30,6 +31,7 @@ namespace Outworld.Scenes.MainMenu
 			resources.Textures.Add("MainMenu.Separator", content.Load<Texture2D>(@"Gui\Scenes\MainMenu\Separator"));
 			resources.Textures.Add("MainMenu.MainOptions", content.Load<Texture2D>(@"Gui\Scenes\MainMenu\MainOptions"));
 			resources.Textures.Add("MainMenu.NewGameOptions", content.Load<Texture2D>(@"Gui\Scenes\MainMenu\NewGameOptions"));
+			resources.Textures.Add("MainMenu.JoinGameOptions", content.Load<Texture2D>(@"Gui\Scenes\MainMenu\JoinGameOptions"));
 
 			resources.Fonts.Add("Hud", content.Load<SpriteFont>(@"Fonts\Moire"));
 
@@ -39,13 +41,17 @@ namespace Outworld.Scenes.MainMenu
 			InitializeGui();
 
 			// Initialize all child scenes
-			var scene = new MainScene();
-			Context.Scenes.AddChild(this, scene, true);
-			scene.InitializeGui(gui);
+			var mainScene = new MainScene();
+			Context.Scenes.AddChild(this, mainScene, true);
+			mainScene.InitializeGui(gui);
 
-			var scene2 = new NewGameScene();
-			Context.Scenes.AddChild(this, scene2, true);
-			scene2.InitializeGui(gui);
+			var newGameScene = new NewGameScene();
+			Context.Scenes.AddChild(this, newGameScene, true);
+			newGameScene.InitializeGui(gui);
+
+			var joinGameScene = new JoinGameScene();
+			Context.Scenes.AddChild(this, joinGameScene, true);
+			joinGameScene.InitializeGui(gui);
 
 			ShowScene(SceneType.Main);
 		}
@@ -58,6 +64,7 @@ namespace Outworld.Scenes.MainMenu
 			resources.Textures.Remove("MainMenu.Separator");
 			resources.Textures.Remove("MainMenu.MainOptions");
 			resources.Textures.Remove("MainMenu.NewGameOptions");
+			resources.Textures.Remove("MainMenu.JoinGameOptions");
 
 			resources.Fonts.Remove("Hud");
 
@@ -167,14 +174,19 @@ namespace Outworld.Scenes.MainMenu
 			{
 				case SceneType.Main:
 					title.Text = "MAIN MENU";
+					gui.Elements[4].Visibility = Visibility.Visible;
 					break;
 
 				case SceneType.NewGame:
 					title.Text = "NEW GAME";
+					gui.Elements[5].Visibility = Visibility.Visible;
+					break;
+
+				case SceneType.JoinGame:
+					title.Text = "JOIN GAME";
+					gui.Elements[6].Visibility = Visibility.Visible;
 					break;
 			}
-
-			gui.Elements[(int)type + 4].Visibility = Visibility.Visible;
 		}
 	}
 }

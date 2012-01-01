@@ -102,7 +102,11 @@ namespace Framework.Gui
 
 		private UIElement GetChildElementAffectedByMouseEvent(UIElement element)
 		{
-			if (element is StackPanel)
+			if (element is Panel)
+			{
+				return GetElementAffectedByMouseEvent((element as Panel).Children);
+			}
+			else if (element is StackPanel)
 			{
 				return GetElementAffectedByMouseEvent((element as StackPanel).Children);
 			}

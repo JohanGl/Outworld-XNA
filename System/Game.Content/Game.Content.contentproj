@@ -361,13 +361,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\Scenes\MainMenu\Separator2.png">
-      <Name>Separator2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Gui\Scenes\MainMenu\MainOptions.png">
       <Name>MainOptions</Name>
       <Importer>TextureImporter</Importer>
@@ -384,6 +377,13 @@
   <ItemGroup>
     <Compile Include="Gui\Scenes\MainMenu\NewGameOptions.png">
       <Name>NewGameOptions</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Gui\Scenes\MainMenu\JoinGameOptions.png">
+      <Name>JoinGameOptions</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

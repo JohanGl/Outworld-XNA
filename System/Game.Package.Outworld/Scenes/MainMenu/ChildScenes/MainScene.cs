@@ -35,7 +35,6 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			menuOptions.Width = 176;
 			menuOptions.Height = 400;
 			menuOptions.Spacing.Bottom = 32;
-			menuOptions.Visibility = Visibility.Visible;
 			gui.Elements.Add(menuOptions);
 
 			for (int i = 0; i < 5; i++)

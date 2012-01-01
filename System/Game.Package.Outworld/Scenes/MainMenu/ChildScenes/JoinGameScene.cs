@@ -5,8 +5,6 @@ using Framework.Core.Services;
 using Framework.Gui;
 using Game.Network.Clients;
 using Game.Network.Clients.Settings;
-using Game.Network.Servers;
-using Game.Network.Servers.Settings;
 using Game.World;
 using Microsoft.Xna.Framework;
 using Outworld.Scenes.InGame;
@@ -14,19 +12,18 @@ using Outworld.Settings.Global;
 
 namespace Outworld.Scenes.MainMenu.ChildScenes
 {
-	public class NewGameScene : SceneBase
+	public class JoinGameScene : SceneBase
 	{
 		private GlobalSettings globalSettings;
-		private IGameServer gameServer;
 		private IGameClient gameClient;
 		private bool startedLoading;
-
+		private Panel panel;
 		private StackPanel menuOptions;
+		private TextBox textBoxIp;
 
 		private enum ButtonCommand
 		{
-			HostGame,
-			JoinGame,
+			Connect,
 			Return
 		}
 
@@ -35,7 +32,6 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			base.Initialize(context);
 
 			globalSettings = ServiceLocator.Get<GlobalSettings>();
-			gameServer = ServiceLocator.Get<IGameServer>();
 			gameClient = ServiceLocator.Get<IGameClient>();
 		}
 
@@ -49,6 +45,13 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 
 		public void InitializeGui(GuiManager gui)
 		{
+			panel = new Panel();
+			panel.HorizontalAlignment = HorizontalAlignment.Left;
+			panel.VerticalAlignment = VerticalAlignment.Top;
+			panel.Width = Context.View.Area.Width;
+			panel.Height = Context.View.Area.Height;
+			gui.Elements.Add(panel);
+
 			menuOptions = new StackPanel();
 			menuOptions.HorizontalAlignment = HorizontalAlignment.Left;
 			menuOptions.VerticalAlignment = VerticalAlignment.Center;
@@ -56,9 +59,16 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			menuOptions.Width = 176;
 			menuOptions.Height = 400;
 			menuOptions.Spacing.Bottom = 32;
-			gui.Elements.Add(menuOptions);
+			panel.Children.Add(menuOptions);
 
-			for (int i = 0; i < 3; i++)
+			// Add the address textbox to the stackpanel
+			textBoxIp = new TextBox("", 100, Context.Resources.Fonts["Global.Default"]);
+			textBoxIp.HorizontalAlignment = HorizontalAlignment.Left;
+			textBoxIp.VerticalAlignment = VerticalAlignment.Top;
+			textBoxIp.Text = "Hello";
+			menuOptions.Children.Add(textBoxIp);
+
+			for (int i = 0; i < 2; i++)
 			{
 				menuOptions.Children.Add(GetMenuOption(i));
 			}
@@ -76,17 +86,12 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			switch (row)
 			{
 				case 1:
-					buttonCommand = ButtonCommand.JoinGame;
+					buttonCommand = ButtonCommand.Return;
 					offsetY = 58;
 					break;
 
-				case 2:
-					buttonCommand = ButtonCommand.Return;
-					offsetY = 115;
-					break;
-
 				default:
-					buttonCommand = ButtonCommand.HostGame;
+					buttonCommand = ButtonCommand.Connect;
 					break;
 			}
 
@@ -96,7 +101,7 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			buttonStates.Focused = new Rectangle(352, offsetY, optionWidth, optionHeight);
 			buttonStates.Pressed = buttonStates.Default;
 
-			var result = new ImageButton(Context.Resources.Textures["MainMenu.NewGameOptions"], buttonStates);
+			var result = new ImageButton(Context.Resources.Textures["MainMenu.JoinGameOptions"], buttonStates);
 			result.HorizontalAlignment = HorizontalAlignment.Left;
 			result.VerticalAlignment = VerticalAlignment.Top;
 			result.Click += MenuOptionOnClick;
@@ -111,30 +116,21 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 
 			switch ((ButtonCommand)button.Tag)
 			{
-				case ButtonCommand.HostGame:
-					CreateHost();
-					break;
-
-				case ButtonCommand.JoinGame:
-					((MainMenuScene)Parent).ShowScene(SceneType.JoinGame);
+				case ButtonCommand.Connect:
+					JoinHost(textBoxIp.Text);
 					break;
 
 				case ButtonCommand.Return:
-					((MainMenuScene)Parent).ShowScene(SceneType.Main);
+					((MainMenuScene)Parent).ShowScene(SceneType.NewGame);
 					break;
 			}
 		}
 
 		public override void Update(GameTime gameTime)
 		{
-			if (menuOptions.Visibility != Visibility.Visible)
+			if (panel.Visibility != Visibility.Visible)
 			{
 				return;
-			}
-
-			if (gameServer.IsStarted)
-			{
-				gameServer.Update(gameTime);
 			}
 
 			gameClient.Update(gameTime);
@@ -151,23 +147,6 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 
 		public override void Render(GameTime gameTime)
 		{
-		}
-
-		private void CreateHost()
-		{
-			var settings = new GameServerSettings
-			{
-				MaximumConnections = 4,
-				Port = globalSettings.Network.ServerPort,
-			};
-
-			settings.World.Gravity = globalSettings.World.Gravity;
-			settings.World.Seed = globalSettings.World.Seed;
-
-			gameServer.Initialize(settings);
-			gameServer.Start();
-
-			JoinHost(globalSettings.Network.ServerAddress);
 		}
 
 		private void JoinHost(string ip)
@@ -191,12 +170,13 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 		private void InitializeGameSettings(GameSettingsEventArgs e)
 		{
 			// Initialize the settings
-			globalSettings.World.Seed = e.Seed;
-			globalSettings.World.Gravity = e.Gravity;
+			var settings = ServiceLocator.Get<GlobalSettings>();
+			settings.World.Seed = e.Seed;
+			settings.World.Gravity = e.Gravity;
 
 			// Initialize the world
 			gameClient.World = new WorldContext();
-			gameClient.World.Initialize(Context, globalSettings.World.ViewDistance, globalSettings.World.Gravity, globalSettings.World.Seed);
+			gameClient.World.Initialize(Context, settings.World.ViewDistance, settings.World.Gravity, settings.World.Seed);
 
 			ExitScene();
 		}
