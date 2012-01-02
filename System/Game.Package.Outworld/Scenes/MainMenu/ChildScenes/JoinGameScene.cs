@@ -3,6 +3,7 @@ using Framework.Core.Contexts;
 using Framework.Core.Scenes;
 using Framework.Core.Services;
 using Framework.Gui;
+using Framework.Gui.Events;
 using Game.Network.Clients;
 using Game.Network.Clients.Settings;
 using Game.World;
@@ -62,10 +63,12 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			panel.Children.Add(menuOptions);
 
 			// Add the address textbox to the stackpanel
-			textBoxIp = new TextBox("", 100, Context.Resources.Fonts["Global.Default"]);
+			textBoxIp = new TextBox("", 50, Context.Resources.Fonts["Global.Normal"]);
 			textBoxIp.HorizontalAlignment = HorizontalAlignment.Left;
 			textBoxIp.VerticalAlignment = VerticalAlignment.Top;
-			textBoxIp.Text = "Hello";
+			textBoxIp.Text = "127.0.0.1";
+			textBoxIp.SetFocus(true);
+			textBoxIp.EnterKeyDown += textBoxIp_EnterKeyDown;
 			menuOptions.Children.Add(textBoxIp);
 
 			for (int i = 0; i < 2; i++)
@@ -74,6 +77,11 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			}
 
 			gui.UpdateLayout();
+		}
+
+		private void textBoxIp_EnterKeyDown(object sender, TextBoxEventArgs e)
+		{
+			MenuOptionOnClick(menuOptions.Children[1], EventArgs.Empty);
 		}
 
 		private ImageButton GetMenuOption(int row)

@@ -34,6 +34,7 @@ namespace Outworld.Scenes.MainMenu
 			resources.Textures.Add("MainMenu.JoinGameOptions", content.Load<Texture2D>(@"Gui\Scenes\MainMenu\JoinGameOptions"));
 
 			resources.Fonts.Add("Hud", content.Load<SpriteFont>(@"Fonts\Moire"));
+			resources.Fonts.Add("Global.Normal", content.Load<SpriteFont>(@"Fonts\Moire_Bold_20"));
 
 			audioHandler.LoadSound("ButtonPress", @"Audio\Sounds\Gui\ButtonPress01");
 			audioHandler.LoadSound("ButtonHighlight", @"Audio\Sounds\Gui\ButtonPress01");
