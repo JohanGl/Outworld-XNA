@@ -238,9 +238,11 @@ namespace Game.Network.Clients
 		{
 			InitializeMessageWriter();
 			client.Writer.Write((byte)PacketType.ClientSpatial);
+		
 			messageHelper.WriteVector3(position, client.Writer);
 			messageHelper.WriteVector3(velocity, client.Writer);
 			messageHelper.WriteVector3AsVector3b(angle, client.Writer);
+
 			SendMessage();
 		}
 
@@ -248,8 +250,7 @@ namespace Game.Network.Clients
 		{
 			InitializeMessageWriter();
 			client.Writer.Write((byte)PacketType.ClientActions);
-			client.Writer.Write((byte)actions.Count);
-
+			
 			for (int i = 0; i < actions.Count; i++)
 			{
 				client.Writer.Write((byte)actions[i].Type);
