@@ -78,6 +78,7 @@ namespace Framework.Core.Contexts
 
 		public void ClearMappings()
 		{
+			KeyboardState.Clear();
 		}
 
 		private void keyboardBuffer_KeyPress(object sender, KeyPressEventArgs e)

@@ -18,7 +18,7 @@
 				<ClipName>Run</ClipName>
 				<StartFrame>204</StartFrame>
 				<EndFrame>1836</EndFrame>
-				<Duration>2</Duration>
+				<Duration>1</Duration>
 				<!-- We can register events in this clip, so we can know when certain frames are hit -->
 				<Events>
 					<Item>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Framework.Core.Contexts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,6 +17,7 @@ namespace Framework.Gui
 		private UIElement currentlyFocusedElement;
 
 		public List<UIElement> Elements;
+		public event EventHandler<ElementStateChangeArgs> ElementStateChanged;
 
 		public GuiManager(InputContext inputContext, GraphicsDevice device, SpriteBatch spriteBatch = null)
 		{
@@ -69,7 +71,7 @@ namespace Framework.Gui
 
 			HandleLeftMouseButtonPressed(mouseState);
 			HandleMouseWheel(mouseState);
-			HandleMouseHoover();
+			HandleMouseHover();
 		}
 
 		private UIElement GetElementAffectedByMouseEvent(List<UIElement> elements, bool boundsCheck = true)
@@ -100,7 +102,11 @@ namespace Framework.Gui
 
 		private UIElement GetChildElementAffectedByMouseEvent(UIElement element)
 		{
-			if (element is StackPanel)
+			if (element is Panel)
+			{
+				return GetElementAffectedByMouseEvent((element as Panel).Children);
+			}
+			else if (element is StackPanel)
 			{
 				return GetElementAffectedByMouseEvent((element as StackPanel).Children);
 			}
@@ -129,6 +135,12 @@ namespace Framework.Gui
 					}
 
 					element.HandleMouseEvent(mouseState);
+
+					// Fire the state-change event
+					if (ElementStateChanged != null)
+					{
+						ElementStateChanged(element, new ElementStateChangeArgs() { State = ElementState.Focused });
+					}
 				}
 			}
 		}
@@ -146,7 +158,7 @@ namespace Framework.Gui
 			}
 		}
 
-		private void HandleMouseHoover()
+		private void HandleMouseHover()
 		{
 			var element = GetElementAffectedByMouseEvent(Elements);
 
@@ -162,32 +174,15 @@ namespace Framework.Gui
 					}
 
 					currentlyHighlightedElement = element;
+
+					// Fire the state-change event
+					if (ElementStateChanged != null)
+					{
+						ElementStateChanged(element, new ElementStateChangeArgs() { State = ElementState.Highlighted });
+					}
 				}
 			}
 		}
-
-		//private void UpdateKeyboardInput()
-		//{
-		//    for (int i = 0; i < Elements.Count; i++)
-		//    {
-		//        // Current element to handle
-		//        UIElement currentElement = Elements[i];
-
-		//        if (currentElement.IsFocused)
-		//        {
-		//            if (currentElement is TextBox)
-		//            {
-		//                (currentElement as TextBox).UpdateText(inputContext);
-		//            }
-		//            else if (currentElement is ChatBox)
-		//            {
-		//                (currentElement as ChatBox).UpdateText(inputContext);
-		//            }
-
-		//            break;
-		//        }
-		//    }
-		//}
 
 		public void Render()
 		{

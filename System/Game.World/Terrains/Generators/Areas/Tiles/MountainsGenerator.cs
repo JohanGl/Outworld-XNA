@@ -2,7 +2,6 @@
 using Game.World.Terrains.Generators.Noise.Managers;
 using Game.World.Terrains.Generators.Noise.Managers.AreaResources;
 using Game.World.Terrains.Generators.Noise.Managers.Areas;
-using Game.World.Terrains.Helpers;
 using Game.World.Terrains.Parts.Areas;
 using Game.World.Terrains.Parts.Tiles;
 
@@ -42,41 +41,23 @@ namespace Game.World.Terrains.Generators.Areas.Tiles
 					for (int tileX = 0; tileX < Area.Size.X; tileX++)
 					{
 						int currentSurfaceIndex = currentZ + tileX;
-						int currentSurfaceY = surface[currentSurfaceIndex];
+						int currentSurfaceY = surface[currentSurfaceIndex] - 1;
 
-						if (area.Info.Location.Y == 0)
+						// Above the ground?
+						if (currentTileY > currentSurfaceY)
 						{
-							if (currentTileY > currentSurfaceY)
-							{
-								area.Info.Tiles[index].Type = TileType.Empty;
-							}
-							else if (currentTileY > 0)
-							{
-								area.Info.Tiles[index].Type = GetSurfaceTileType(area.Info.Location, tileX, tileY, tileZ);
-							}
-							else
-							{
-								area.Info.Tiles[index].Type = TileType.Sand;
-							}
+							// Empty tile
+							area.Info.Tiles[index].Type = TileType.Empty;
 						}
+						// At the exact ground level?
+						else if (currentTileY == currentSurfaceY)
+						{
+							area.Info.Tiles[index].Type = GetSurfaceTileType(area.Info.Location, tileX, tileY, tileZ);
+						}
+						// Below the ground level
 						else
 						{
-							// Above the ground?
-							if (currentTileY > currentSurfaceY)
-							{
-								// Empty tile
-								area.Info.Tiles[index].Type = TileType.Empty;
-							}
-							// At the exact ground level?
-							else if (currentTileY == currentSurfaceY)
-							{
-								area.Info.Tiles[index].Type = GetSurfaceTileType(area.Info.Location, tileX, tileY, tileZ);
-							}
-							// Below the ground level
-							else
-							{
-								area.Info.Tiles[index].Type = GetSurfaceTileType(area.Info.Location, tileX, tileY, tileZ);
-							}
+							area.Info.Tiles[index].Type = GetSurfaceTileType(area.Info.Location, tileX, tileY, tileZ);
 						}
 
 						index++;

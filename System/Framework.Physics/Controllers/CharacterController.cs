@@ -5,7 +5,7 @@ namespace Framework.Physics.Controllers
 {
 	public class CharacterController : Jitter.Dynamics.Constraints.Constraint
 	{
-		private const float JumpVelocity = 0.8f;
+		private const float JumpVelocity = 1.0f;
 		private float feetPosition;
 		public Jitter.World World { private set; get; }
 		public JVector TargetVelocity { get; set; }

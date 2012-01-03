@@ -14,15 +14,24 @@ namespace Framework.Gui
 
 		public override void UpdateLayout(GuiManager guiManager, Rectangle availableSize)
 		{
-			Width = Source.Width;
-			Height = Source.Height;
+			if (Width == 0f)
+			{
+				Width = Source.Width;
+			}
+
+			if (Height == 0f)
+			{
+				Height = Source.Height;
+			}
 
 			guiManager.Arrange(this, availableSize);
 		}
 
 		public override void Render(GraphicsDevice device, SpriteBatch spriteBatch)
 		{
-			spriteBatch.Draw(Source, Position, Color.White);
+			spriteBatch.Draw(Source, new Rectangle((int)Position.X, (int)Position.Y, (int)Width, (int)Height), Color.White);
+
+			//spriteBatch.Draw(Source, Position, Color.White);
 		}
 	}
 }

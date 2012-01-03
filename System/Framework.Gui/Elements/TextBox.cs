@@ -29,6 +29,7 @@ namespace Framework.Gui
 				if (value.Length <= maxLength)
 				{
 					text = value;
+					caretIndex = text.Length;
 				}
 			}
 		}
@@ -81,7 +82,7 @@ namespace Framework.Gui
 			Height = 20;
 			Width = 150;
 
-			Opacity = 0.5f;
+			Opacity = 1f;
 		}
 
 		public override void SetFocus(bool state)

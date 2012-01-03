@@ -203,7 +203,7 @@ namespace Outworld.Scenes.InGame
 			var content = Context.Resources.Content;
 			var resources = Context.Resources;
 
-			resources.Fonts.Add("Hud", content.Load<SpriteFont>(@"Fonts\Moire_Numbers"));
+			resources.Fonts.Add("Hud", content.Load<SpriteFont>(@"Fonts\Moire"));
 			resources.Fonts.Add("Hud.Small", content.Load<SpriteFont>(@"Fonts\Moire_Small"));
 
 			// Terrain
