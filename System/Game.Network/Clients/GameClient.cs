@@ -18,6 +18,7 @@ namespace Game.Network.Clients
 	{
 		public event EventHandler<GameSettingsEventArgs> GetGameSettingsCompleted;
 		public event EventHandler<ClientSpatialEventArgs> GetClientSpatialCompleted;
+		public event EventHandler<ClientActionsEventArgs> GetClientActionsCompleted;
 		public WorldContext World { get; set; }
 		public byte ClientId { get; set; }
 		public List<ServerEntity> ServerEntities { get; set; }
@@ -91,6 +92,22 @@ namespace Game.Network.Clients
 					case PacketType.ClientSpatial:
 						ReceivedClientSpatial(message);
 						break;
+
+					case PacketType.ClientActions:
+						ReceivedClientActions(message);
+						break;
+				}
+
+				// TODO: Temp Debug
+				if ((PacketType)message.Data[0] != PacketType.ClientSpatial)
+				{
+					string bytes = "";
+					for (int j = 0; j < message.Data.Length; j++)
+					{
+						bytes += Convert.ToInt16(message.Data[j]).ToString();
+					}
+
+					Logger.Log<GameClient>(LogLevel.Debug, "Received Data: {0} ({1} bytes)", bytes, message.Data.Length);
 				}
 			}
 
@@ -103,6 +120,34 @@ namespace Game.Network.Clients
 
 				// Update all world entities
 				World.EntityHandler.Update(gameTime);
+			}
+		}
+
+		private void ReceivedGameSettings(Message message)
+		{
+			if (GetGameSettingsCompleted != null)
+			{
+				var args = new GameSettingsEventArgs();
+
+				// Read the message
+				client.Reader.ReadNewMessage(message);
+				client.Reader.ReadByte();
+				args.ClientId = client.Reader.ReadByte();
+				args.Seed = client.Reader.ReadInt32();
+				args.Gravity = messageHelper.ReadVector3(client.Reader);
+
+				// Assign the client id
+				ClientId = args.ClientId;
+
+				byte totalClients = client.Reader.ReadByte();
+
+				for (int i = 0; i < totalClients; i++)
+				{
+					byte currentClientId = client.Reader.ReadByte();
+					UpdateServerEntities(currentClientId, true);
+				}
+
+				GetGameSettingsCompleted(this, args);
 			}
 		}
 
@@ -124,6 +169,72 @@ namespace Game.Network.Clients
 			messageHandler.AddMessage("GameClient", notificationMessage);
 
 			UpdateServerEntities(clientId, connected);
+		}
+
+		private void ReceivedClientSpatial(Message message)
+		{
+			if (GetClientSpatialCompleted != null)
+			{
+				var args = new ClientSpatialEventArgs();
+
+				// Read the message
+				client.Reader.ReadNewMessage(message);
+				client.Reader.ReadByte();
+
+				// Find out how many clients that are included in the message
+				byte clients = client.Reader.ReadByte();
+
+				// Initialize and retrieve all client spatial data
+				args.ClientData = new ClientSpatialData[clients];
+
+				for (byte i = 0; i < clients; i++)
+				{
+					var data = new ClientSpatialData();
+					data.ClientId = client.Reader.ReadByte();
+					data.Position = messageHelper.ReadVector3(client.Reader);
+					data.Velocity = messageHelper.ReadVector3(client.Reader);
+					data.Angle = messageHelper.ReadVector3FromVector3b(client.Reader);
+
+					args.ClientData[i] = data;
+				}
+
+				GetClientSpatialCompleted(this, args);
+			}
+		}
+
+		private void ReceivedClientActions(Message message)
+		{
+			if (GetClientActionsCompleted != null)
+			{
+				var args = new ClientActionsEventArgs();
+
+				// Read the message
+				client.Reader.ReadNewMessage(message);
+				client.Reader.ReadByte();
+
+				// Get the number of clients in this message
+				byte clients = client.Reader.ReadByte();
+
+				for (byte i = 0; i < clients; i++)
+				{
+					// Get the id of the current client
+					byte clientId = client.Reader.ReadByte();
+
+					// Get the number of actions for the current client
+					byte actions = client.Reader.ReadByte();
+
+					for (byte j = 0; j < actions; j++)
+					{
+						args.ClientActions.Add(new ClientAction()
+						{
+							ClientId = clientId,
+							Type = (ClientActionType)client.Reader.ReadByte()
+						});
+					}
+				}
+
+				GetClientActionsCompleted(this, args);
+			}
 		}
 
 		private void UpdateServerEntities(byte clientId, bool connected)
@@ -168,70 +279,11 @@ namespace Game.Network.Clients
 			client.Send(MessageDeliveryMethod.ReliableUnordered);
 		}
 
-		private void ReceivedGameSettings(Message message)
-		{
-			if (GetGameSettingsCompleted != null)
-			{
-				var args = new GameSettingsEventArgs();
-
-				// Read the message
-				client.Reader.ReadNewMessage(message);
-				client.Reader.ReadByte();
-				args.ClientId = client.Reader.ReadByte();
-				args.Seed = client.Reader.ReadInt32();
-				args.Gravity = messageHelper.ReadVector3(client.Reader);
-
-				// Assign the client id
-				ClientId = args.ClientId;
-
-				byte totalClients = client.Reader.ReadByte();
-
-				for (int i = 0; i < totalClients; i++)
-				{
-					byte currentClientId = client.Reader.ReadByte();
-					UpdateServerEntities(currentClientId, true);
-				}
-
-				GetGameSettingsCompleted(this, args);
-			}
-		}
-
 		public void GetClientSpatial()
 		{
 			client.Writer.WriteNewMessage();
 			client.Writer.Write((byte)PacketType.ClientSpatial);
 			client.Send(MessageDeliveryMethod.UnreliableSequenced);
-		}
-
-		private void ReceivedClientSpatial(Message message)
-		{
-			if (GetClientSpatialCompleted != null)
-			{
-				var args = new ClientSpatialEventArgs();
-
-				// Read the message
-				client.Reader.ReadNewMessage(message);
-				client.Reader.ReadByte();
-
-				// Find out how many clients are included in the message
-				byte clients = client.Reader.ReadByte();
-
-				// Initialize and retrieve all client spatial data
-				args.ClientData = new ClientSpatialData[clients];
-
-				for (int i = 0; i < clients; i++)
-				{
-					var data = new ClientSpatialData();
-					data.ClientId = client.Reader.ReadByte();
-					data.Position = messageHelper.ReadVector3(client.Reader);
-					data.Velocity = messageHelper.ReadVector3(client.Reader);
-					data.Angle = messageHelper.ReadVector3FromVector3b(client.Reader);
-
-					args.ClientData[i] = data;
-				}
-
-				GetClientSpatialCompleted(this, args);
-			}
 		}
 
 		public void SendClientSpatial(Vector3 position, Vector3 velocity, Vector3 angle)
@@ -248,6 +300,7 @@ namespace Game.Network.Clients
 		{
 			InitializeMessageWriter();
 			client.Writer.Write((byte)PacketType.ClientActions);
+			client.Writer.Write((byte)actions.Count);
 
 			for (int i = 0; i < actions.Count; i++)
 			{

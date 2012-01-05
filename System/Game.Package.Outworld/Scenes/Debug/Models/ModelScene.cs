@@ -23,10 +23,9 @@ namespace Outworld.Scenes.Debug.Models
 			var content = Context.Resources.Content;
 			Context.Resources.Models.Add("weapon", content.Load<Model>(@"Models\Weapons\Pistol01"));
 			Context.Resources.Models.Add("Chibi", content.Load<Model>(@"Models\Characters\Chibi\Chibi"));
-			Context.Resources.Models.Add("Chibi2", content.Load<Model>(@"Models\Characters\Chibi\HeroRun"));
 
 			skinnedModel = new SkinnedModel();
-			skinnedModel.Initialize(Context.Resources.Models["Chibi2"]);
+			skinnedModel.Initialize(Context.Resources.Models["Chibi"]);
 			skinnedModel.SetAnimationClip("Idle");
 			//skinnedModel.SetAnimationClip("Run");
 			//skinnedModel.SetAnimationClip("Take 001");
@@ -37,7 +36,6 @@ namespace Outworld.Scenes.Debug.Models
 		{
 			Context.Resources.Models.Remove("weapon");
 			Context.Resources.Models.Remove("Chibi");
-			Context.Resources.Models.Remove("Chibi2");
 		}
 
 		public override void Update(GameTime gameTime)

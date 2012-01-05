@@ -92,6 +92,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Clients\Events\ClientActionsEventArgs.cs" />
     <Compile Include="Common\ClientAction.cs" />
     <Compile Include="Common\NetworkMessage.cs" />
     <Compile Include="Clients\ServerEntity.cs" />

@@ -1,7 +1,12 @@
-﻿namespace Game.Network.Common
+﻿using System;
+
+namespace Game.Network.Common
 {
 	public struct ClientAction
 	{
-		public PacketActionType Type;
+		public DateTime Time;
+
+		public byte ClientId;
+		public ClientActionType Type;
 	}
 }

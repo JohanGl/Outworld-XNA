@@ -317,18 +317,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Characters\Chibi\HeroRun.fbx">
-      <Name>HeroRun</Name>
-      <Importer>FbxImporter</Importer>
-      <Processor>SkinnedModelProcessorNew</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Models\Characters\Chibi\Chibi.fbx">
       <Name>Chibi</Name>
       <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-      <ProcessorParameters_Scale>0.4</ProcessorParameters_Scale>
+      <Processor>SkinnedModelProcessorNew</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -339,8 +331,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Characters\Chibi\HeroRun_Anims.xml">
-      <Name>HeroRun_Anims</Name>
+    <Compile Include="Models\Characters\Chibi\Chibi_Anims.xml">
+      <Name>Chibi_Anims</Name>
       <Importer>XmlImporter</Importer>
       <Processor>PassThroughProcessor</Processor>
       <SubType>Designer</SubType>

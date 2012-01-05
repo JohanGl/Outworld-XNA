@@ -1,5 +1,6 @@
 ﻿using System;
 using Framework.Core.Contexts;
+using Framework.Core.Messaging;
 using Framework.Core.Scenes.Cameras;
 using Framework.Core.Services;
 using Framework.Physics.Controllers;
@@ -7,6 +8,7 @@ using Game.Entities.Outworld.World;
 using Game.Entities.System;
 using Game.Entities.System.ComponentModel;
 using Game.Entities.System.EntityModel;
+using Game.Network.Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Outworld.Settings.Global;
@@ -21,6 +23,8 @@ namespace Outworld.Players
 		// Custom properties
 		public bool IsEnabled { get; set; }
 		public bool HasFocus;
+		public byte MovementDirection { get; private set; }
+		public byte PreviousMovementDirection { get; private set; }
 
 		// Components
 		private SpatialComponent spatialComponent;
@@ -35,9 +39,16 @@ namespace Outworld.Players
 		private Vector3 movementVelocity;
 		private Vector3 velocityResult;
 
+		public PlayerInputComponent()
+		{
+			MovementDirection = 0;
+			PreviousMovementDirection = 0;
+		}
+
 		public void Initialize(InputContext inputContext)
 		{
 			this.inputContext = inputContext;
+			
 			playerComponent = Owner.Components.Get<PlayerComponent>();
 			spatialComponent = Owner.Components.Get<SpatialComponent>();
 			controller = spatialComponent.RigidBody.Tag as CharacterController;
@@ -207,75 +218,120 @@ namespace Outworld.Players
 
 			if (inputContext.Keyboard.IsEnabled)
 			{
-				// Walk forward
-				if (inputContext.Keyboard.KeyboardState[Keys.W].Pressed)
+				bool forward = inputContext.Keyboard.KeyboardState[Keys.W].Pressed;
+				bool backwards = inputContext.Keyboard.KeyboardState[Keys.S].Pressed;
+				bool left = inputContext.Keyboard.KeyboardState[Keys.A].Pressed;
+				bool right = inputContext.Keyboard.KeyboardState[Keys.D].Pressed;
+
+				if (forward)
 				{
 					float speed = (1f * movementAmplifier.X);
 					movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X + 90));
 					movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X + 90));
 				}
-				// Walk backwards
-				else if (inputContext.Keyboard.KeyboardState[Keys.S].Pressed)
+				else if (backwards)
 				{
 					float speed = (1f * movementAmplifier.X);
 					movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X - 90));
 					movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X - 90));
 				}
 
-				// Strafe left
-				if (inputContext.Keyboard.KeyboardState[Keys.A].Pressed)
+				if (left)
 				{
 					float speed = (1f * movementAmplifier.Y);
 					movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X));
 					movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X));
 				}
-				// Strafe right
-				else if (inputContext.Keyboard.KeyboardState[Keys.D].Pressed)
+				else if (right)
 				{
 					float speed = (1f * movementAmplifier.Y);
 					movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X + 180));
 					movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X + 180));
 				}
+
+				UpdateInputMovementDirection(forward, backwards, left, right);
 			}
 			
-			if (inputContext.HasGamePad)
-			{
-				// Walk forward
-				if (inputContext.GamePadState[Buttons.LeftThumbstickUp].Pressed)
-				{
-					float speed = (inputContext.GamePadState[Buttons.LeftThumbstickUp].Value * movementAmplifier.X);
-					movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X + 90));
-					movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X + 90));
-				}
-					// Walk backwards
-				else if (inputContext.GamePadState[Buttons.LeftThumbstickDown].Pressed)
-				{
-					float speed = (inputContext.GamePadState[Buttons.LeftThumbstickDown].Value * movementAmplifier.X);
-					movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X - 90));
-					movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X - 90));
-				}
+			//if (inputContext.HasGamePad)
+			//{
+			//    // Walk forward
+			//    if (inputContext.GamePadState[Buttons.LeftThumbstickUp].Pressed)
+			//    {
+			//        float speed = (inputContext.GamePadState[Buttons.LeftThumbstickUp].Value * movementAmplifier.X);
+			//        movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X + 90));
+			//        movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X + 90));
+			//    }
+			//        // Walk backwards
+			//    else if (inputContext.GamePadState[Buttons.LeftThumbstickDown].Pressed)
+			//    {
+			//        float speed = (inputContext.GamePadState[Buttons.LeftThumbstickDown].Value * movementAmplifier.X);
+			//        movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X - 90));
+			//        movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X - 90));
+			//    }
 
-				// Strafe left
-				if (inputContext.GamePadState[Buttons.LeftThumbstickLeft].Pressed)
-				{
-					float speed = (inputContext.GamePadState[Buttons.LeftThumbstickLeft].Value * movementAmplifier.Y);
-					movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X));
-					movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X));
-				}
-					// Strafe right
-				else if (inputContext.GamePadState[Buttons.LeftThumbstickRight].Pressed)
-				{
-					float speed = (inputContext.GamePadState[Buttons.LeftThumbstickRight].Value * movementAmplifier.Y);
-					movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X + 180));
-					movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X + 180));
-				}
-			}
+			//    // Strafe left
+			//    if (inputContext.GamePadState[Buttons.LeftThumbstickLeft].Pressed)
+			//    {
+			//        float speed = (inputContext.GamePadState[Buttons.LeftThumbstickLeft].Value * movementAmplifier.Y);
+			//        movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X));
+			//        movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X));
+			//    }
+			//        // Strafe right
+			//    else if (inputContext.GamePadState[Buttons.LeftThumbstickRight].Pressed)
+			//    {
+			//        float speed = (inputContext.GamePadState[Buttons.LeftThumbstickRight].Value * movementAmplifier.Y);
+			//        movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X + 180));
+			//        movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X + 180));
+			//    }
+			//}
 
 			// Lower the movement speed if crouching
 			if (playerComponent.IsCrouching)
 			{
 				movementVelocity.X *= crouchingMovementReduction;
 				movementVelocity.Z *= crouchingMovementReduction;
+			}
+		}
+
+		private void UpdateInputMovementDirection(bool forward, bool backwards, bool left, bool right)
+		{
+			PreviousMovementDirection = MovementDirection;
+
+			// Default to idle
+			MovementDirection = 0;
+
+			// Here we check what direction the player is moving in an 8 direction clockwise fashion where forward = 1, forward + right = 2, right = 3 etc
+			if (forward && left)
+			{
+				MovementDirection = 8;
+			}
+			else if (forward && right)
+			{
+				MovementDirection = 2;
+			}
+			else if (forward)
+			{
+				MovementDirection = 1;
+			}
+			else if (backwards && left)
+			{
+				MovementDirection = 6;
+			}
+			else if (backwards && right)
+			{
+				MovementDirection = 4;
+			}
+			else if (backwards)
+			{
+				MovementDirection = 5;
+			}
+			else if (left)
+			{
+				MovementDirection = 7;
+			}
+			else if (right)
+			{
+				MovementDirection = 3;
 			}
 		}
 

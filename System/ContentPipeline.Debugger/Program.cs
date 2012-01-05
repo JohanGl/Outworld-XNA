@@ -94,7 +94,7 @@ namespace ContentPipeline.Debugger
 		///       Example:
 		///               private const string SingleItem = @"dude.fbx";
 		/// </summary>
-		private const string SingleItem = @"Models\Characters\Chibi\HeroRun.fbx";
+		private const string SingleItem = @"Models\Characters\Chibi\Chibi.fbx";
 
 		/// <summary>
 		/// TODO: Set the XnaProfile to HiDef or Reach, depending on your target graphics profile.

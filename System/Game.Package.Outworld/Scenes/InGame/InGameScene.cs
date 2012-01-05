@@ -24,6 +24,7 @@ using Game.World.Terrains.Helpers;
 using Game.World.Terrains.Parts.Areas;
 using Game.World.Terrains.Parts.Areas.Helpers;
 using Game.World.Terrains.Parts.Tiles;
+using Outworld.Helpers.Logging;
 using Outworld.Players;
 using Outworld.Scenes.InGame.Helpers.BreadCrumbs;
 using Microsoft.Xna.Framework;
@@ -76,7 +77,7 @@ namespace Outworld.Scenes.InGame
 		public override void Initialize(GameContext context)
 		{
 			base.Initialize(context);
-			
+
 			stringBuilder = new StringBuilder(100, 500);
 			
 			globalSettings = ServiceLocator.Get<GlobalSettings>();
@@ -86,6 +87,7 @@ namespace Outworld.Scenes.InGame
 			gameServer = ServiceLocator.Get<IGameServer>();
 			gameClient = ServiceLocator.Get<IGameClient>();
 			gameClient.GetClientSpatialCompleted += gameClient_GetClientSpatialCompleted;
+			gameClient.GetClientActionsCompleted += gameClient_GetClientActionsCompleted;
 
 			physicsRenderer = gameClient.World.PhysicsHandler.CreateRenderer(context.Graphics.Device, (BasicEffect)context.Graphics.Effect);
 
@@ -97,7 +99,7 @@ namespace Outworld.Scenes.InGame
 			InitializeTimers();
 			InitializeAudio();
 
-			tileBelowPlayerFeetOffsetY = ((globalSettings.Player.Spatial.Size.Y * 0.5f) + 0.01f);
+			new LogFilterHelper().FilterTerrain();
 		}
 
 		private void InitializeHelpers()
@@ -151,6 +153,8 @@ namespace Outworld.Scenes.InGame
 
 		private void InitializePlayer()
 		{
+			tileBelowPlayerFeetOffsetY = ((globalSettings.Player.Spatial.Size.Y * 0.5f) + 0.01f);
+
 			player = PlayerEntityFactory.Get("Player", Context, gameClient.World);
 
 			playerComponent = player.Components.Get<PlayerComponent>();
@@ -224,12 +228,10 @@ namespace Outworld.Scenes.InGame
 
 			// Models
 			Context.Resources.Models.Add("Player", content.Load<Model>(@"Models\Characters\Chibi\Chibi"));
-			Context.Resources.Models.Add("Player2", content.Load<Model>(@"Models\Characters\Dude\dude"));
 
 			skinnedModelPlayer = new SkinnedModel();
-			skinnedModelPlayer.Initialize(Context.Resources.Models["Player2"]);
-			skinnedModelPlayer.SetAnimationClip("Take 001");
-			skinnedModelPlayer.Scale = 0.0225f;
+			skinnedModelPlayer.Initialize(Context.Resources.Models["Player"]);
+			skinnedModelPlayer.SetAnimationClip("Run");
 
 			// Sounds
 			audioHandler.LoadSound("Walking1", @"Audio\Sounds\Characters\Walking01");
@@ -315,8 +317,8 @@ namespace Outworld.Scenes.InGame
 
 			if (Context.Input.Keyboard.KeyboardState[Keys.F1].WasJustPressed)
 			{
-				//messageHandler.AddMessage("ServerUpdates", new PlayerMessage() { Type = PacketActionType.Damaged });
-				messageHandler.AddMessage("ServerUpdates", new PlayerMessage() { Type = PacketActionType.Dead });
+				messageHandler.AddMessage("ClientActions", new PlayerMessage() { Type = ClientActionType.Damaged });
+				messageHandler.AddMessage("ClientActions", new PlayerMessage() { Type = ClientActionType.Dead });
 
 				//audioHandler.PlaySound3d("a", "Walking1", 1f, playerSpatial.Position);
 			}
@@ -440,57 +442,66 @@ namespace Outworld.Scenes.InGame
 
 			var position = playerSpatial.Position + new Vector3(5f, 0.2f, 0);
 			var angle = new Vector3(0, playerSpatial.Angle.X + 180f, 0);
-			RenderModel(Context.Resources.Models["Player"], camera.View, camera.Projection, position, angle);
+
+			RenderSkinnedPlayer(0, position, angle);
 
 			for (int i = 0; i < gameClient.ServerEntities.Count; i++)
 			{
 				var entity = gameClient.ServerEntities[i];
-				RenderModel(Context.Resources.Models["Player"], camera.View, camera.Projection, entity.Position, new Vector3(entity.Angle.X + 180f, 0, 0));
+				RenderSkinnedPlayer(entity.Animation, entity.Position, new Vector3(entity.Angle.X + 180f, 0, 0));
 			}
 		}
 
-		//private void RenderSkinnedPlayer(Vector3 position, float angle)
-		//{
-		//    var camera = Context.View.Cameras["Default"];
-		//    RenderModel(Context.Resources.Models["Player2"], position + new Vector3(10f, -0.1f, 0), new Vector3(0, 0, 0));
-
-		//    //skinnedModelPlayer.Render(camera.View, camera.Projection, position + new Vector3(0, -0.725f, 0), angle);
-		//}
-
-		private void RenderModel(Model m, Matrix view, Matrix projection, Vector3 position, Vector3 angle, float scale = 1f)
+		private void RenderSkinnedPlayer(byte animation, Vector3 position, Vector3 angle)
 		{
-			Matrix[] transforms = new Matrix[m.Bones.Count];
-			float aspectRatio = Context.Graphics.Device.Viewport.AspectRatio;
-			m.CopyAbsoluteBoneTransformsTo(transforms);
+			var camera = Context.View.Cameras["Default"];
 
-			var state = new RasterizerState();
-			state.CullMode = CullMode.None;
-			Context.Graphics.Device.RasterizerState = state;
-
-			foreach (ModelMesh mesh in m.Meshes)
+			if (animation == 0)
 			{
-				foreach (BasicEffect effect in mesh.Effects)
-				{
-					effect.EnableDefaultLighting();
-					effect.DiffuseColor = new Vector3(1, 1, 1);
-
-					effect.View = view;
-					effect.Projection = projection;
-					effect.World = Matrix.Identity *
-								   Matrix.CreateScale(scale) *
-								   Matrix.CreateRotationY(MathHelper.ToRadians(-angle.Y)) *
-								   Matrix.CreateTranslation(position);
-				}
-
-				mesh.Draw();
+				skinnedModelPlayer.SetAnimationClip("Idle");
 			}
+			else
+			{
+				skinnedModelPlayer.SetAnimationClip("Run");
+			}
+
+			skinnedModelPlayer.Render(camera.View, camera.Projection, position + new Vector3(0, -0.725f, 0), angle.Y);
 		}
+
+		//private void RenderModel(Model m, Matrix view, Matrix projection, Vector3 position, Vector3 angle, float scale = 1f)
+		//{
+		//    Matrix[] transforms = new Matrix[m.Bones.Count];
+		//    float aspectRatio = Context.Graphics.Device.Viewport.AspectRatio;
+		//    m.CopyAbsoluteBoneTransformsTo(transforms);
+
+		//    var state = new RasterizerState();
+		//    state.CullMode = CullMode.None;
+		//    Context.Graphics.Device.RasterizerState = state;
+
+		//    foreach (ModelMesh mesh in m.Meshes)
+		//    {
+		//        foreach (BasicEffect effect in mesh.Effects)
+		//        {
+		//            effect.EnableDefaultLighting();
+		//            effect.DiffuseColor = new Vector3(1, 1, 1);
+
+		//            effect.View = view;
+		//            effect.Projection = projection;
+		//            effect.World = Matrix.Identity *
+		//                           Matrix.CreateScale(scale) *
+		//                           Matrix.CreateRotationY(MathHelper.ToRadians(-angle.Y)) *
+		//                           Matrix.CreateTranslation(position);
+		//        }
+
+		//        mesh.Draw();
+		//    }
+		//}
 
 		private void SendDataToServer()
 		{
 			if (gameClient.IsConnected)
 			{
-				var messages = messageHandler.GetMessages<PlayerMessage>("ServerUpdates");
+				var messages = messageHandler.GetMessages<PlayerMessage>("ClientActions");
 
 				if (messages.Count > 0)
 				{
@@ -513,7 +524,7 @@ namespace Outworld.Scenes.InGame
 				}
 			}
 
-			messageHandler.Clear("ServerUpdates");
+			messageHandler.Clear("ClientActions");
 		}
 
 		private void SaveBreadCrumb()
@@ -533,7 +544,7 @@ namespace Outworld.Scenes.InGame
 				// Forced spatial update from the server
 				if (clientData.ClientId == gameClient.ClientId)
 				{
-					// Move the player to the forced location
+					// TODO: Move the player to the forced location
 				}
 				// Update other clients spatial data
 				else
@@ -548,8 +559,52 @@ namespace Outworld.Scenes.InGame
 							break;
 						}
 					}
+				}
+			}
+		}
 
-					continue;
+		private void gameClient_GetClientActionsCompleted(object sender, ClientActionsEventArgs e)
+		{
+			for (int i = 0; i < e.ClientActions.Count; i++)
+			{
+				var action = e.ClientActions[i];
+
+				for (int j = 0; j < gameClient.ServerEntities.Count; j++)
+				{
+					var serverEntity = gameClient.ServerEntities[j];
+
+					if (serverEntity.Id == action.ClientId)
+					{
+						if (action.Type == ClientActionType.Idle)
+						{
+							serverEntity.Animation = 0;
+						}
+						else if (action.Type == ClientActionType.RunDirection1 ||
+								 action.Type == ClientActionType.RunDirection2 ||
+								 action.Type == ClientActionType.RunDirection3 ||
+								 action.Type == ClientActionType.RunDirection4 ||
+								 action.Type == ClientActionType.RunDirection5 ||
+								 action.Type == ClientActionType.RunDirection6 ||
+								 action.Type == ClientActionType.RunDirection7 ||
+								 action.Type == ClientActionType.RunDirection8)
+						{
+							serverEntity.Animation = 1;
+						}
+						else if (action.Type == ClientActionType.Dead)
+						{
+							// Add a global message for this event
+							var notificationMessage = new NetworkMessage()
+							{
+								Type = NetworkMessage.MessageType.ClientAction,
+								ClientActionType = ClientActionType.Dead,
+								Text = string.Format("Player {0} died", action.ClientId)
+							};
+
+							messageHandler.AddMessage("GameClient", notificationMessage);
+						}
+
+						break;
+					}
 				}
 			}
 		}
