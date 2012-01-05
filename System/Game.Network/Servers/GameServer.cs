@@ -297,15 +297,7 @@ namespace Game.Network.Servers
 			//server.Reader.ReadNewMessage(message);
 			//server.Reader.ReadByte();
 			// TODO: Split up all combined messages
-
-
-// Spatial [28] bytes						(Header = 1 bytes, data = 27 bytes)
-// Combined [30] bytes						(Header = 1 bytes, data = 1 byte)
-// Combined + 1 extra action [31] bytes
-// Combined + 2 extra action [32] bytes
-// Combined + 3 extra action [33] bytes
-// ...
-
+			
 			// Split spatial-message
 			Message spatialMessage = new Message();
 			spatialMessage.Type = message.Type;
