@@ -28,7 +28,7 @@ namespace Outworld.Players
 		public IEntity Owner { get; set; }
 
 		// Custom properties
-		public AnimationHandler<AnimationType> AnimationHandler { get; set; }
+		private AnimationHandler<AnimationType> animationHandler;
 		public bool IsDead { get; private set; }
 		public bool IsCrouching;
 		public float CameraOffsetY;
@@ -62,28 +62,21 @@ namespace Outworld.Players
 			int deathDuration = globalSettings.Player.AnimationDuration.Death;
 
 			// Initialize the animations
-			AnimationHandler = new AnimationHandler<AnimationType>();
-			AnimationHandler.Animations.Add(AnimationType.Crouch, new Animation(CameraOffsetY, cameraCrouchingOffsetY, crouchDuration));
-			AnimationHandler.Animations.Add(AnimationType.Stand, new Animation(cameraCrouchingOffsetY, CameraOffsetY, standDuration));
-			AnimationHandler.Animations.Add(AnimationType.DeathCameraRoll, new Animation(0, 90, deathDuration));
-			AnimationHandler.Animations.Add(AnimationType.DeathCameraTilt, new Animation(0, 0, deathDuration));
-			AnimationHandler.Animations.Add(AnimationType.DeathCameraOffsetY, new Animation(CameraOffsetY, cameraCrouchingOffsetY, deathDuration));
+			animationHandler = new AnimationHandler<AnimationType>();
+			animationHandler.Animations.Add(AnimationType.Crouch, new Animation(CameraOffsetY, cameraCrouchingOffsetY, crouchDuration));
+			animationHandler.Animations.Add(AnimationType.Stand, new Animation(cameraCrouchingOffsetY, CameraOffsetY, standDuration));
+			animationHandler.Animations.Add(AnimationType.DeathCameraRoll, new Animation(0, 90, deathDuration));
+			animationHandler.Animations.Add(AnimationType.DeathCameraTilt, new Animation(0, 0, deathDuration));
+			animationHandler.Animations.Add(AnimationType.DeathCameraOffsetY, new Animation(CameraOffsetY, cameraCrouchingOffsetY, deathDuration));
 
 			collisionHandlerCounter = 0;
 		}
 
 		public void Initialize()
 		{
-			// Spatial
 			spatial = Owner.Components.Get<SpatialComponent>();
-
-			// Spatial sensor
 			spatialSensor = Owner.Components.Get<SpatialSensorComponent>();
-
-			// Health
 			healthComponent = Owner.Components.Get<HealthComponent>();
-
-			// Input
 			inputComponent = Owner.Components.Get<PlayerInputComponent>();
 		}
 
@@ -94,45 +87,49 @@ namespace Outworld.Players
 			// Handle death animations
 			if (isDying)
 			{
-				if (AnimationHandler.Animations[AnimationType.DeathCameraRoll].IsRunning)
+				if (animationHandler.Animations[AnimationType.DeathCameraRoll].IsRunning)
 				{
-					spatial.Angle.Z = AnimationHandler.Animations[AnimationType.DeathCameraRoll].CurrentValue;
+					spatial.Angle.Z = animationHandler.Animations[AnimationType.DeathCameraRoll].CurrentValue;
 				}
 
-				if (AnimationHandler.Animations[AnimationType.DeathCameraTilt].IsRunning)
+				if (animationHandler.Animations[AnimationType.DeathCameraTilt].IsRunning)
 				{
-					spatial.Angle.Y = AnimationHandler.Animations[AnimationType.DeathCameraTilt].CurrentValue;
+					spatial.Angle.Y = animationHandler.Animations[AnimationType.DeathCameraTilt].CurrentValue;
 				}
 
-				if (AnimationHandler.Animations[AnimationType.DeathCameraOffsetY].IsRunning)
+				if (animationHandler.Animations[AnimationType.DeathCameraOffsetY].IsRunning)
 				{
-					CameraOffsetY = AnimationHandler.Animations[AnimationType.DeathCameraOffsetY].CurrentValue;
+					CameraOffsetY = animationHandler.Animations[AnimationType.DeathCameraOffsetY].CurrentValue;
 				}
 
-				isDying = AnimationHandler.HasRunningAnimations;
+				isDying = animationHandler.HasRunningAnimations;
 			}
-
-			// Crouching
-			if (AnimationHandler.Animations[AnimationType.Crouch].IsRunning)
+			else
 			{
-				CameraOffsetY = AnimationHandler.Animations[AnimationType.Crouch].CurrentValue;
-			}
-			// Standing up
-			else if (AnimationHandler.Animations[AnimationType.Stand].IsRunning)
-			{
-				CameraOffsetY = AnimationHandler.Animations[AnimationType.Stand].CurrentValue;
-			}
+				UpdateMovement();
 
-			// Check impacts
-			if (spatialSensor.State[SpatialSensorState.Impact])
-			{
-				float impactDepth = (1.0f + spatialSensor.ImpactDepth.Y);
-				float damage = (float)Math.Pow(impactDepth, 8);
-				healthComponent.Subtract(Math.Abs(damage * 2f));
-
-				if (healthComponent.Health == 0)
+				// Crouching
+				if (animationHandler.Animations[AnimationType.Crouch].IsRunning)
 				{
-					Kill();
+					CameraOffsetY = animationHandler.Animations[AnimationType.Crouch].CurrentValue;
+				}
+				// Standing up
+				else if (animationHandler.Animations[AnimationType.Stand].IsRunning)
+				{
+					CameraOffsetY = animationHandler.Animations[AnimationType.Stand].CurrentValue;
+				}
+
+				// Check impacts
+				if (spatialSensor.State[SpatialSensorState.Impact])
+				{
+					float impactDepth = (1.0f + spatialSensor.ImpactDepth.Y);
+					float damage = (float)Math.Pow(impactDepth, 8);
+					healthComponent.Subtract(Math.Abs(damage * 2f));
+
+					if (healthComponent.Health == 0)
+					{
+						Kill();
+					}
 				}
 			}
 
@@ -141,37 +138,57 @@ namespace Outworld.Players
 				HandleCollisions();
 				collisionHandlerCounter = 0;
 			}
-			
-			AnimationHandler.Update();
+
+			animationHandler.Update();
+		}
+
+		private void UpdateMovement()
+		{
+			// Return if nothing has changed
+			if (inputComponent.MovementDirection == inputComponent.PreviousMovementDirection)
+			{
+				return;
+			}
+
+			// Calculate the new direction enum value
+			int newDirection = (int)ClientActionType.RunDirection1 + (inputComponent.MovementDirection - 1);
+
+			messageHandler.AddMessage("ClientActions", new PlayerMessage() { Type = (ClientActionType)newDirection });
+
+			//messageHandler.AddMessage("Notifications", new NotificationMessage());
 		}
 
 		public void Kill()
 		{
 			inputComponent.IsEnabled = false;
+
+			// Stop the player from moving on the x and z axes when dead
+			spatial.Velocity = new Vector3(0, spatial.Velocity.Y, 0);
+
 			IsDead = true;
 			isDying = true;
 
-			AnimationHandler.Animations[AnimationType.DeathCameraTilt].From = spatial.Angle.Y;
-			AnimationHandler.Animations[AnimationType.DeathCameraRoll].Start();
-			AnimationHandler.Animations[AnimationType.DeathCameraTilt].Start();
-			AnimationHandler.Animations[AnimationType.DeathCameraOffsetY].Start();
+			animationHandler.Animations[AnimationType.DeathCameraTilt].From = spatial.Angle.Y;
+			animationHandler.Animations[AnimationType.DeathCameraRoll].Start();
+			animationHandler.Animations[AnimationType.DeathCameraTilt].Start();
+			animationHandler.Animations[AnimationType.DeathCameraOffsetY].Start();
 
-			messageHandler.AddMessage("ServerUpdates", new PlayerMessage() { Type = PacketActionType.Dead });
+			messageHandler.AddMessage("ClientActions", new PlayerMessage() { Type = ClientActionType.Dead });
 		}
 
 		public void ToggleStandCrouch()
 		{
 			// If there are no animations running
-			if (!AnimationHandler.HasRunningAnimations)
+			if (!animationHandler.HasRunningAnimations)
 			{
 				if (!IsCrouching)
 				{
-					AnimationHandler.Animations[AnimationType.Crouch].Start();
+					animationHandler.Animations[AnimationType.Crouch].Start();
 					IsCrouching = true;
 				}
 				else
 				{
-					AnimationHandler.Animations[AnimationType.Stand].Start();
+					animationHandler.Animations[AnimationType.Stand].Start();
 					IsCrouching = false;
 				}
 			}

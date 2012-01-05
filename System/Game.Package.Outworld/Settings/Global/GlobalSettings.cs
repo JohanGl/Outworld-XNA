@@ -34,7 +34,7 @@ namespace Outworld.Settings.Global
 			World.Seed = 140024513;
 			World.Fog = true;
 			World.Gravity = new Vector3(0, -30, 0);
-			World.ViewDistance = new Vector2i(2, 2);
+			World.ViewDistance = new Vector2i(3, 3);
 
 			// Player
 			Player.CameraOffsetY = 0.7f;

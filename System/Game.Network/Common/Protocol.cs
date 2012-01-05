@@ -16,12 +16,21 @@
 	/// <summary>
 	/// Defines all available entity actions/triggers/events within a packet
 	/// </summary>
-	public enum PacketActionType : byte
+	public enum ClientActionType : byte
 	{
 		Unknown = 0,
 		Idle,
-		Run,
+		RunDirection1,
+		RunDirection2,
+		RunDirection3,
+		RunDirection4,
+		RunDirection5,
+		RunDirection6,
+		RunDirection7,
+		RunDirection8,
 		Jump,
+		Fall,
+		Land,
 		Crouch,
 		Shoot,
 		Reload,

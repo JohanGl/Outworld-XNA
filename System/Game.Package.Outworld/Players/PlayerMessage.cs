@@ -5,6 +5,6 @@ namespace Game.Network.Clients
 {
 	public class PlayerMessage : IMessage
 	{
-		public PacketActionType Type;
+		public ClientActionType Type;
 	}
 }

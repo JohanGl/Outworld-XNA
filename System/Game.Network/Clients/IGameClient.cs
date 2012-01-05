@@ -12,6 +12,7 @@ namespace Game.Network.Clients
 	{
 		event EventHandler<GameSettingsEventArgs> GetGameSettingsCompleted;
 		event EventHandler<ClientSpatialEventArgs> GetClientSpatialCompleted;
+		event EventHandler<ClientActionsEventArgs> GetClientActionsCompleted;
 
 		byte ClientId { get; }
 		bool IsConnected { get; }

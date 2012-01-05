@@ -81,7 +81,7 @@ namespace Framework.Animations.Pipeline
 		{
 			if (node.OpaqueData.Count > 0)
 			{
-				int a = 10;
+				//int a = 10;
 				//var a = node.OpaqueData.GetValue<string>("AnimName", null);
 			}
 		}

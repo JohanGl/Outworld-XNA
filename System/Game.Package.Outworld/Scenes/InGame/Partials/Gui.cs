@@ -3,6 +3,7 @@ using Framework.Core.Common;
 using Framework.Gui;
 using Game.Entities.Outworld.World.SpatialSensor;
 using Game.Network.Clients;
+using Game.Network.Common;
 using Game.World.Terrains.Parts.Areas.Helpers;
 using Outworld.Scenes.InGame.Controls.Hud;
 using Game.World.Terrains.Rendering.MeshPools;
@@ -88,6 +89,13 @@ namespace Outworld.Scenes.InGame
 					{
 						disconnectedPlayers = true;
 					}
+					else if (message.Type == NetworkMessage.MessageType.ClientAction)
+					{
+						if (message.ClientActionType == ClientActionType.Dead)
+						{
+							audioHandler.PlaySound("Notification2");
+						}
+					}
 				}
 
 				if (connectedPlayers)
@@ -119,18 +127,22 @@ namespace Outworld.Scenes.InGame
 			stringBuilder.Append((int)Context.Graphics.Fps);
 			stringBuilder.Append(Environment.NewLine);
 
-			stringBuilder.Append("Total Tiles: ");
-			stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalVisibleTiles);
-			stringBuilder.Append(" (");
-			stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalTiles);
-			stringBuilder.Append(")");
-			stringBuilder.Append(Environment.NewLine);
+			//stringBuilder.Append("Total Tiles: ");
+			//stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalVisibleTiles);
+			//stringBuilder.Append(" (");
+			//stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalTiles);
+			//stringBuilder.Append(")");
+			//stringBuilder.Append(Environment.NewLine);
 
-			stringBuilder.Append("Total Faces: ");
-			stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalVisibleFaces);
-			stringBuilder.Append(" (");
-			stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalFaces);
-			stringBuilder.Append(")");
+			//stringBuilder.Append("Total Faces: ");
+			//stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalVisibleFaces);
+			//stringBuilder.Append(" (");
+			//stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalFaces);
+			//stringBuilder.Append(")");
+			//stringBuilder.Append(Environment.NewLine);
+
+			stringBuilder.Append("Direction: ");
+			stringBuilder.Append((int)playerInput.MovementDirection);
 			stringBuilder.Append(Environment.NewLine);
 
 			stringBuilder.Append("Position (");
@@ -142,38 +154,35 @@ namespace Outworld.Scenes.InGame
 			stringBuilder.Append(")");
 			stringBuilder.Append(Environment.NewLine);
 
-			var areaLocation = new Vector3i();
-			AreaHelper.FindAreaLocation(playerSpatial.Position, ref areaLocation);
+			//stringBuilder.Append("Velocity (");
+			//stringBuilder.Append((int)playerSpatial.RigidBody.Velocity.X);
+			//stringBuilder.Append(", ");
+			//stringBuilder.Append((int)playerSpatial.RigidBody.Velocity.Y);
+			//stringBuilder.Append(", ");
+			//stringBuilder.Append((int)playerSpatial.RigidBody.Velocity.Z);
+			//stringBuilder.Append(")");
+			//stringBuilder.Append(Environment.NewLine);
 
 			stringBuilder.Append("Area (");
-			stringBuilder.Append(areaLocation.X);
+			stringBuilder.Append(playerSpatial.Area.X);
 			stringBuilder.Append(", ");
-			stringBuilder.Append(areaLocation.Y);
+			stringBuilder.Append(playerSpatial.Area.Y);
 			stringBuilder.Append(", ");
-			stringBuilder.Append(areaLocation.Z);
+			stringBuilder.Append(playerSpatial.Area.Z);
 			stringBuilder.Append(")");
 			stringBuilder.Append(Environment.NewLine);
 
-			stringBuilder.Append("Velocity (");
-			stringBuilder.Append((int)playerSpatial.RigidBody.Velocity.X);
-			stringBuilder.Append(", ");
-			stringBuilder.Append((int)playerSpatial.RigidBody.Velocity.Y);
-			stringBuilder.Append(", ");
-			stringBuilder.Append((int)playerSpatial.RigidBody.Velocity.Z);
-			stringBuilder.Append(")");
-			stringBuilder.Append(Environment.NewLine);
+			//stringBuilder.Append("Total Areas: ");
+			//stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalAreas);
+			//stringBuilder.Append(Environment.NewLine);
 
-			stringBuilder.Append("Total Areas: ");
-			stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalAreas);
-			stringBuilder.Append(Environment.NewLine);
+			//stringBuilder.Append("Total Cached Areas: ");
+			//stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalCachedAreas);
+			//stringBuilder.Append(Environment.NewLine);
 
-			stringBuilder.Append("Total Cached Areas: ");
-			stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalCachedAreas);
-			stringBuilder.Append(Environment.NewLine);
-
-			stringBuilder.Append("MeshPool: ");
-			stringBuilder.Append(TerrainMeshPool.Statistics);
-			stringBuilder.Append(Environment.NewLine);
+			//stringBuilder.Append("MeshPool: ");
+			//stringBuilder.Append(TerrainMeshPool.Statistics);
+			//stringBuilder.Append(Environment.NewLine);
 
 			stringBuilder.Append("Allocated RAM: ");
 			stringBuilder.Append((currentProcess.PeakWorkingSet64 / 1024) / 1024);

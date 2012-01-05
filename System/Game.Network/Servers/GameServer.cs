@@ -24,6 +24,9 @@ namespace Game.Network.Servers
 		private GameTimer tickrateTimer;
 		private GameTimer checkClientTimeoutsTimer;
 
+		private Dictionary<PacketType, int> packetSizeLookup;
+		private int combinedMessageStartIndex;
+
 		public GameServer()
 		{
 			messageHelper = new MessageHelper();
@@ -32,6 +35,10 @@ namespace Game.Network.Servers
 
 			tickrateTimer = new GameTimer(TimeSpan.FromMilliseconds(1000 / 30));
 			checkClientTimeoutsTimer = new GameTimer(TimeSpan.FromSeconds(2));
+
+			packetSizeLookup = new Dictionary<PacketType, int>();
+			packetSizeLookup.Add(PacketType.ClientSpatial, 28);
+			packetSizeLookup.Add(PacketType.ClientActions, 0);
 
 			Logger.RegisterLogLevelsFor<GameServer>(Logger.LogLevels.Adaptive);
 		}
@@ -107,6 +114,7 @@ namespace Game.Network.Servers
 				return;
 			}
 
+			// Check for and remove clients that have timed out
 			if (checkClientTimeoutsTimer.Update(gameTime))
 			{
 				CheckClientTimeouts(gameTime);
@@ -127,11 +135,12 @@ namespace Game.Network.Servers
 				ProcessMessage(gameTime, server.Messages[i]);
 			}
 
-			// Clear all previously stored messages
+			// Clear all messages to prepare for a new batch the next time this function is called
 			server.Messages.Clear();
 
 			// Send updates to the clients
 			BroadcastClientSpatial();
+			BroadcastClientActions();
 
 			// Update the world
 			World.Update(gameTime);
@@ -171,6 +180,18 @@ namespace Game.Network.Servers
 					case PacketType.Combined:
 						ReceivedCombinedMessage(message);
 						break;
+				}
+
+				// TODO: Temp Debug
+				if ((PacketType)message.Data[0] != PacketType.ClientSpatial)
+				{
+					string bytes = "";
+					for (int j = 0; j < message.Data.Length; j++)
+					{
+						bytes += Convert.ToInt16(message.Data[j]).ToString();
+					}
+
+					Logger.Log<GameServer>(LogLevel.Debug, "Received Data: {0} ({1} bytes)", bytes, message.Data.Length);
 				}
 			}
 			else
@@ -246,7 +267,8 @@ namespace Game.Network.Servers
 				ClientId = clientId,
 				Position = messageHelper.ReadVector3(server.Reader),
 				Velocity = messageHelper.ReadVector3(server.Reader),
-				Angle = messageHelper.ReadVector3FromVector3b(server.Reader)
+				Angle = messageHelper.ReadVector3FromVector3b(server.Reader),
+				Time = DateTime.UtcNow,
 			};
 
 			clients[clientSpatialData.ClientId].SpatialData.Add(clientSpatialData);
@@ -269,16 +291,21 @@ namespace Game.Network.Servers
 
 			server.Reader.ReadNewMessage(message);
 			server.Reader.ReadByte();
-			
+
 			int actions = server.Reader.ReadByte();
 
 			for (int i = 0; i < actions; i++)
 			{
-				var type = (PacketActionType)server.Reader.ReadByte();
-				clients[clientId].Actions.Add(new ClientAction() { Type = type });
+				var action = new ClientAction()
+				{
+					Time = DateTime.UtcNow,
+					Type = (ClientActionType)server.Reader.ReadByte()
+				};
 
-				// Keep a maximum of 5 entries
-				if (clients[clientId].Actions.Count > 5)
+				clients[clientId].Actions.Add(action);
+
+				// Keep a maximum of 10 entries per server tickRate update
+				if (clients[clientId].Actions.Count > 10)
 				{
 					clients[clientId].Actions.RemoveAt(0);
 				}
@@ -294,40 +321,42 @@ namespace Game.Network.Servers
 				return;
 			}
 
-			//server.Reader.ReadNewMessage(message);
-			//server.Reader.ReadByte();
-			// TODO: Split up all combined messages
-			
-			// Split spatial-message
-			Message spatialMessage = new Message();
-			spatialMessage.Type = message.Type;
-			spatialMessage.ClientId = message.ClientId;
+			combinedMessageStartIndex = 1;
 
-			byte[] spatialData = new byte[29];
-			spatialData[0] = (byte) PacketType.ClientSpatial;
-			for(int i = 1; i < 29; i++)
+			while (HasMoreMessagesInCombinedMessage(message))
 			{
-				spatialData[i] = message.Data[i];
+				server.Messages.Add(GetNextMessageInCombinedMessage(message));
 			}
-			spatialMessage.Data = spatialData;
-			
-			// Split action-messages
-			//Message actionMessage = new Message();
-			//actionMessage.Type = message.Type;
-			//actionMessage.ClientId = message.ClientId;
+		}
 
-			//int actionCount = (message.Data.Length - 29);
-			//byte[] actionData = new byte[actionCount];
-			//actionData[0] = (byte) PacketType.ClientActions;
-			//for (int i = 1; i < actionCount; i++)
-			//{
-			//    actionData[i] = message.Data[i + 29];
-			//}
-			//actionMessage.Data = actionData;
+		private bool HasMoreMessagesInCombinedMessage(Message message)
+		{
+			return (combinedMessageStartIndex < message.Data.Length);
+		}
 
-			// Add new messages to queue
-			server.Messages.Add(spatialMessage);
-//			server.Messages.Add(actionMessage);
+		private Message GetNextMessageInCombinedMessage(Message message)
+		{
+			var type = (PacketType)message.Data[combinedMessageStartIndex];
+			var size = packetSizeLookup[type];
+
+			// Dynamic size packet?
+			if (size == 0)
+			{
+				// The second byte represents the length of the packet (+ 2 for the header and length bytes)
+				size = message.Data[combinedMessageStartIndex + 1] + 2;
+			}
+
+			var result = new Message
+			{
+				ClientId = message.ClientId,
+				Type = MessageType.Data,
+				Data = new byte[size]
+			};
+
+			Array.Copy(message.Data, combinedMessageStartIndex, result.Data, 0, size);
+			combinedMessageStartIndex += size;
+
+			return result;
 		}
 
 		private void BroadcastClientSpatial()
@@ -337,6 +366,7 @@ namespace Game.Network.Servers
 				return;
 			}
 
+			// Write the header
 			server.Writer.WriteNewMessage();
 			server.Writer.Write((byte)PacketType.ClientSpatial);
 
@@ -344,27 +374,90 @@ namespace Game.Network.Servers
 			server.Writer.Write((byte)clients.Count);
 
 			// Write all client positions
-			foreach (var pair in clients)
+			foreach (var client in clients)
 			{
-				int length = pair.Value.SpatialData.Count - 1;
+				int length = client.Value.SpatialData.Count - 1;
 
-				server.Writer.Write(pair.Key);
+				// Write the current client id
+				server.Writer.Write(client.Key);
 
 				if (length >= 0)
 				{
-					messageHelper.WriteVector3(pair.Value.SpatialData[length].Position, server.Writer);
-					messageHelper.WriteVector3(pair.Value.SpatialData[length].Velocity, server.Writer);
-					messageHelper.WriteVector3(pair.Value.SpatialData[length].Angle, server.Writer);
+					// Write the client spatial data
+					messageHelper.WriteVector3(client.Value.SpatialData[length].Position, server.Writer);
+					messageHelper.WriteVector3(client.Value.SpatialData[length].Velocity, server.Writer);
+					messageHelper.WriteVector3AsVector3b(client.Value.SpatialData[length].Angle, server.Writer);
 				}
 				else
 				{
 					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
 					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
-					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
+					messageHelper.WriteVector3AsVector3b(Vector3.Zero, server.Writer);
 				}
 			}
 
 			server.Broadcast(MessageDeliveryMethod.UnreliableSequenced);
+		}
+
+		private void BroadcastClientActions()
+		{
+			if (clients.Count < 2)
+			{
+				return;
+			}
+
+			int clientsWithActions = 0;
+
+			foreach (var client in clients.Values)
+			{
+				if (client.Actions.Count > 0)
+				{
+					clientsWithActions++;
+				}
+			}
+
+			if (clientsWithActions == 0)
+			{
+				return;
+			}
+
+			bool hasDataToSend = false;
+
+			// Write the header
+			server.Writer.WriteNewMessage();
+			server.Writer.Write((byte)PacketType.ClientActions);
+			server.Writer.Write((byte)clientsWithActions);
+
+			foreach (var client in clients)
+			{
+				var clientData = client.Value;
+
+				if (clientData.Actions.Count == 0)
+				{
+					continue;
+				}
+
+				hasDataToSend = true;
+
+				// Write the current client id and number of actions
+				server.Writer.Write(client.Key);
+				server.Writer.Write((byte)clientData.Actions.Count);
+
+				for (int i = 0; i < clientData.Actions.Count; i++)
+				{
+					var action = clientData.Actions[i];
+
+					// Write the current client action
+					server.Writer.Write((byte)action.Type);
+				}
+
+				clientData.Actions.Clear();
+			}
+
+			if (hasDataToSend)
+			{
+				server.Broadcast(MessageDeliveryMethod.ReliableSequenced);
+			}
 		}
 
 		private byte CreateClientIdAsByteMapping(long clientId)
