@@ -107,7 +107,12 @@ namespace Outworld.Scenes.InGame
 			gui.Elements.Add(menuItem_JoinHost);
 
 			// Add textbox to the stackpanel
-			textBoxIp = new TextBox("", 100, Context.Resources.Fonts["Global.Default"]);
+			var textBoxInfo = new TextBoxInfo()
+			{
+				MaxLength = 100,
+				SpriteFont = Context.Resources.Fonts["Global.Default"]
+			};
+			textBoxIp = new TextBox("", textBoxInfo);
 			textBoxIp.Opacity = 1.0f;
 			menuItem_JoinHost.Children.Add(textBoxIp);
 

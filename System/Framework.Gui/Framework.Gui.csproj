@@ -96,6 +96,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\TextBoxInfo.cs" />
     <Compile Include="Elements\Panel.cs" />
     <Compile Include="Events\ElementStateChangeArgs.cs" />
     <Compile Include="Elements\Button.cs" />

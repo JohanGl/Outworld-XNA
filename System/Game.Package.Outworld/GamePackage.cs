@@ -53,6 +53,7 @@ namespace Outworld
 			var content = gameContext.Resources.Content;
 			content.RootDirectory = "Content";
 			gameContext.Resources.Fonts.Add("Global.Default", content.Load<SpriteFont>(@"Fonts\Default"));
+			gameContext.Resources.Fonts.Add("Global.Normal", content.Load<SpriteFont>(@"Fonts\Moire_Bold_20"));
 			gameContext.Resources.Textures.Add("Global.TerrainMergeMask", content.Load<Texture2D>(@"Terrain\TerrainMergeMask"));
 
 			// Initialize the root scene of this game package

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using Framework.Core.Common;
 using Framework.Core.Contexts;
 using Framework.Gui.Events;
 using Microsoft.Xna.Framework;
@@ -14,6 +16,11 @@ namespace Framework.Gui
 {
 	public class TextBox : UIElement
 	{
+		private struct BackgroundPart
+		{
+			public Rectangle[] Sections;
+		}
+
 		public event EventHandler<TextBoxEventArgs> EnterKeyDown;
 
 		private string text;
@@ -26,7 +33,7 @@ namespace Framework.Gui
 
 			set
 			{
-				if (value.Length <= maxLength)
+				if (value.Length <= info.MaxLength)
 				{
 					text = value;
 					caretIndex = text.Length;
@@ -34,21 +41,9 @@ namespace Framework.Gui
 			}
 		}
 
-		// The maximum lengt of textbox-text
-		private int maxLength;
-		public int MaxLength
-		{
-			get
-			{
-				return maxLength;
-			}
-			set
-			{
-				maxLength = value;
-			}
-		}
-
-		public SpriteFont Font;
+		private TextBoxInfo info;
+		private Dictionary<byte, BackgroundPart> backgroundParts;
+		private Rectangle[] backgroundPartDestinations;
 
 		private Timer timerCaretBlinkDuration;
 		private bool isCaretVisible;
@@ -57,12 +52,10 @@ namespace Framework.Gui
 		// The position of text in the Textbox
 		private Vector2 textPosition;
 
-		public TextBox(string text, int maxLength, SpriteFont font = null)
+		public TextBox(string text, TextBoxInfo info)
 		{
-			MaxLength = maxLength;
-
 			Text = text;
-			Font = font;
+			this.info = info;
 
 			Initialize();
 		}
@@ -70,19 +63,93 @@ namespace Framework.Gui
 		private void Initialize()
 		{
 			isCaretVisible = false;
+			caretIndex = text.Length;
 
-			// Initialize timer for cursor
+			// Initialize the caret blink timer
 			timerCaretBlinkDuration = new Timer(500);
 			timerCaretBlinkDuration.AutoReset = true;
 			timerCaretBlinkDuration.Elapsed += timerCaretBlinkDuration_Elapsed;
 			timerCaretBlinkDuration.Start();
 
-			caretIndex = text.Length;
-
 			Height = 20;
 			Width = 150;
 
 			Opacity = 1f;
+
+			InitializeBackground();
+		}
+
+		private void InitializeBackground()
+		{
+			if (info.Background == null)
+			{
+				return;
+			}
+
+			backgroundParts = new Dictionary<byte, BackgroundPart>();
+			backgroundPartDestinations = new Rectangle[9];
+
+			backgroundParts.Add(0, GetBackgroundPart(0));
+			backgroundParts.Add(1, GetBackgroundPart(1));
+			backgroundParts.Add(2, GetBackgroundPart(2));
+		}
+
+		private BackgroundPart GetBackgroundPart(byte partIndex)
+		{
+			var size = new Vector2i(info.Background.Height, (info.Background.Width - 2) / 3);
+			var unitSize = new Vector2i(size.X / 3, size.Y / 3);
+
+			var partOffsetX = (size.X * partIndex) + partIndex;
+			var offsetX = new int[] { partOffsetX, partOffsetX + unitSize.X, partOffsetX + (unitSize.X * 2) };
+			var offsetY = new int[] { 0, unitSize.Y, (unitSize.Y * 2) };
+
+			var part = new BackgroundPart();
+			part.Sections = new Rectangle[9];
+
+			part.Sections[0] = new Rectangle(offsetX[0], offsetY[0], unitSize.X, size.Y);
+			part.Sections[1] = new Rectangle(offsetX[1], offsetY[0], unitSize.X, size.Y);
+			part.Sections[2] = new Rectangle(offsetX[2], offsetY[0], unitSize.X, size.Y);
+
+			part.Sections[3] = new Rectangle(offsetX[0], offsetY[1], unitSize.X, size.Y);
+			part.Sections[4] = new Rectangle(offsetX[1], offsetY[1], unitSize.X, size.Y);
+			part.Sections[5] = new Rectangle(offsetX[2], offsetY[1], unitSize.X, size.Y);
+
+			part.Sections[6] = new Rectangle(offsetX[0], offsetY[2], unitSize.X, size.Y);
+			part.Sections[7] = new Rectangle(offsetX[1], offsetY[2], unitSize.X, size.Y);
+			part.Sections[8] = new Rectangle(offsetX[2], offsetY[2], unitSize.X, size.Y);
+
+			return part;
+		}
+
+		private void UpdateBackgroundPartLayout()
+		{
+			if (info.Background == null)
+			{
+				return;
+			}
+
+			var part = backgroundParts[0];
+
+			int x = (int)Position.X;
+			int y = (int)Position.Y;
+			int w = part.Sections[0].Width;
+			int h = part.Sections[0].Height;
+			int controlWidth = (int)Width;
+			int centerWidth = controlWidth - (w * 2);
+
+			backgroundPartDestinations[0] = new Rectangle(x, y, w, h);
+			backgroundPartDestinations[1] = new Rectangle(x + w, y, centerWidth, h);
+			backgroundPartDestinations[2] = new Rectangle(controlWidth - w, y, w, h);
+
+			y += h;
+			backgroundPartDestinations[3] = new Rectangle(x, y, w, h);
+			backgroundPartDestinations[4] = new Rectangle(x + w, y, centerWidth, h);
+			backgroundPartDestinations[5] = new Rectangle(controlWidth - w, y, w, h);
+
+			y += h;
+			backgroundPartDestinations[6] = new Rectangle(x, y, w, h);
+			backgroundPartDestinations[7] = new Rectangle(x + w, y, centerWidth, h);
+			backgroundPartDestinations[8] = new Rectangle(controlWidth - w, y, w, h);
 		}
 
 		public override void SetFocus(bool state)
@@ -97,6 +164,8 @@ namespace Framework.Gui
 			textPosition = Position;
 			textPosition.Y += 2;
 			textPosition.X += 4;
+
+			UpdateBackgroundPartLayout();
 		}
 
 		public void UpdateText(KeyboardInputEventArgs args)
@@ -236,7 +305,7 @@ namespace Framework.Gui
 		private void AddCharacter(char value)
 		{
 			// Skip this step if the textbox is full
-			if (text.Length == MaxLength)
+			if (text.Length == info.MaxLength)
 			{
 				return;
 			}
@@ -264,18 +333,18 @@ namespace Framework.Gui
 
 		public override void Render(GraphicsDevice device, SpriteBatch spriteBatch)
 		{
-			// Render the rectangle
-			RenderTextBoxBase(device, spriteBatch);
+			// Render the background
+			RenderBackground(spriteBatch);
 			
 			if (IsFocused)
 			{
 				// Render the text
-				spriteBatch.DrawString(Font, text, textPosition, Color.White * Opacity);
+				spriteBatch.DrawString(info.SpriteFont, text, textPosition, Color.White * Opacity);
 			}
 			else
 			{
 				// Render the text
-				spriteBatch.DrawString(Font, text, textPosition, Color.White * 0.5f);
+				spriteBatch.DrawString(info.SpriteFont, text, textPosition, Color.White * 0.5f);
 				isCaretVisible = false;
 			}
 
@@ -293,27 +362,26 @@ namespace Framework.Gui
 
 			// Calculate the position of where to draw the caret
 			Vector2 caretPosition = textPosition;
-			caretPosition.X += Font.MeasureString(textLeftOfCaret).X - 1;
+			caretPosition.X += info.SpriteFont.MeasureString(textLeftOfCaret).X - 1;
 			caretPosition.Y -= 1;
 
 			// Draw the caret
-			spriteBatch.DrawString(Font, "|", caretPosition, Color.White * Opacity);
+			spriteBatch.DrawString(info.SpriteFont, "|", caretPosition, Color.White * Opacity);
 		}
 
-		// Render the rectangle
-		private void RenderTextBoxBase(GraphicsDevice device, SpriteBatch spriteBatch)
+		private void RenderBackground(SpriteBatch spriteBatch)
 		{
-			Texture2D rect = new Texture2D(device, (int)Width, (int)Height);
-
-			Color[] data = new Color[(int)Width * (int)Height];
-			for (int i = 0; i < data.Length; ++i)
+			if (info.Background == null)
 			{
-				data[i] = Color.Black;
+				return;
 			}
 
-			rect.SetData(data);
+			var part = backgroundParts[0];
 
-			spriteBatch.Draw(rect, Position, Color.White * (Opacity / 2.0f));
+			for (int i = 0; i < 9; i++)
+			{
+				spriteBatch.Draw(info.Background, backgroundPartDestinations[i], part.Sections[i], Color.White);
+			}
 		}
 
 		/// <summary>
@@ -364,7 +432,7 @@ namespace Framework.Gui
 
 			for (int i = 0; i <= substring.Length; i++)
 			{
-				Vector2 lettersSize = Font.MeasureString((substring.Substring(0, i)));
+				Vector2 lettersSize = info.SpriteFont.MeasureString((substring.Substring(0, i)));
 				float lettersX = textPosition.X + lettersSize.X;
 				float distance = Math.Abs(ms.X - lettersX);
 

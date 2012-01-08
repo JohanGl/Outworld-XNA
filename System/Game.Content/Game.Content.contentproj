@@ -388,6 +388,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Gui\Scenes\InGame\RadarPlayerDot.png">
+      <Name>RadarPlayerDot</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Gui\Controls\TextBoxes\TextBox.png">
       <Name>TextBox</Name>
       <Importer>TextureImporter</Importer>

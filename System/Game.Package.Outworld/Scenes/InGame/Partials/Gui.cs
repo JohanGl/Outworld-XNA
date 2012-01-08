@@ -18,16 +18,21 @@ namespace Outworld.Scenes.InGame
 		private WeaponBar weaponBar;
 		private HealthBar healthBar;
 		private Notifications notifications;
+		private Radar radar;
 
 		private void InitializeGui()
 		{
 			gui = new GuiManager(Context.Input, Context.Graphics.Device, Context.Graphics.SpriteBatch);
 
 			// Add the radar image
-			var radar = new Image(Context.Resources.Textures["Gui.Hud.Radar"]);
-			radar.HorizontalAlignment = HorizontalAlignment.Right;
-			radar.VerticalAlignment = VerticalAlignment.Top;
-			radar.Margin = new Thickness(0, 10, 10, 0);
+			//var radar = new Image(Context.Resources.Textures["Gui.Hud.Radar"]);
+			//radar.HorizontalAlignment = HorizontalAlignment.Right;
+			//radar.VerticalAlignment = VerticalAlignment.Top;
+			//radar.Margin = new Thickness(0, 10, 10, 0);
+			//gui.Elements.Add(radar);
+
+			radar = new Radar();
+			radar.Initialize(Context);
 			gui.Elements.Add(radar);
 
 			// Weapon

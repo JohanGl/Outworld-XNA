@@ -63,7 +63,13 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			panel.Children.Add(menuOptions);
 
 			// Add the address textbox to the stackpanel
-			textBoxIp = new TextBox("", 50, Context.Resources.Fonts["Global.Normal"]);
+			var textBoxInfo = new TextBoxInfo()
+			{
+				MaxLength = 50,
+				SpriteFont = Context.Resources.Fonts["Global.Normal"],
+				Background = Context.Resources.Textures["MainMenu.TextBox"]
+			};
+			textBoxIp = new TextBox("", textBoxInfo);
 			textBoxIp.HorizontalAlignment = HorizontalAlignment.Left;
 			textBoxIp.VerticalAlignment = VerticalAlignment.Top;
 			textBoxIp.Text = "127.0.0.1";
