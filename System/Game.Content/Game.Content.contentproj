@@ -395,6 +395,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Characters\textures\chibiSpaceMarineDiffuse.jpg">
+      <Name>chibiSpaceMarineDiffuse</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Gui\Controls\TextBoxes\TextBox.png">
       <Name>TextBox</Name>
       <Importer>TextureImporter</Importer>

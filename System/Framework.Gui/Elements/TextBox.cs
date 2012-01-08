@@ -106,17 +106,17 @@ namespace Framework.Gui
 			var part = new BackgroundPart();
 			part.Sections = new Rectangle[9];
 
-			part.Sections[0] = new Rectangle(offsetX[0], offsetY[0], unitSize.X, size.Y);
-			part.Sections[1] = new Rectangle(offsetX[1], offsetY[0], unitSize.X, size.Y);
-			part.Sections[2] = new Rectangle(offsetX[2], offsetY[0], unitSize.X, size.Y);
+			part.Sections[0] = new Rectangle(offsetX[0], offsetY[0], unitSize.X, unitSize.Y);
+			part.Sections[1] = new Rectangle(offsetX[1], offsetY[0], unitSize.X, unitSize.Y);
+			part.Sections[2] = new Rectangle(offsetX[2], offsetY[0], unitSize.X, unitSize.Y);
 
-			part.Sections[3] = new Rectangle(offsetX[0], offsetY[1], unitSize.X, size.Y);
-			part.Sections[4] = new Rectangle(offsetX[1], offsetY[1], unitSize.X, size.Y);
-			part.Sections[5] = new Rectangle(offsetX[2], offsetY[1], unitSize.X, size.Y);
+			part.Sections[3] = new Rectangle(offsetX[0], offsetY[1], unitSize.X, unitSize.Y);
+			part.Sections[4] = new Rectangle(offsetX[1], offsetY[1], unitSize.X, unitSize.Y);
+			part.Sections[5] = new Rectangle(offsetX[2], offsetY[1], unitSize.X, unitSize.Y);
 
-			part.Sections[6] = new Rectangle(offsetX[0], offsetY[2], unitSize.X, size.Y);
-			part.Sections[7] = new Rectangle(offsetX[1], offsetY[2], unitSize.X, size.Y);
-			part.Sections[8] = new Rectangle(offsetX[2], offsetY[2], unitSize.X, size.Y);
+			part.Sections[6] = new Rectangle(offsetX[0], offsetY[2], unitSize.X, unitSize.Y);
+			part.Sections[7] = new Rectangle(offsetX[1], offsetY[2], unitSize.X, unitSize.Y);
+			part.Sections[8] = new Rectangle(offsetX[2], offsetY[2], unitSize.X, unitSize.Y);
 
 			return part;
 		}
@@ -136,20 +136,22 @@ namespace Framework.Gui
 			int h = part.Sections[0].Height;
 			int controlWidth = (int)Width;
 			int centerWidth = controlWidth - (w * 2);
+			int centerHeight = (int)Height - (h * 2) + 4;
+			int r = x + (controlWidth - w);
 
 			backgroundPartDestinations[0] = new Rectangle(x, y, w, h);
 			backgroundPartDestinations[1] = new Rectangle(x + w, y, centerWidth, h);
-			backgroundPartDestinations[2] = new Rectangle(controlWidth - w, y, w, h);
+			backgroundPartDestinations[2] = new Rectangle(r, y, w, h);
 
 			y += h;
-			backgroundPartDestinations[3] = new Rectangle(x, y, w, h);
-			backgroundPartDestinations[4] = new Rectangle(x + w, y, centerWidth, h);
-			backgroundPartDestinations[5] = new Rectangle(controlWidth - w, y, w, h);
+			backgroundPartDestinations[3] = new Rectangle(x, y, w, centerHeight);
+			backgroundPartDestinations[4] = new Rectangle(x + w, y, centerWidth, centerHeight);
+			backgroundPartDestinations[5] = new Rectangle(r, y, w, centerHeight);
 
-			y += h;
+			y += centerHeight;
 			backgroundPartDestinations[6] = new Rectangle(x, y, w, h);
 			backgroundPartDestinations[7] = new Rectangle(x + w, y, centerWidth, h);
-			backgroundPartDestinations[8] = new Rectangle(controlWidth - w, y, w, h);
+			backgroundPartDestinations[8] = new Rectangle(r, y, w, h);
 		}
 
 		public override void SetFocus(bool state)
@@ -309,6 +311,15 @@ namespace Framework.Gui
 			{
 				return;
 			}
+			
+			// Skip this step if there is a character mask and it doesnt contain the character
+			if (info.CharacterMask != null)
+			{
+				if (!info.CharacterMask.Contains(value))
+				{
+					return;
+				}
+			}
 
 			string character = value.ToString();
 
@@ -376,7 +387,20 @@ namespace Framework.Gui
 				return;
 			}
 
-			var part = backgroundParts[0];
+			BackgroundPart part;
+
+			if (IsFocused)
+			{
+				part = backgroundParts[2];
+			}
+			else if (IsHighlighted)
+			{
+				part = backgroundParts[1];
+			}
+			else
+			{
+				part = backgroundParts[0];
+			}
 
 			for (int i = 0; i < 9; i++)
 			{

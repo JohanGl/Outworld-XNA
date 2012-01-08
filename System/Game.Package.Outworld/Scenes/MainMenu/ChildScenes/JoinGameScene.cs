@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Framework.Core.Contexts;
 using Framework.Core.Scenes;
 using Framework.Core.Services;
@@ -65,13 +66,15 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			// Add the address textbox to the stackpanel
 			var textBoxInfo = new TextBoxInfo()
 			{
-				MaxLength = 50,
+				MaxLength = 15,
 				SpriteFont = Context.Resources.Fonts["Global.Normal"],
-				Background = Context.Resources.Textures["MainMenu.TextBox"]
+				Background = Context.Resources.Textures["MainMenu.TextBox"],
+				CharacterMask = new List<int>() { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.' }
 			};
 			textBoxIp = new TextBox("", textBoxInfo);
 			textBoxIp.HorizontalAlignment = HorizontalAlignment.Left;
 			textBoxIp.VerticalAlignment = VerticalAlignment.Top;
+			textBoxIp.Width = 220;
 			textBoxIp.Text = "127.0.0.1";
 			textBoxIp.SetFocus(true);
 			textBoxIp.EnterKeyDown += textBoxIp_EnterKeyDown;
