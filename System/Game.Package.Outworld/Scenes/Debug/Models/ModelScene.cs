@@ -40,7 +40,8 @@ namespace Outworld.Scenes.Debug.Models
 
 		public override void Update(GameTime gameTime)
 		{
-			angle += 60f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+			angle = 90;
+			//angle += 60f * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
 			skinnedModel.Update(gameTime);
 		}

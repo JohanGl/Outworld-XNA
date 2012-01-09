@@ -1,6 +1,7 @@
 ﻿using System;
 using Framework.Core.Common;
 using Framework.Gui;
+using Game.Entities.Outworld;
 using Game.Entities.Outworld.World.SpatialSensor;
 using Game.Network.Clients;
 using Game.Network.Common;
@@ -18,22 +19,17 @@ namespace Outworld.Scenes.InGame
 		private WeaponBar weaponBar;
 		private HealthBar healthBar;
 		private Notifications notifications;
-		private Radar radar;
 
 		private void InitializeGui()
 		{
 			gui = new GuiManager(Context.Input, Context.Graphics.Device, Context.Graphics.SpriteBatch);
 
-			// Add the radar image
-			//var radar = new Image(Context.Resources.Textures["Gui.Hud.Radar"]);
-			//radar.HorizontalAlignment = HorizontalAlignment.Right;
-			//radar.VerticalAlignment = VerticalAlignment.Top;
-			//radar.Margin = new Thickness(0, 10, 10, 0);
+			// Radar
+			//radar = new Radar();
+			//radar.Initialize(Context);
 			//gui.Elements.Add(radar);
-
-			radar = new Radar();
-			radar.Initialize(Context);
-			gui.Elements.Add(radar);
+			radarLogic.Initialize(Context, player, gameClient.ServerEntities);
+			gui.Elements.Add(radarLogic.Radar);
 
 			// Weapon
 			weaponBar = new WeaponBar();

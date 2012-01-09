@@ -84,7 +84,7 @@ namespace Outworld.Players
 
 			camera.View = Matrix.CreateLookAt(cameraPosition, spatialComponent.Position, Vector3.Up);
 		}
-
+		
 		public void UpdateCamera(CameraBase camera)
 		{
 			camera.Position = spatialComponent.RigidBody.Position;

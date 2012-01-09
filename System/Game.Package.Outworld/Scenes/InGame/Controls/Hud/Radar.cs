@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Framework.Core.Contexts;
 using Framework.Core.Services;
 using Framework.Gui;
@@ -11,23 +12,18 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 {
 	public class Radar : UIElement
 	{
-		private Texture2D RadarImage;
-		private Texture2D PlayerDotImage;
-		//private Texture2D EnemyDotImage;
-		//private Texture2D MiscDotImage;
+		private Texture2D radarBaseImage;
+		private Texture2D radarPlayerTypeEntetyImage;
 
-		private float RadarDetectionRange = 2000.0f;
-
-		private GlobalSettings globalSettings;
-		private IGameClient gameClient;
+		public List<RadarEntity> RadarEnteties;
+		public Vector3 Center;
 
 		public void Initialize(GameContext context)
 		{
-			globalSettings = ServiceLocator.Get<GlobalSettings>();
-			gameClient = ServiceLocator.Get<IGameClient>();
+			RadarEnteties = new List<RadarEntity>();
 
-			RadarImage = context.Resources.Textures["Gui.Hud.Radar"];
-			PlayerDotImage = context.Resources.Textures["Gui.Hud.RadarPlayerDot"];
+			radarBaseImage = context.Resources.Textures["Gui.Hud.Radar"];
+			radarPlayerTypeEntetyImage = context.Resources.Textures["Gui.Hud.RadarPlayerDot"];
 		}
 
 		public override void UpdateLayout(GuiManager guiManager, Rectangle availableSize)
@@ -35,39 +31,27 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 			HorizontalAlignment = HorizontalAlignment.Right;
 			VerticalAlignment = VerticalAlignment.Top;
 			Margin = new Thickness(0, 10, 10, 0);
-			Width = RadarImage.Width;
-			Height = RadarImage.Height;
+			Width = radarBaseImage.Width;
+			Height = radarBaseImage.Height;
 
 			guiManager.Arrange(this, availableSize);
 
-			//positionAmount = new Vector2(Position.X + 7, Position.Y);
+			Center = new Vector3(Position.X + (Width / 2), Position.Y + (Height / 2), 0);
 		}
+
 
 		public override void Render(GraphicsDevice device, SpriteBatch spriteBatch)
 		{
-			spriteBatch.Draw(RadarImage, Position, Color.White);
-			
-			foreach(var client in gameClient.ServerEntities)
+			spriteBatch.Draw(radarBaseImage, Position, Color.White);
+
+			for(int i = 0; i < RadarEnteties.Count; i++)
 			{
-				Vector2 diffVector = new Vector2(globalSettings.Player.Spatial.Position.X - client.Position.X, globalSettings.Player.Spatial.Position.Y - client.Position.Y);
-				float distance = diffVector.LengthSquared();
-
-				if (distance <= (RadarDetectionRange * RadarDetectionRange))
+				if (RadarEnteties[i].Color == RadarEntity.RadarEntityColor.Yellow)
 				{
-					diffVector *= ((Width * 0.5f) / RadarDetectionRange);
-
-					//diffVector = Vector2.Transform(diffVector, Matrix.CreateRotationZ(globalSettings.Player.Spatial.Angle.Z));
-
-					diffVector += Position;
-
-					spriteBatch.Draw(PlayerDotImage, diffVector, Color.White);
+					Vector2 position = new Vector2(RadarEnteties[i].Position.X, RadarEnteties[i].Position.Y);
+					spriteBatch.Draw(radarPlayerTypeEntetyImage, position, Color.White);
 				}
-
-				//client.Position += new Vector3(1, 1, 1);
 			}
-
-			//spriteBatch.Draw(PlayerDotImage, positionProgressBar, Color.White);
-			//spriteBatch.DrawString(context.Resources.Fonts["Hud.Small"], "Weapon name", positionTitle, Color.White);
 		}
 	}
 }
