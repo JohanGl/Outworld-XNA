@@ -32,9 +32,9 @@ namespace Outworld.Scenes.MainMenu
 			resources.Textures.Add("MainMenu.MainOptions", content.Load<Texture2D>(@"Gui\Scenes\MainMenu\MainOptions"));
 			resources.Textures.Add("MainMenu.NewGameOptions", content.Load<Texture2D>(@"Gui\Scenes\MainMenu\NewGameOptions"));
 			resources.Textures.Add("MainMenu.JoinGameOptions", content.Load<Texture2D>(@"Gui\Scenes\MainMenu\JoinGameOptions"));
+			resources.Textures.Add("MainMenu.TextBox", content.Load<Texture2D>(@"Gui\Controls\TextBoxes\TextBox"));
 
 			resources.Fonts.Add("Hud", content.Load<SpriteFont>(@"Fonts\Moire"));
-			resources.Fonts.Add("Global.Normal", content.Load<SpriteFont>(@"Fonts\Moire_Bold_20"));
 
 			audioHandler.LoadSound("ButtonPress", @"Audio\Sounds\Gui\ButtonPress01");
 			audioHandler.LoadSound("ButtonHighlight", @"Audio\Sounds\Gui\ButtonPress01");
@@ -66,6 +66,7 @@ namespace Outworld.Scenes.MainMenu
 			resources.Textures.Remove("MainMenu.MainOptions");
 			resources.Textures.Remove("MainMenu.NewGameOptions");
 			resources.Textures.Remove("MainMenu.JoinGameOptions");
+			resources.Textures.Remove("MainMenu.TextBox");
 
 			resources.Fonts.Remove("Hud");
 

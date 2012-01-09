@@ -35,7 +35,12 @@ namespace Framework.Gui
 			Font = font;
 
 			// Initialize child control TextBox
-			textBox = new TextBox("", 50, font);
+			var textBoxInfo = new TextBoxInfo
+			{
+				MaxLength = 50,
+				SpriteFont = font
+			};
+			textBox = new TextBox("", textBoxInfo);
 			textBox.EnterKeyDown += textBox_EnterKeyDown;
 
 			// Initialize child controls textBlocks
