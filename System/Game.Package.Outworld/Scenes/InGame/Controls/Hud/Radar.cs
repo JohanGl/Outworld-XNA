@@ -1,29 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Framework.Core.Contexts;
-using Framework.Core.Services;
 using Framework.Gui;
-using Game.Network.Clients;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Outworld.Settings.Global;
 
 namespace Outworld.Scenes.InGame.Controls.Hud
 {
 	public class Radar : UIElement
 	{
 		private Texture2D radarBaseImage;
-		private Texture2D radarPlayerTypeEntetyImage;
+		private Texture2D radarPlayerTypeEntityImage;
+		private Vector2 uiCenter;
 
-		public List<RadarEntity> RadarEnteties;
+		public List<RadarEntity> RadarEntities;
 		public Vector3 Center;
+		public float Angle;
 
 		public void Initialize(GameContext context)
 		{
-			RadarEnteties = new List<RadarEntity>();
+			RadarEntities = new List<RadarEntity>();
 
 			radarBaseImage = context.Resources.Textures["Gui.Hud.Radar"];
-			radarPlayerTypeEntetyImage = context.Resources.Textures["Gui.Hud.RadarPlayerDot"];
+			radarPlayerTypeEntityImage = context.Resources.Textures["Gui.Hud.RadarPlayerDot"];
 		}
 
 		public override void UpdateLayout(GuiManager guiManager, Rectangle availableSize)
@@ -36,20 +34,29 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 			guiManager.Arrange(this, availableSize);
 
-			Center = new Vector3(Position.X + (Width / 2), Position.Y + (Height / 2), 0);
+			uiCenter = new Vector2(Position.X + (Width / 2), Position.Y + (Height / 2));
 		}
-
 
 		public override void Render(GraphicsDevice device, SpriteBatch spriteBatch)
 		{
 			spriteBatch.Draw(radarBaseImage, Position, Color.White);
 
-			for(int i = 0; i < RadarEnteties.Count; i++)
+			var radian = MathHelper.ToRadians(Angle);
+			var radarRotation = Matrix.CreateRotationZ(MathHelper.ToRadians(radian));
+
+			for (int i = 0; i < RadarEntities.Count; i++)
 			{
-				if (RadarEnteties[i].Color == RadarEntity.RadarEntityColor.Yellow)
+				var entity = RadarEntities[i];
+
+				var result = entity.Position - Center;
+
+				//result = Vector3.Transform(result, radarRotation);
+				//var result = RotateAroundPoint(test, Center, new Vector3(1, 1, 0), MathHelper.ToRadians(Angle));
+
+				if (entity.Color == RadarEntity.RadarEntityColor.Yellow)
 				{
-					Vector2 position = new Vector2(RadarEnteties[i].Position.X, RadarEnteties[i].Position.Z);
-					spriteBatch.Draw(radarPlayerTypeEntetyImage, position, Color.White);
+					Vector2 position = new Vector2(uiCenter.X + result.X, uiCenter.Y + result.Z);
+					spriteBatch.Draw(radarPlayerTypeEntityImage, position, Color.White);
 				}
 			}
 		}

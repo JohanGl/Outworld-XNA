@@ -44,6 +44,8 @@ namespace Outworld.Players
 		private TerrainContextCollisionHelper terrainContextCollisionHelper;
 		private GlobalSettings globalSettings;
 		private bool isDying;
+		private ClientActionType clientAction;
+		private ClientActionType previousClientAction;
 
 		private byte collisionHandlerCounter;
 
@@ -120,9 +122,9 @@ namespace Outworld.Players
 				}
 
 				// Check impacts
-				if (spatialSensor.State[SpatialSensorState.Impact])
+				if (spatialSensor.State[SpatialSensorStateType.Impact].IsActive)
 				{
-					float impactDepth = (1.0f + spatialSensor.ImpactDepth.Y);
+					float impactDepth = (1.0f + spatialSensor.State[SpatialSensorStateType.Impact].Value.Y);
 					float damage = (float)Math.Pow(impactDepth, 8);
 					healthComponent.Subtract(Math.Abs(damage * 2f));
 
@@ -144,18 +146,25 @@ namespace Outworld.Players
 
 		private void UpdateMovement()
 		{
-			// Return if nothing has changed
-			if (inputComponent.MovementDirection == inputComponent.PreviousMovementDirection)
+			// Running
+			if (spatialSensor.State[SpatialSensorStateType.HorizontalMovement].IsActive)
 			{
-				return;
+				// Calculate the new direction enum value
+				int newDirection = (int)ClientActionType.RunDirection1 + (inputComponent.MovementDirection - 1);
+				clientAction = (ClientActionType)newDirection;
+			}
+			// Idle
+			else
+			{
+				clientAction = ClientActionType.Idle;
 			}
 
-			// Calculate the new direction enum value
-			int newDirection = (int)ClientActionType.RunDirection1 + (inputComponent.MovementDirection - 1);
+			if (clientAction != previousClientAction)
+			{
+				messageHandler.AddMessage("ClientActions", new PlayerMessage() { Type = clientAction });
+			}
 
-			messageHandler.AddMessage("ClientActions", new PlayerMessage() { Type = (ClientActionType)newDirection });
-
-			//messageHandler.AddMessage("Notifications", new NotificationMessage());
+			previousClientAction = clientAction;
 		}
 
 		public void Kill()

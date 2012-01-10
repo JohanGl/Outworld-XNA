@@ -250,5 +250,10 @@ namespace Framework.Gui
 			element.Position.Y += element.Margin.Top;
 			element.Position.Y -= element.Margin.Bottom;
 		}
+
+		public void ClearFocus()
+		{
+
+		}
 	}
 }

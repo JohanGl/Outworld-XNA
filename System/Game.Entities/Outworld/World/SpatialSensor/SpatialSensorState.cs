@@ -1,11 +1,10 @@
-﻿namespace Game.Entities.Outworld.World.SpatialSensor
+using Microsoft.Xna.Framework;
+
+namespace Game.Entities.Outworld.World.SpatialSensor
 {
-	public enum SpatialSensorState
+	public class SpatialSensorState
 	{
-		Ascending,
-		Descending,
-		HorizontalMovement,
-		VerticalMovement,
-		Impact
+		public bool IsActive;
+		public Vector3 Value;
 	}
 }

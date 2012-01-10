@@ -22,6 +22,7 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 		private Panel panel;
 		private StackPanel menuOptions;
 		private TextBox textBoxIp;
+		private GuiManager gui;
 
 		private enum ButtonCommand
 		{
@@ -47,6 +48,8 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 
 		public void InitializeGui(GuiManager gui)
 		{
+			this.gui = gui;
+
 			panel = new Panel();
 			panel.HorizontalAlignment = HorizontalAlignment.Left;
 			panel.VerticalAlignment = VerticalAlignment.Top;
@@ -90,6 +93,8 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 
 		private void textBoxIp_EnterKeyDown(object sender, TextBoxEventArgs e)
 		{
+			textBoxIp.SetFocus(false);
+			menuOptions.Children[1].SetFocus(true);
 			MenuOptionOnClick(menuOptions.Children[1], EventArgs.Empty);
 		}
 
