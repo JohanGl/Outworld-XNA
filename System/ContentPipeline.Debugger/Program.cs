@@ -85,7 +85,7 @@ namespace ContentPipeline.Debugger
 		///       Example:
 		///               private const string ProjectToDebug = @"C:\XNA Samples\SkinnedModelExtensions\SkinningSample\Content\SkinningSampleContent.contentproj";
 		/// </summary>
-		private const string ProjectToDebug = @"D:\Dev\XNA\Outworld\System\Game.Content\Game.Content.contentproj";
+		private const string ProjectToDebug = @"C:\Users\Joakim\Documents\Visual Studio 2010\Projects\outworld-github\Outworld\System\Game.Content\Game.Content.contentproj";
 
 		/// <summary>
 		/// TODO: Change this to the content item you want to debug. The content pipeline will only

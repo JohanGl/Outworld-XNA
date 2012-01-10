@@ -106,10 +106,12 @@
     <Compile Include="Scenes\Debug\Audio\AudioScene.cs" />
     <Compile Include="Scenes\Debug\Models\ModelScene.cs" />
     <Compile Include="Scenes\InGame\ChildScenes\InGameMenu\InGameMenuScene.cs" />
+    <Compile Include="Scenes\InGame\Controls\Hud\RadarEntity.cs" />
     <Compile Include="Scenes\InGame\Controls\Hud\Radar.cs" />
     <Compile Include="Scenes\InGame\Controls\Hud\Notifications.cs" />
     <Compile Include="Scenes\InGame\Helpers\BreadCrumbs\BreadCrumb.cs" />
     <Compile Include="Scenes\InGame\Helpers\BreadCrumbs\BreadCrumbHelper.cs" />
+    <Compile Include="Scenes\InGame\Helpers\RadarLogic.cs" />
     <Compile Include="Scenes\Loading\LoadingScene.cs" />
     <Compile Include="Scenes\Debug\Terrain\TerrainDebugScene.cs" />
     <Compile Include="Scenes\MainMenu\ChildScenes\JoinGameScene.cs" />

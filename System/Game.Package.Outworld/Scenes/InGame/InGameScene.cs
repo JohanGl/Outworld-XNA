@@ -26,6 +26,7 @@ using Game.World.Terrains.Parts.Areas.Helpers;
 using Game.World.Terrains.Parts.Tiles;
 using Outworld.Helpers.Logging;
 using Outworld.Players;
+using Outworld.Scenes.InGame.Controls.Hud;
 using Outworld.Scenes.InGame.Helpers.BreadCrumbs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -47,6 +48,7 @@ namespace Outworld.Scenes.InGame
 		private StringBuilder stringBuilder;
 
 		private BreadCrumbHelper breadCrumbsHelper;
+		private RadarLogic radarLogic;
 
 		/// <summary>
 		/// Used for displaying how much memory is being allocated by the application
@@ -109,6 +111,8 @@ namespace Outworld.Scenes.InGame
 		{
 			// Allows us to store breadcrumbs for 20 minutes (since breadcrumbs are stored every 10 seconds and we allow 120 entries. 10 * 120 = 1200 seconds which equals 20 minutes)
 			breadCrumbsHelper = new BreadCrumbHelper(120);
+
+			radarLogic = new RadarLogic();
 		}
 
 		private void InitializeWorld()
@@ -165,7 +169,7 @@ namespace Outworld.Scenes.InGame
 			playerSpatial = player.Components.Get<SpatialComponent>();
 			playerSpatialSensor = player.Components.Get<SpatialSensorComponent>();
 			playerHealth = player.Components.Get<HealthComponent>();
-
+			
 			// Check if we should spawn at a previous breadcrumb
 			if (breadCrumbsHelper.BreadCrumbs.Count > 0)
 			{
@@ -308,6 +312,8 @@ namespace Outworld.Scenes.InGame
 			timerSendDataToServer.Update(gameTime);
 			timerSaveBreadCrumb.Update(gameTime);
 			timerUpdateCurrentProcess.Update(gameTime);
+
+			radarLogic.Update();
 		}
 
 		private void UpdateInput()
