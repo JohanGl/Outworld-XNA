@@ -395,7 +395,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Characters\textures\chibiSpaceMarineDiffuse.jpg">
+    <Compile Include="Models\Characters\scenes\chibiSpaceMarineDiffuse.jpg">
       <Name>chibiSpaceMarineDiffuse</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>

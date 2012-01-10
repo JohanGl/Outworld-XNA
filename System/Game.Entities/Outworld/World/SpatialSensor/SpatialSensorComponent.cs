@@ -15,8 +15,7 @@ namespace Game.Entities.Outworld.World.SpatialSensor
 		public string Id { get; set; }
 		public IEntity Owner { get; set; }
 
-		public Dictionary<SpatialSensorState, bool> State { get; private set; }
-		public Vector3 ImpactDepth;
+		public Dictionary<SpatialSensorStateType, SpatialSensorState> State { get; private set; }
 
 		private SpatialComponent spatialComponent;
 		private Vector3 previousVelocity;
@@ -30,15 +29,14 @@ namespace Game.Entities.Outworld.World.SpatialSensor
 
 		public void Initialize()
 		{
-			State = new Dictionary<SpatialSensorState, bool>();
-			State.Add(SpatialSensorState.Ascending, false);
-			State.Add(SpatialSensorState.Descending, false);
-			State.Add(SpatialSensorState.Impact, false);
-			State.Add(SpatialSensorState.HorizontalMovement, false);
-			State.Add(SpatialSensorState.VerticalMovement, false);
+			State = new Dictionary<SpatialSensorStateType, SpatialSensorState>();
+			State.Add(SpatialSensorStateType.Ascending, new SpatialSensorState());
+			State.Add(SpatialSensorStateType.Descending, new SpatialSensorState());
+			State.Add(SpatialSensorStateType.Impact, new SpatialSensorState());
+			State.Add(SpatialSensorStateType.HorizontalMovement, new SpatialSensorState());
+			State.Add(SpatialSensorStateType.VerticalMovement, new SpatialSensorState());
 
 			impactDelta = new Vector3();
-			ImpactDepth = new Vector3();
 
 			spatialComponent = Owner.Components.Get<SpatialComponent>();
 
@@ -74,14 +72,13 @@ namespace Game.Entities.Outworld.World.SpatialSensor
 
 		private void ResetStates()
 		{
-			State[SpatialSensorState.Ascending] = false;
-			State[SpatialSensorState.Descending] = false;
-			State[SpatialSensorState.Impact] = false;
-			State[SpatialSensorState.HorizontalMovement] = false;
-			State[SpatialSensorState.VerticalMovement] = false;
-			ImpactDepth.X = 0;
-			ImpactDepth.Y = 0;
-			ImpactDepth.Z = 0;
+			State[SpatialSensorStateType.Ascending].IsActive = false;
+			State[SpatialSensorStateType.Descending].IsActive = false;
+			State[SpatialSensorStateType.Impact].IsActive = false;
+			State[SpatialSensorStateType.HorizontalMovement].IsActive = false;
+			State[SpatialSensorStateType.VerticalMovement].IsActive = false;
+
+			State[SpatialSensorStateType.Impact].Value = Vector3.Zero;
 		}
 
 		private bool IsStationary()
@@ -107,15 +104,15 @@ namespace Game.Entities.Outworld.World.SpatialSensor
 			if (impactDelta.X > HorizontalMovementTriggerValue ||
 				impactDelta.Z > HorizontalMovementTriggerValue)
 			{
-				State[SpatialSensorState.HorizontalMovement] = true;
+				State[SpatialSensorStateType.HorizontalMovement].IsActive = true;
 			}
 		}
 
 		private void UpdateSensorsForVerticalMovement()
 		{
-			if (State[SpatialSensorState.Ascending] || State[SpatialSensorState.Descending])
+			if (State[SpatialSensorStateType.Ascending].IsActive || State[SpatialSensorStateType.Descending].IsActive)
 			{
-				State[SpatialSensorState.VerticalMovement] = true;
+				State[SpatialSensorStateType.VerticalMovement].IsActive = true;
 			}
 			else
 			{
@@ -123,7 +120,7 @@ namespace Game.Entities.Outworld.World.SpatialSensor
 
 				if (impactDelta.Y > VerticalMovementTriggerValue)
 				{
-					State[SpatialSensorState.VerticalMovement] = true;
+					State[SpatialSensorStateType.VerticalMovement].IsActive = true;
 				}
 			}
 		}
@@ -133,12 +130,12 @@ namespace Game.Entities.Outworld.World.SpatialSensor
 			// Ascending
 			if (spatialComponent.Velocity.Y > AscendDescendTriggerValue)
 			{
-				State[SpatialSensorState.Ascending] = true;
+				State[SpatialSensorStateType.Ascending].IsActive = true;
 			}
 			// Descending
 			else if (spatialComponent.Velocity.Y < -AscendDescendTriggerValue)
 			{
-				State[SpatialSensorState.Descending] = true;
+				State[SpatialSensorStateType.Descending].IsActive = true;
 			}
 		}
 
@@ -154,20 +151,20 @@ namespace Game.Entities.Outworld.World.SpatialSensor
 
 			if (impactDepth.X > impactTriggerDepth.X)
 			{
-				State[SpatialSensorState.Impact] = true;
-				ImpactDepth.X = impactDepth.X;
+				State[SpatialSensorStateType.Impact].IsActive = true;
+				State[SpatialSensorStateType.Impact].Value.X = impactDepth.X;
 			}
 
 			if (impactDepth.Y > impactTriggerDepth.Y)
 			{
-				State[SpatialSensorState.Impact] = true;
-				ImpactDepth.Y = impactDepth.Y;
+				State[SpatialSensorStateType.Impact].IsActive = true;
+				State[SpatialSensorStateType.Impact].Value.Y = impactDepth.Y;
 			}
 
 			if (impactDepth.Z > impactTriggerDepth.Z)
 			{
-				State[SpatialSensorState.Impact] = true;
-				ImpactDepth.Z = impactDepth.Z;
+				State[SpatialSensorStateType.Impact].IsActive = true;
+				State[SpatialSensorStateType.Impact].Value.Z = impactDepth.Z;
 			}
 		}
 

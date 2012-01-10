@@ -98,6 +98,7 @@
     <Compile Include="Outworld\World\SpatialComponent.cs" />
     <Compile Include="Outworld\World\SpatialSensor\SpatialSensorComponent.cs" />
     <Compile Include="Outworld\World\SpatialSensor\SpatialSensorState.cs" />
+    <Compile Include="Outworld\World\SpatialSensor\SpatialSensorStateType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\ComponentModel\Handlers\ComponentHandler.cs" />
     <Compile Include="System\ComponentModel\Handlers\IComponentHandler.cs" />

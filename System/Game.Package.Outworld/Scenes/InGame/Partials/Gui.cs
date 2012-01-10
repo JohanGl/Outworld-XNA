@@ -154,14 +154,14 @@ namespace Outworld.Scenes.InGame
 			stringBuilder.Append(")");
 			stringBuilder.Append(Environment.NewLine);
 
-			//stringBuilder.Append("Velocity (");
-			//stringBuilder.Append((int)playerSpatial.RigidBody.Velocity.X);
-			//stringBuilder.Append(", ");
-			//stringBuilder.Append((int)playerSpatial.RigidBody.Velocity.Y);
-			//stringBuilder.Append(", ");
-			//stringBuilder.Append((int)playerSpatial.RigidBody.Velocity.Z);
-			//stringBuilder.Append(")");
-			//stringBuilder.Append(Environment.NewLine);
+			stringBuilder.Append("Velocity (");
+			stringBuilder.Append((int)playerSpatial.RigidBody.Velocity.X);
+			stringBuilder.Append(", ");
+			stringBuilder.Append((int)playerSpatial.RigidBody.Velocity.Y);
+			stringBuilder.Append(", ");
+			stringBuilder.Append((int)playerSpatial.RigidBody.Velocity.Z);
+			stringBuilder.Append(")");
+			stringBuilder.Append(Environment.NewLine);
 
 			stringBuilder.Append("Area (");
 			stringBuilder.Append(playerSpatial.Area.X);
@@ -191,19 +191,19 @@ namespace Outworld.Scenes.InGame
 
 			stringBuilder.Append(Environment.NewLine);
 			stringBuilder.Append("Ascending ");
-			stringBuilder.Append(playerSpatialSensor.State[SpatialSensorState.Ascending]);
+			stringBuilder.Append(playerSpatialSensor.State[SpatialSensorStateType.Ascending].IsActive);
 			stringBuilder.Append(Environment.NewLine);
 			stringBuilder.Append("Descending ");
-			stringBuilder.Append(playerSpatialSensor.State[SpatialSensorState.Descending]);
+			stringBuilder.Append(playerSpatialSensor.State[SpatialSensorStateType.Descending].IsActive);
 			stringBuilder.Append(Environment.NewLine);
 			stringBuilder.Append("Impact ");
-			stringBuilder.Append(playerSpatialSensor.State[SpatialSensorState.Impact]);
+			stringBuilder.Append(playerSpatialSensor.State[SpatialSensorStateType.Impact].IsActive);
 			stringBuilder.Append(Environment.NewLine);
 			stringBuilder.Append("HorizontalMovement ");
-			stringBuilder.Append(playerSpatialSensor.State[SpatialSensorState.HorizontalMovement]);
+			stringBuilder.Append(playerSpatialSensor.State[SpatialSensorStateType.HorizontalMovement].IsActive);
 			stringBuilder.Append(Environment.NewLine);
 			stringBuilder.Append("VerticalMovement ");
-			stringBuilder.Append(playerSpatialSensor.State[SpatialSensorState.VerticalMovement]);
+			stringBuilder.Append(playerSpatialSensor.State[SpatialSensorStateType.VerticalMovement].IsActive);
 
 			Context.Graphics.SpriteBatch.Begin();
 

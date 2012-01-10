@@ -15,5 +15,10 @@ namespace Outworld.Helpers.Logging
 			Logger.Mute<TerrainVisibility>(true);
 			Logger.Mute<VisibilityQueue>(true);
 		}
+
+		public void FilterAll()
+		{
+			Logger.Mute(true);
+		}
 	}
 }
