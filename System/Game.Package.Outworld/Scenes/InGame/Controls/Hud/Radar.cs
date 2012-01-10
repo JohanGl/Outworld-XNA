@@ -48,7 +48,7 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 			{
 				if (RadarEnteties[i].Color == RadarEntity.RadarEntityColor.Yellow)
 				{
-					Vector2 position = new Vector2(RadarEnteties[i].Position.X, RadarEnteties[i].Position.Y);
+					Vector2 position = new Vector2(RadarEnteties[i].Position.X, RadarEnteties[i].Position.Z);
 					spriteBatch.Draw(radarPlayerTypeEntetyImage, position, Color.White);
 				}
 			}
