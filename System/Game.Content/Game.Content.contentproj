@@ -324,13 +324,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Characters\Chibi\chibiSpaceMarineDiffuse.jpg">
-      <Name>chibiSpaceMarineDiffuse</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Models\Characters\Chibi\Chibi_Anims.xml">
       <Name>Chibi_Anims</Name>
       <Importer>XmlImporter</Importer>
@@ -395,15 +388,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Characters\scenes\chibiSpaceMarineDiffuse.jpg">
-      <Name>chibiSpaceMarineDiffuse</Name>
+    <Compile Include="Gui\Controls\TextBoxes\TextBox.png">
+      <Name>TextBox</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\Controls\TextBoxes\TextBox.png">
-      <Name>TextBox</Name>
+    <Compile Include="Models\Characters\scenes\chibiSpaceMarineDiffuse.png">
+      <Name>chibiSpaceMarineDiffuse</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
