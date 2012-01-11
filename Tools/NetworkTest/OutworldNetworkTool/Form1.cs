@@ -54,10 +54,10 @@ namespace OutworldNetworkTool
 				{
 					var bot = bots[i];
 
-					float radian = (float)Math.PI / 180f;
-					float radius = 20;
-					bot.Position.X = radius * (float)Math.Sin(radian * bot.Angle.X);
-					bot.Position.Z = radius * (float)Math.Cos(radian * bot.Angle.X);
+					//float radian = (float)Math.PI / 180f;
+					//float radius = 20;
+					//bot.Position.X = radius * (float)Math.Sin(radian * bot.Angle.X);
+					//bot.Position.Z = radius * (float)Math.Cos(radian * bot.Angle.X);
 					//bot.Angle.X += 5.0f;
 
 					bot.Client.SendClientSpatial(bot.Position, bot.Velocity, bot.Angle);

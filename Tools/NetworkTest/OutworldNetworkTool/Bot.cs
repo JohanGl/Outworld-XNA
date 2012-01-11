@@ -28,7 +28,7 @@ namespace OutworldNetworkTool
 			Client = CreateGameClient(serverAddress);
 
 			Time = DateTime.Now.ToString();
-			Position = new Vector3(48, 44, -5);
+			Position = new Vector3(23, 23, 3);
 			Velocity = new Vector3(0, 0, 0);
 			Angle = new Vector3(0, 0, 0);
 		}
