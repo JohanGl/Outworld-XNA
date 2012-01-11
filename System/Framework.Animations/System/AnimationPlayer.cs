@@ -54,7 +54,7 @@ namespace Framework.Animations.System
 			currentKeyframe = 0;
 
 			// Initialize bone transforms to the bind pose.
-			//skinningDataValue.BindPose.CopyTo(boneTransforms, 0);
+			skinningDataValue.BindPose.CopyTo(boneTransforms, 0);
 		}
 
 		/// <summary>
