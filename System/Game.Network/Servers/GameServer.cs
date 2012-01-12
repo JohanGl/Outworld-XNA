@@ -271,7 +271,7 @@ namespace Game.Network.Servers
 			clientSpatialData.ClientId = clientId;
 			clientSpatialData.Position = messageHelper.ReadVector3(server.Reader);
 			clientSpatialData.Velocity = messageHelper.ReadVector3(server.Reader);
-			clientSpatialData.Angle = messageHelper.ReadVector3FromVector3b(server.Reader);
+			clientSpatialData.Angle = messageHelper.ReadVector3(server.Reader);
 			clientSpatialData.Time = DateTime.UtcNow;
 
 			clients[clientSpatialData.ClientId].SpatialData.Add(clientSpatialData);
@@ -389,13 +389,13 @@ namespace Game.Network.Servers
 					// Write the client spatial data
 					messageHelper.WriteVector3(client.Value.SpatialData[length].Position, server.Writer);
 					messageHelper.WriteVector3(client.Value.SpatialData[length].Velocity, server.Writer);
-					messageHelper.WriteVector3AsVector3b(client.Value.SpatialData[length].Angle, server.Writer);
+					messageHelper.WriteVector3(client.Value.SpatialData[length].Angle, server.Writer);
 				}
 				else
 				{
 					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
 					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
-					messageHelper.WriteVector3AsVector3b(Vector3.Zero, server.Writer);
+					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
 				}
 			}
 
