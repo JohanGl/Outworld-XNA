@@ -34,7 +34,8 @@ namespace Game.Network.Servers
 			connectionIds = new Dictionary<long, byte>();
 
 			tickrateTimer = new GameTimer(TimeSpan.FromMilliseconds(1000 / 30));
-			checkClientTimeoutsTimer = new GameTimer(TimeSpan.FromSeconds(2));
+//			checkClientTimeoutsTimer = new GameTimer(TimeSpan.FromSeconds(2));
+			checkClientTimeoutsTimer = new GameTimer(TimeSpan.FromSeconds(200000));
 
 			packetSizeLookup = new Dictionary<PacketType, int>();
 			packetSizeLookup.Add(PacketType.ClientSpatial, 28);
