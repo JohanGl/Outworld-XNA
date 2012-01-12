@@ -463,7 +463,7 @@ namespace Outworld.Scenes.InGame
 			for (int i = 0; i < gameClient.ServerEntities.Count; i++)
 			{
 				var entity = gameClient.ServerEntities[i];
-				RenderSkinnedPlayer(entity.Animation, entity.Position, new Vector3(entity.Angle.X + 180f, 0, 0));
+				RenderSkinnedPlayer(entity.Animation, entity.Position, new Vector3(entity.Angle.X, 0, 0));
 			}
 
 			previousClientAction = currentClientAction;
