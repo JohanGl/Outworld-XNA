@@ -193,7 +193,7 @@ namespace Game.Network.Clients
 					data.ClientId = client.Reader.ReadByte();
 					data.Position = messageHelper.ReadVector3(client.Reader);
 					data.Velocity = messageHelper.ReadVector3(client.Reader);
-					data.Angle = messageHelper.ReadVector3FromVector3b(client.Reader);
+					data.Angle = messageHelper.ReadVector3(client.Reader);
 
 					args.ClientData[i] = data;
 				}
@@ -285,7 +285,7 @@ namespace Game.Network.Clients
 			client.Writer.Write((byte)PacketType.ClientSpatial);
 			messageHelper.WriteVector3(position, client.Writer);
 			messageHelper.WriteVector3(velocity, client.Writer);
-			messageHelper.WriteVector3AsVector3b(angle, client.Writer);
+			messageHelper.WriteVector3(angle, client.Writer);
 			SendMessage();
 		}
 
