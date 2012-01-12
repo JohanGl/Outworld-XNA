@@ -464,8 +464,6 @@ namespace Outworld.Scenes.InGame
 			{
 				var entity = gameClient.ServerEntities[i];
 				RenderSkinnedPlayer(entity.Animation, entity.Position, new Vector3(entity.Angle.X + 180f, 0, 0));
-
-				System.Diagnostics.Debug.WriteLine(entity.Angle);
 			}
 
 			previousClientAction = currentClientAction;
@@ -487,7 +485,7 @@ namespace Outworld.Scenes.InGame
 				}
 			}
 
-			skinnedModelPlayer.Render(camera.View, camera.Projection, position + new Vector3(0, -0.725f, 0), (angle.Y + 180));
+			skinnedModelPlayer.Render(camera.View, camera.Projection, position + new Vector3(0, -0.725f, 0), angle.X);
 		}
 
 		//private void RenderModel(Model m, Matrix view, Matrix projection, Vector3 position, Vector3 angle, float scale = 1f)
