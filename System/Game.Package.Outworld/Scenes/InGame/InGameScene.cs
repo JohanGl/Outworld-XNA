@@ -112,7 +112,7 @@ namespace Outworld.Scenes.InGame
 			// Allows us to store breadcrumbs for 20 minutes (since breadcrumbs are stored every 10 seconds and we allow 120 entries. 10 * 120 = 1200 seconds which equals 20 minutes)
 			breadCrumbsHelper = new BreadCrumbHelper(120);
 
-//test			radarLogic = new RadarLogic();
+			radarLogic = new RadarLogic();
 		}
 
 		private void InitializeWorld()
@@ -313,7 +313,7 @@ namespace Outworld.Scenes.InGame
 			timerSaveBreadCrumb.Update(gameTime);
 			timerUpdateCurrentProcess.Update(gameTime);
 
-//test			radarLogic.Update();
+			radarLogic.Update();
 		}
 
 		private void UpdateInput()
