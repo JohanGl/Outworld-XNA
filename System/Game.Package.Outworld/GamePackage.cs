@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Framework.Audio;
 using Framework.Core.Contexts;
 using Framework.Core.Messaging;
@@ -41,6 +42,10 @@ namespace Outworld
 
 		public void Initialize(GameContext gameContext)
 		{
+			float x = BitConverter.ToSingle(new byte[] { 112, 144, 222, 65 }, 0);
+			float y = BitConverter.ToSingle(new byte[] { 37, 229, 42, 66 }, 0);
+			float z = BitConverter.ToSingle(new byte[] { 200, 197, 46, 65 }, 0);
+			
 			// Register all globally accessible objects
 			ServiceLocator.Register<GlobalSettings>(new SettingsHandler().GetGlobalSettings());
 			ServiceLocator.Register<IMessageHandler>(CreateMessageHandler());

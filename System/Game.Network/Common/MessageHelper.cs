@@ -17,14 +17,15 @@ namespace Game.Network.Common
 			float x = reader.ReadFloat();
 			float y = reader.ReadFloat();
 			float z = reader.ReadFloat();
-			return new Vector3(x * byteToFloatDegree, y * byteToFloatDegree, z * byteToFloatDegree);
+			
+			return new Vector3(x, y, z);
 		}
 
 		public Vector3 ReadVector3FromVector3b(IMessageReader reader)
 		{
-			float x = reader.ReadByte();
-			float y = reader.ReadByte();
-			float z = reader.ReadByte();
+			float x = reader.ReadByte() * byteToFloatDegree;
+			float y = reader.ReadByte() * byteToFloatDegree;
+			float z = reader.ReadByte() * byteToFloatDegree;
 
 			return new Vector3(x, y, z);
 		}

@@ -189,6 +189,11 @@ namespace Game.Network.Servers
 					for (int j = 0; j < message.Data.Length; j++)
 					{
 						bytes += Convert.ToInt16(message.Data[j]).ToString();
+
+						if (j < message.Data.Length - 1)
+						{
+							bytes += ",";
+						}
 					}
 
 					Logger.Log<GameServer>(LogLevel.Debug, "Received Data: {0} ({1} bytes)", bytes, message.Data.Length);
@@ -385,8 +390,6 @@ namespace Game.Network.Servers
 					messageHelper.WriteVector3(client.Value.SpatialData[length].Position, server.Writer);
 					messageHelper.WriteVector3(client.Value.SpatialData[length].Velocity, server.Writer);
 					messageHelper.WriteVector3AsVector3b(client.Value.SpatialData[length].Angle, server.Writer);
-
-					System.Diagnostics.Debug.WriteLine(string.Format("{0}: {1}", client.Key, client.Value.SpatialData[length].Position));
 				}
 				else
 				{
