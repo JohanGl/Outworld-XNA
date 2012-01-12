@@ -279,13 +279,6 @@ namespace Game.Network.Clients
 			client.Send(MessageDeliveryMethod.ReliableUnordered);
 		}
 
-		public void GetClientSpatial()
-		{
-			client.Writer.WriteNewMessage();
-			client.Writer.Write((byte)PacketType.ClientSpatial);
-			client.Send(MessageDeliveryMethod.UnreliableSequenced);
-		}
-
 		public void SendClientSpatial(Vector3 position, Vector3 velocity, Vector3 angle)
 		{
 			InitializeMessageWriter();

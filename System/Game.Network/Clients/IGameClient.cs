@@ -25,7 +25,6 @@ namespace Game.Network.Clients
 		void Update(GameTime gameTime);
 
 		void GetGameSettings();
-		void GetClientSpatial();
 		void SendClientSpatial(Vector3 position, Vector3 velocity, Vector3 angle);
 		void SendClientActions(List<ClientAction> actions);
 

@@ -34,7 +34,7 @@ namespace Game.Network.Servers
 			connectionIds = new Dictionary<long, byte>();
 
 			tickrateTimer = new GameTimer(TimeSpan.FromMilliseconds(1000 / 30));
-			checkClientTimeoutsTimer = new GameTimer(TimeSpan.FromSeconds(2));
+			checkClientTimeoutsTimer = new GameTimer(TimeSpan.FromSeconds(20));
 
 			packetSizeLookup = new Dictionary<PacketType, int>();
 			packetSizeLookup.Add(PacketType.ClientSpatial, 28);
@@ -49,7 +49,7 @@ namespace Game.Network.Servers
 
 			foreach (var pair in clients)
 			{
-				if (gameTime.TotalGameTime.Seconds - pair.Value.Timeout >= 2)
+				if (gameTime.TotalGameTime.Seconds - pair.Value.Timeout >= 20)
 				{
 					var message = new Message();
 					message.ClientId = GetClientIdAsLong(pair.Key).Value;
@@ -262,14 +262,12 @@ namespace Game.Network.Servers
 			server.Reader.ReadNewMessage(message);
 			server.Reader.ReadByte();
 
-			var clientSpatialData = new ClientSpatialData
-			{
-				ClientId = clientId,
-				Position = messageHelper.ReadVector3(server.Reader),
-				Velocity = messageHelper.ReadVector3(server.Reader),
-				Angle = messageHelper.ReadVector3FromVector3b(server.Reader),
-				Time = DateTime.UtcNow,
-			};
+			var clientSpatialData = new ClientSpatialData();
+			clientSpatialData.ClientId = clientId;
+			clientSpatialData.Position = messageHelper.ReadVector3(server.Reader);
+			clientSpatialData.Velocity = messageHelper.ReadVector3(server.Reader);
+			clientSpatialData.Angle = messageHelper.ReadVector3FromVector3b(server.Reader);
+			clientSpatialData.Time = DateTime.UtcNow;
 
 			clients[clientSpatialData.ClientId].SpatialData.Add(clientSpatialData);
 
@@ -387,6 +385,8 @@ namespace Game.Network.Servers
 					messageHelper.WriteVector3(client.Value.SpatialData[length].Position, server.Writer);
 					messageHelper.WriteVector3(client.Value.SpatialData[length].Velocity, server.Writer);
 					messageHelper.WriteVector3AsVector3b(client.Value.SpatialData[length].Angle, server.Writer);
+
+					System.Diagnostics.Debug.WriteLine(string.Format("{0}: {1}", client.Key, client.Value.SpatialData[length].Position));
 				}
 				else
 				{

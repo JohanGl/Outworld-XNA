@@ -387,7 +387,7 @@ namespace Outworld.Scenes.InGame
 					return;
 				}
 				
-				Vector3 playerPosition = new Vector3(playerSpatial.Position.X, playerSpatial.Position.Y - tileBelowPlayerFeetOffsetY, playerSpatial.Position.Z);
+				var playerPosition = new Vector3(playerSpatial.Position.X, playerSpatial.Position.Y - tileBelowPlayerFeetOffsetY, playerSpatial.Position.Z);
 				TileType tileTypeBelowPlayer = gameClient.World.TerrainContext.TileCollisionHelper.GetIntersectingTile(area, playerPosition).Type;
 
 				if (tileTypeBelowPlayer == TileType.Empty)
@@ -407,7 +407,9 @@ namespace Outworld.Scenes.InGame
 					soundName = (!walkToggle) ? "Walking1" : "Walking2";
 				}
 
-				audioHandler.PlaySound(soundName, 0.25f, 0f, -0.1f);
+				float footPan = (!walkToggle) ? -0.1f : 0.1f;
+
+				audioHandler.PlaySound(soundName, 0.2f, 0f, footPan);
 
 				walkToggle = !walkToggle;
 			}
@@ -449,13 +451,13 @@ namespace Outworld.Scenes.InGame
 
 		private void RenderServerEntities()
 		{
-			var camera = Context.View.Cameras["Default"];
+			//var camera = Context.View.Cameras["Default"];
 
 			// Render the current player (debug)
-			var position = playerSpatial.Position + new Vector3(5f, 0.2f, 0);
-			var angle = new Vector3(0, playerSpatial.Angle.X + 180f, 0);
+			//var position = playerSpatial.Position + new Vector3(5f, 0.2f, 0);
+			//var angle = new Vector3(0, playerSpatial.Angle.X + 180f, 0);
 
-			RenderSkinnedPlayer(currentClientAction, position, angle);
+			//RenderSkinnedPlayer(currentClientAction, position, angle);
 
 			// Render all server entities
 			for (int i = 0; i < gameClient.ServerEntities.Count; i++)
@@ -519,28 +521,28 @@ namespace Outworld.Scenes.InGame
 		{
 			if (gameClient.IsConnected)
 			{
-				var messages = messageHandler.GetMessages<PlayerMessage>("ClientActions");
+				//var messages = messageHandler.GetMessages<PlayerMessage>("ClientActions");
 
-				if (messages.Count > 0)
-				{
-					var actions = new List<ClientAction>();
+				//if (messages.Count > 0)
+				//{
+				//    var actions = new List<ClientAction>();
 
-					for (int i = 0; i < messages.Count; i++)
-					{
-						actions.Add(new ClientAction() { Type = messages[i].Type });
-						currentClientAction = (byte)messages[i].Type;
-					}
+				//    for (int i = 0; i < messages.Count; i++)
+				//    {
+				//        actions.Add(new ClientAction() { Type = messages[i].Type });
+				//        currentClientAction = (byte)messages[i].Type;
+				//    }
 
-					gameClient.BeginCombinedMessage();
-					gameClient.SendClientSpatial(playerSpatial.Position, playerSpatial.Velocity, playerSpatial.Angle);
-					gameClient.SendClientActions(actions);
-					gameClient.EndCombinedMessage();
-				}
-				else
-				{
+				//    gameClient.BeginCombinedMessage();
+				//    gameClient.SendClientSpatial(playerSpatial.Position, playerSpatial.Velocity, playerSpatial.Angle);
+				//    gameClient.SendClientActions(actions);
+				//    gameClient.EndCombinedMessage();
+				//}
+				//else
+				//{
 					// Sends our current spatial data to the server
 					gameClient.SendClientSpatial(playerSpatial.Position, playerSpatial.Velocity, playerSpatial.Angle);
-				}
+				//}
 			}
 
 			messageHandler.Clear("ClientActions");
