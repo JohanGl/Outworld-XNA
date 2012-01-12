@@ -364,10 +364,10 @@ namespace Game.Network.Servers
 
 		private void BroadcastClientSpatial()
 		{
-			//if (clients.Count < 2)
-			//{
-			//    return;
-			//}
+			if (clients.Count < 2)
+			{
+				return;
+			}
 
 			// Write the header
 			server.Writer.WriteNewMessage();

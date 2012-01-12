@@ -453,7 +453,7 @@ namespace Outworld.Scenes.InGame
 		{
 			//var camera = Context.View.Cameras["Default"];
 
-			// Render the current player (debug)
+			//// Render the current player (debug)
 			//var position = playerSpatial.Position + new Vector3(5f, 0.2f, 0);
 			//var angle = new Vector3(0, playerSpatial.Angle.X + 180f, 0);
 
@@ -464,6 +464,8 @@ namespace Outworld.Scenes.InGame
 			{
 				var entity = gameClient.ServerEntities[i];
 				RenderSkinnedPlayer(entity.Animation, entity.Position, new Vector3(entity.Angle.X + 180f, 0, 0));
+
+				System.Diagnostics.Debug.WriteLine(entity.Angle);
 			}
 
 			previousClientAction = currentClientAction;
