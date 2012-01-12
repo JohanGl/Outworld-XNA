@@ -25,11 +25,8 @@ namespace Outworld.Scenes.InGame
 			gui = new GuiManager(Context.Input, Context.Graphics.Device, Context.Graphics.SpriteBatch);
 
 			// Radar
-			//radar = new Radar();
-			//radar.Initialize(Context);
-			//gui.Elements.Add(radar);
-			radarLogic.Initialize(Context, player, gameClient.ServerEntities);
-			gui.Elements.Add(radarLogic.Radar);
+			//radarLogic.Initialize(Context, player, gameClient.ServerEntities);
+			//gui.Elements.Add(radarLogic.Radar);
 
 			// Weapon
 			weaponBar = new WeaponBar();
