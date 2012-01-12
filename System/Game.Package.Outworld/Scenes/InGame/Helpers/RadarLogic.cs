@@ -41,7 +41,7 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 			var radarEntity = new RadarEntity();
 			radarEntity.Color = RadarEntity.RadarEntityColor.Yellow;
 			radarEntity.Position = new Vector3(5, 42, 1);//playerSpatial.Position.X + 8, playerSpatial.Position.Y + 8, playerSpatial.Position.Z);
-			radarEntity.Id = 1;
+			radarEntity.Id = 99;
 
 			Radar.RadarEntities.Add(radarEntity);
 		}
@@ -70,7 +70,6 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 				Radar.RadarEntities.Add(radarEntity);
 			}
 			
-
 			Radar.Center = playerSpatial.Position;
 			Radar.Angle = -playerSpatial.Angle.X + 180;
 		}
