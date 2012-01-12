@@ -70,7 +70,7 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			// Add the address textbox to the stackpanel
 			var textBoxInfo = new TextBoxInfo()
 			{
-				MaxLength = 15,
+				MaxLength = 100,
 				SpriteFont = Context.Resources.Fonts["Global.Normal"],
 				Background = Context.Resources.Textures["MainMenu.TextBox"]
 			};

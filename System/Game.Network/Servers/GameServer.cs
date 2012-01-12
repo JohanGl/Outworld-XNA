@@ -242,7 +242,7 @@ namespace Game.Network.Servers
 			server.Writer.Write(clientId);
 			server.Writer.Write(Settings.World.Seed);
 			messageHelper.WriteVector3(Settings.World.Gravity, server.Writer);
-			server.Writer.Write((byte)clients.Count - 1);
+			server.Writer.Write((byte)(clients.Count - 1));
 
 			foreach (var pair in clients)
 			{
