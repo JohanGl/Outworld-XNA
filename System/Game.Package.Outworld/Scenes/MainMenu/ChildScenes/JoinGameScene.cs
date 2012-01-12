@@ -9,6 +9,7 @@ using Game.Network.Clients;
 using Game.Network.Clients.Settings;
 using Game.World;
 using Microsoft.Xna.Framework;
+using Outworld.Scenes.Debug.Models;
 using Outworld.Scenes.InGame;
 using Outworld.Settings.Global;
 
@@ -71,8 +72,7 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			{
 				MaxLength = 15,
 				SpriteFont = Context.Resources.Fonts["Global.Normal"],
-				Background = Context.Resources.Textures["MainMenu.TextBox"],
-				CharacterMask = new List<int>() { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.' }
+				Background = Context.Resources.Textures["MainMenu.TextBox"]
 			};
 			textBoxIp = new TextBox("", textBoxInfo);
 			textBoxIp.HorizontalAlignment = HorizontalAlignment.Left;
