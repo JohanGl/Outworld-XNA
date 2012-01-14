@@ -9,15 +9,18 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 	public class Radar : UIElement
 	{
 		private Texture2D radarBaseImage;
-		private Texture2D radarPlayerTypeEntityImage;
+		private Texture2D radarCompass;
+		private Texture2D yellowRadarEntityImage;
+		private Texture2D redRadarEntityImage;
+
 		private Vector2 uiCenter;
 		private float radarDetectionRange;
 		private float radarDetectionRangeSquared;
+		private Vector2 radarOrigin;
 
 		public List<RadarEntity> RadarEntities;
 		public Vector3 Center;
 		public float Angle;
-		private float scaleWorldToRadarCoords;
 
 		public void Initialize(GameContext context)
 		{
@@ -25,10 +28,11 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 			radarDetectionRange = 50.0f;
 			radarDetectionRangeSquared = (radarDetectionRange*radarDetectionRange);
-			scaleWorldToRadarCoords = ((Width / 2) / radarDetectionRange);
 
 			radarBaseImage = context.Resources.Textures["Gui.Hud.Radar"];
-			radarPlayerTypeEntityImage = context.Resources.Textures["Gui.Hud.RadarPlayerDot"];
+			yellowRadarEntityImage = context.Resources.Textures["Gui.Hud.YellowRadarEntity"];
+			redRadarEntityImage = context.Resources.Textures["Gui.Hud.RedRadarEntity"];
+			radarCompass = context.Resources.Textures["Gui.Hud.RadarCompass"];
 		}
 
 		public override void UpdateLayout(GuiManager guiManager, Rectangle availableSize)
@@ -42,7 +46,9 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 			guiManager.Arrange(this, availableSize);
 
 			uiCenter = new Vector2(Position.X + (Width / 2), Position.Y + (Height / 2));
-			uiCenter -= new Vector2((radarPlayerTypeEntityImage.Width / 2.0f), (radarPlayerTypeEntityImage.Height / 2.0f));
+			uiCenter -= new Vector2((yellowRadarEntityImage.Width / 2.0f), (yellowRadarEntityImage.Height / 2.0f));
+
+			radarOrigin = new Vector2(Width / 2, Height / 2);
 		}
 
 		public override void Render(GraphicsDevice device, SpriteBatch spriteBatch)
@@ -67,9 +73,18 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 					diffVect += uiCenter;
 
-					spriteBatch.Draw(radarPlayerTypeEntityImage, diffVect, Color.White);
+					if(entity.Color == RadarEntity.RadarEntityColor.Yellow)
+					{
+						spriteBatch.Draw(yellowRadarEntityImage, diffVect, Color.White);
+					}
+					else
+					{
+						spriteBatch.Draw(redRadarEntityImage, diffVect, Color.White);
+					}
 				}
 			}
+
+			spriteBatch.Draw(radarCompass, new Vector2(Position.X + (Width / 2), Position.Y + (Height / 2)), null, Color.White * 0.2f, radian, radarOrigin, 1, SpriteEffects.None, 0);
 		}
 
 		

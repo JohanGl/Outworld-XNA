@@ -48,22 +48,11 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 		public void Update()
 		{
-			//for(int i = 0; i < clients.Count; i++)
-			//{
-			//    var radarEntity = new RadarEntity();
-			//    radarEntity.Color = RadarEntity.RadarEntityColor.Yellow;
-			//    radarEntity.Position = clients[i].Position;
-			//    radarEntity.Id = i;
-
-			//    Radar.RadarEntities.Add(radarEntity);
-			//}
-
-
 			Radar.RadarEntities.Clear();
 			for (int i = 0; i < clients.Count; i++)
 			{
 				var radarEntity = new RadarEntity();
-				radarEntity.Color = RadarEntity.RadarEntityColor.Yellow;
+				radarEntity.Color = RadarEntity.RadarEntityColor.Red;
 				radarEntity.Position = clients[i].Position;
 				radarEntity.Id = i;
 
