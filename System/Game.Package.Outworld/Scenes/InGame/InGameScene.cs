@@ -48,7 +48,6 @@ namespace Outworld.Scenes.InGame
 		private StringBuilder stringBuilder;
 
 		private BreadCrumbHelper breadCrumbsHelper;
-		private RadarLogic radarLogic;
 
 		/// <summary>
 		/// Used for displaying how much memory is being allocated by the application
@@ -318,8 +317,6 @@ namespace Outworld.Scenes.InGame
 			timerSendDataToServer.Update(gameTime);
 			timerSaveBreadCrumb.Update(gameTime);
 			timerUpdateCurrentProcess.Update(gameTime);
-
-			radarLogic.Update();
 		}
 
 		private void UpdateInput()

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Framework.Core.Common;
 using Framework.Core.Contexts;
 using Framework.Gui;
 using Microsoft.Xna.Framework;
@@ -23,12 +25,16 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 		public Vector3 Center;
 		public float Angle;
 
+		public GameTimer fadeTimer;
+
 		public void Initialize(GameContext context)
 		{
 			RadarEntities = new List<RadarEntity>();
 
-			radarDetectionRange = 50.0f;
+			radarDetectionRange = 84.0f;
 			radarDetectionRangeSquared = (radarDetectionRange*radarDetectionRange);
+
+			fadeTimer = new GameTimer(TimeSpan.FromMilliseconds(50));
 
 			radarBaseImage = context.Resources.Textures["Gui.Hud.Radar"];
 			radarCompass = context.Resources.Textures["Gui.Hud.RadarCompass"];
@@ -53,6 +59,43 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 			radarOrigin = new Vector2(Width / 2, Height / 2);
 		}
 
+		public void Update(GameTime gameTime)
+		{
+			// Update all items fade state
+			if (fadeTimer.Update(gameTime))
+			{
+				for (int i = 0; i < RadarEntities.Count; i++)
+				{
+					var entity = RadarEntities[i];
+					Vector2 diffVect = new Vector2(entity.Position.X - Center.X, entity.Position.Z - Center.Z);
+					float distance = diffVect.LengthSquared();
+					
+					if (distance >= radarDetectionRangeSquared)
+					{
+						if (entity.Opacity > 0.0f)
+						{
+							entity.Opacity -= 0.05f;
+						}
+						else
+						{
+							entity.Opacity = 0.0f;
+						}
+					}
+					else
+					{
+						if (entity.Opacity <= 1.0f)
+						{
+							entity.Opacity += 0.05f;
+						}
+						else
+						{
+							entity.Opacity = 1.0f;
+						}
+					}
+				}
+			}
+		}
+
 		public override void Render(GraphicsDevice device, SpriteBatch spriteBatch)
 		{
 			spriteBatch.Draw(radarBaseImage, Position, Color.White);
@@ -67,7 +110,7 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 				
 				float distance = diffVect.LengthSquared();
 
-				if (distance < radarDetectionRangeSquared)
+//				if (distance < radarDetectionRangeSquared)
 				{
 					diffVect *= ((Width / 2) / radarDetectionRange);
 
@@ -77,15 +120,15 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 					if(entity.Color == RadarEntity.RadarEntityColor.Yellow)
 					{
-						spriteBatch.Draw(yellowRadarEntityImage, diffVect, Color.White);
+						spriteBatch.Draw(yellowRadarEntityImage, diffVect, Color.White * entity.Opacity);
 					}
 					else if(entity.Color == RadarEntity.RadarEntityColor.Red)
 					{
-						spriteBatch.Draw(redRadarEntityImage, diffVect, Color.White);
+						spriteBatch.Draw(redRadarEntityImage, diffVect, Color.White * entity.Opacity);
 					}
 					else
 					{
-						spriteBatch.Draw(greenRadarEntityImage, diffVect, Color.White);
+						spriteBatch.Draw(greenRadarEntityImage, diffVect, Color.White * entity.Opacity);
 					}
 				}
 			}
