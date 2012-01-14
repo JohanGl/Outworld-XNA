@@ -52,7 +52,7 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 			for (int i = 0; i < clients.Count; i++)
 			{
 				var radarEntity = new RadarEntity();
-				radarEntity.Color = RadarEntity.RadarEntityColor.Red;
+				radarEntity.Color = RadarEntity.RadarEntityColor.Green;
 				radarEntity.Position = clients[i].Position;
 				radarEntity.Id = i;
 

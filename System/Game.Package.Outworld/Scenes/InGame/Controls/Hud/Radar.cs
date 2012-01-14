@@ -12,6 +12,7 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 		private Texture2D radarCompass;
 		private Texture2D yellowRadarEntityImage;
 		private Texture2D redRadarEntityImage;
+		private Texture2D greenRadarEntityImage;
 
 		private Vector2 uiCenter;
 		private float radarDetectionRange;
@@ -30,9 +31,10 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 			radarDetectionRangeSquared = (radarDetectionRange*radarDetectionRange);
 
 			radarBaseImage = context.Resources.Textures["Gui.Hud.Radar"];
+			radarCompass = context.Resources.Textures["Gui.Hud.RadarCompass"];
 			yellowRadarEntityImage = context.Resources.Textures["Gui.Hud.YellowRadarEntity"];
 			redRadarEntityImage = context.Resources.Textures["Gui.Hud.RedRadarEntity"];
-			radarCompass = context.Resources.Textures["Gui.Hud.RadarCompass"];
+			greenRadarEntityImage = context.Resources.Textures["Gui.Hud.GreenRadarEntity"];
 		}
 
 		public override void UpdateLayout(GuiManager guiManager, Rectangle availableSize)
@@ -77,9 +79,13 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 					{
 						spriteBatch.Draw(yellowRadarEntityImage, diffVect, Color.White);
 					}
-					else
+					else if(entity.Color == RadarEntity.RadarEntityColor.Red)
 					{
 						spriteBatch.Draw(redRadarEntityImage, diffVect, Color.White);
+					}
+					else
+					{
+						spriteBatch.Draw(greenRadarEntityImage, diffVect, Color.White);
 					}
 				}
 			}

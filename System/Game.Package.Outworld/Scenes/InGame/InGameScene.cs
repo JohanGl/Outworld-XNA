@@ -226,9 +226,10 @@ namespace Outworld.Scenes.InGame
 
 			// Gui
 			resources.Textures.Add("Gui.Hud.Radar", content.Load<Texture2D>(@"Gui\Scenes\InGame\Radar"));
+			resources.Textures.Add("Gui.Hud.RadarCompass", content.Load<Texture2D>(@"Gui\Scenes\InGame\RadarCompass"));
 			resources.Textures.Add("Gui.Hud.YellowRadarEntity", content.Load<Texture2D>(@"Gui\Scenes\InGame\YellowRadarEntity"));
 			resources.Textures.Add("Gui.Hud.RedRadarEntity", content.Load<Texture2D>(@"Gui\Scenes\InGame\RedRadarEntity"));
-			resources.Textures.Add("Gui.Hud.RadarCompass", content.Load<Texture2D>(@"Gui\Scenes\InGame\RadarCompass"));
+			resources.Textures.Add("Gui.Hud.GreenRadarEntity", content.Load<Texture2D>(@"Gui\Scenes\InGame\GreenRadarEntity"));
 			resources.Textures.Add("Gui.Hud.ProgressBar", content.Load<Texture2D>(@"Gui\Scenes\InGame\ProgressBar"));
 			resources.Textures.Add("Gui.Hud.ProgressBar.Empty", content.Load<Texture2D>(@"Gui\Scenes\InGame\ProgressBar_Empty"));
 			resources.Textures.Add("Gui.Hud.WeaponBorder", content.Load<Texture2D>(@"Gui\Scenes\InGame\WeaponBorder"));
@@ -273,6 +274,7 @@ namespace Outworld.Scenes.InGame
 			resources.Textures.Remove("Gui.Hud.RadarCompass");
 			resources.Textures.Remove("Gui.Hud.YellowRadarEntity");
 			resources.Textures.Remove("Gui.Hud.RedRadarEntity");
+			resources.Textures.Remove("Gui.Hud.GreenRadarEntity");
 			resources.Textures.Remove("Gui.Hud.ProgressBar");
 			resources.Textures.Remove("Gui.Hud.ProgressBar.Empty");
 			resources.Textures.Remove("Gui.Hud.WeaponBorder");
