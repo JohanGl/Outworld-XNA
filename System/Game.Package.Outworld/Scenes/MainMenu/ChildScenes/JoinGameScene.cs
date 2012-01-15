@@ -78,8 +78,7 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			textBoxIp.HorizontalAlignment = HorizontalAlignment.Left;
 			textBoxIp.VerticalAlignment = VerticalAlignment.Top;
 			textBoxIp.Width = 220;
-			textBoxIp.Text = "127.0.0.1";
-			textBoxIp.SetFocus(true);
+			textBoxIp.Text = "";
 			textBoxIp.EnterKeyDown += textBoxIp_EnterKeyDown;
 			menuOptions.Children.Add(textBoxIp);
 
@@ -93,7 +92,7 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 
 		private void textBoxIp_EnterKeyDown(object sender, TextBoxEventArgs e)
 		{
-			textBoxIp.SetFocus(false);
+			gui.ClearFocus();
 			menuOptions.Children[1].SetFocus(true);
 			MenuOptionOnClick(menuOptions.Children[1], EventArgs.Empty);
 		}

@@ -182,13 +182,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Characters\Player.fbx">
-      <Name>Player</Name>
-      <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Tiles\Stone5.png">
       <Name>Stone5</Name>
       <Importer>TextureImporter</Importer>
@@ -395,7 +388,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Characters\scenes\chibiSpaceMarineDiffuse.png">
+    <Compile Include="Models\Characters\Chibi\chibiSpaceMarineDiffuse.png">
       <Name>chibiSpaceMarineDiffuse</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>

@@ -251,9 +251,24 @@ namespace Framework.Gui
 			element.Position.Y -= element.Margin.Bottom;
 		}
 
+		public void SetFocus(UIElement element)
+		{
+			ClearFocus();
+
+			element.SetFocus(true);
+
+			currentlyFocusedElement = element;
+			currentlyHighlightedElement = null;
+		}
+
 		public void ClearFocus()
 		{
+			if (currentlyFocusedElement != null)
+			{
+				currentlyFocusedElement.SetFocus(false);
+			}
 
+			currentlyFocusedElement = null;
 		}
 	}
 }
