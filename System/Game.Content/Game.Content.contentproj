@@ -92,13 +92,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\Scenes\InGame\Radar_Mock.png">
-      <Name>Radar_Mock</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Gui\Scenes\InGame\ProgressBar.png">
       <Name>ProgressBar</Name>
       <Importer>TextureImporter</Importer>
@@ -149,11 +142,6 @@
     </Compile>
     <Compile Include="Gui\Controls\Buttons\Selected.png">
       <Name>Selected</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Gui\Scenes\InGame\Dialog.png">
-      <Name>Dialog</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -374,13 +362,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\Scenes\InGame\RadarPlayerDot.png">
-      <Name>RadarPlayerDot</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Gui\Controls\TextBoxes\TextBox.png">
       <Name>TextBox</Name>
       <Importer>TextureImporter</Importer>
@@ -388,8 +369,27 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Characters\Chibi\chibiSpaceMarineDiffuse.png">
-      <Name>chibiSpaceMarineDiffuse</Name>
+    <Compile Include="Gui\Scenes\InGame\RadarCompass.png">
+      <Name>RadarCompass</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Gui\Scenes\InGame\RedRadarEntity.png">
+      <Name>RedRadarEntity</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Gui\Scenes\InGame\YellowRadarEntity.png">
+      <Name>YellowRadarEntity</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Gui\Scenes\InGame\GreenRadarEntity.png">
+      <Name>GreenRadarEntity</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

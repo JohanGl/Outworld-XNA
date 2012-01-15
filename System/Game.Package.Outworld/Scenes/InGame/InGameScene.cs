@@ -48,7 +48,6 @@ namespace Outworld.Scenes.InGame
 		private StringBuilder stringBuilder;
 
 		private BreadCrumbHelper breadCrumbsHelper;
-		private RadarLogic radarLogic;
 
 		/// <summary>
 		/// Used for displaying how much memory is being allocated by the application
@@ -103,8 +102,8 @@ namespace Outworld.Scenes.InGame
 			InitializeTimers();
 			InitializeAudio();
 
-			//new LogFilterHelper().FilterTerrain();
-			new LogFilterHelper().FilterAll();
+			new LogFilterHelper().FilterTerrain();
+			//new LogFilterHelper().FilterAll();
 		}
 
 		private void InitializeHelpers()
@@ -226,7 +225,10 @@ namespace Outworld.Scenes.InGame
 
 			// Gui
 			resources.Textures.Add("Gui.Hud.Radar", content.Load<Texture2D>(@"Gui\Scenes\InGame\Radar"));
-			resources.Textures.Add("Gui.Hud.RadarPlayerDot", content.Load<Texture2D>(@"Gui\Scenes\InGame\RadarPlayerDot"));
+			resources.Textures.Add("Gui.Hud.RadarCompass", content.Load<Texture2D>(@"Gui\Scenes\InGame\RadarCompass"));
+			resources.Textures.Add("Gui.Hud.YellowRadarEntity", content.Load<Texture2D>(@"Gui\Scenes\InGame\YellowRadarEntity"));
+			resources.Textures.Add("Gui.Hud.RedRadarEntity", content.Load<Texture2D>(@"Gui\Scenes\InGame\RedRadarEntity"));
+			resources.Textures.Add("Gui.Hud.GreenRadarEntity", content.Load<Texture2D>(@"Gui\Scenes\InGame\GreenRadarEntity"));
 			resources.Textures.Add("Gui.Hud.ProgressBar", content.Load<Texture2D>(@"Gui\Scenes\InGame\ProgressBar"));
 			resources.Textures.Add("Gui.Hud.ProgressBar.Empty", content.Load<Texture2D>(@"Gui\Scenes\InGame\ProgressBar_Empty"));
 			resources.Textures.Add("Gui.Hud.WeaponBorder", content.Load<Texture2D>(@"Gui\Scenes\InGame\WeaponBorder"));
@@ -268,7 +270,10 @@ namespace Outworld.Scenes.InGame
 			}
 
 			resources.Textures.Remove("Gui.Hud.Radar");
-			resources.Textures.Remove("Gui.Hud.RadarPlayerDot");
+			resources.Textures.Remove("Gui.Hud.RadarCompass");
+			resources.Textures.Remove("Gui.Hud.YellowRadarEntity");
+			resources.Textures.Remove("Gui.Hud.RedRadarEntity");
+			resources.Textures.Remove("Gui.Hud.GreenRadarEntity");
 			resources.Textures.Remove("Gui.Hud.ProgressBar");
 			resources.Textures.Remove("Gui.Hud.ProgressBar.Empty");
 			resources.Textures.Remove("Gui.Hud.WeaponBorder");
@@ -312,8 +317,6 @@ namespace Outworld.Scenes.InGame
 			timerSendDataToServer.Update(gameTime);
 			timerSaveBreadCrumb.Update(gameTime);
 			timerUpdateCurrentProcess.Update(gameTime);
-
-			radarLogic.Update();
 		}
 
 		private void UpdateInput()

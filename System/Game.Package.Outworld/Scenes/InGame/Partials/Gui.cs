@@ -18,6 +18,7 @@ namespace Outworld.Scenes.InGame
 		private GuiManager gui;
 		private WeaponBar weaponBar;
 		private HealthBar healthBar;
+		private RadarLogic radarLogic;
 		private Notifications notifications;
 
 		private void InitializeGui()
@@ -55,6 +56,8 @@ namespace Outworld.Scenes.InGame
 				healthBar.Percentage = playerHealth.Percentage;
 				healthBar.UpdateProgressBar();
 			}
+
+			radarLogic.Update(gameTime);
 
 			UpdateNetworkNotifications(gameTime);
 		}

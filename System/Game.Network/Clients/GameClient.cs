@@ -285,7 +285,7 @@ namespace Game.Network.Clients
 			client.Writer.Write((byte)PacketType.ClientSpatial);
 			messageHelper.WriteVector3(position, client.Writer);
 			messageHelper.WriteVector3(velocity, client.Writer);
-			messageHelper.WriteVector3(angle, client.Writer);
+			messageHelper.WriteByteAngles(angle, client.Writer);
 			SendMessage();
 		}
 
