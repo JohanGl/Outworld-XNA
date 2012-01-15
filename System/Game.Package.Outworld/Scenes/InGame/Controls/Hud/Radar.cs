@@ -61,7 +61,7 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 		public void Update(GameTime gameTime)
 		{
-			// Update all items fade state
+			// Update all entities fade state
 			if (fadeTimer.Update(gameTime))
 			{
 				for (int i = 0; i < RadarEntities.Count; i++)
