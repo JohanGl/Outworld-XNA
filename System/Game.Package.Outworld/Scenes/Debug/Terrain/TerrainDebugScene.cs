@@ -209,7 +209,8 @@ namespace Outworld.Scenes.Debug.Terrain
 			// Save terrain-snapshot
 			else if (currentKeyboardState.IsKeyDown(Keys.F2))
 			{
-				ImageExporter.AreasToBitmap(String.Format("terrain{0}.png", seed.ToString()), terrainContext.Visibility.AreaCollection.Areas.ToList(), true);
+				ImageExporter.AreasToBitmap(String.Format("d:\\temp\\terrain{0}.png", seed.ToString()), terrainContext.Visibility.AreaCollection.Areas.ToList(), true);
+				ImageExporter.AreasToThemeBitmap("d:\\temp\\theme.png", terrainContext.Visibility.AreaCollection.Areas.ToList());
 			}
 			else if (IsKeyPressedThisUpdate(Keys.T))
 			{
