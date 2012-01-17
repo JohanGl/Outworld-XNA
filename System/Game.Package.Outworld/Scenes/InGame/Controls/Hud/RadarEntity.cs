@@ -12,12 +12,8 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 		public Vector2 LockedPosition;
 
-		public void Initialize(int id, Color color, Vector3 position)
+		public RadarEntity()
 		{
-			Id = id;
-			Color = color;
-			Position = position;
-
 			LockedPosition = new Vector2(-1, -1);
 		}
 	}

@@ -63,7 +63,44 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 			Radar.Angle = -playerSpatial.Angle.X + 180;
 
 			var messages = messageHandler.GetMessages<NetworkMessage>("GameClient");
-			
+
+			for (int i = 0; i < messages.Count; i++ )
+			{
+				var message = messages[i];
+
+				if (message.Type == NetworkMessage.MessageType.Disconnected)
+				{
+					for(int j = 0; j < Radar.RadarEntities.Count; j++)
+					{
+						var radarEntity = Radar.RadarEntities[j];
+
+						if (radarEntity.Id == message.ClientId)
+						{
+							Radar.RadarEntities.Remove(radarEntity);
+							break;
+						}
+					}
+				}
+				else if(message.Type == NetworkMessage.MessageType.Connected)
+				{
+					for (int j = 0; j < clients.Count; j++)
+					{
+						var client = clients[j];
+
+						if (client.Id == message.ClientId)
+						{
+							var radarEntity = new RadarEntity();
+							radarEntity.Id = message.ClientId;
+							radarEntity.Opacity = 1.0f;
+							radarEntity.Color = Color.LightGreen;
+							radarEntity.Position = client.Position;
+
+							Radar.RadarEntities.Add(radarEntity);
+						}
+					}
+				}
+			}
+
 			Radar.Update(gameTime);
 		}
 	}
