@@ -102,8 +102,8 @@ namespace Outworld.Scenes.InGame
 			InitializeTimers();
 			InitializeAudio();
 
-			//new LogFilterHelper().FilterTerrain();
-			new LogFilterHelper().FilterAll();
+			new LogFilterHelper().FilterTerrain();
+			//new LogFilterHelper().FilterAll();
 		}
 
 		private void InitializeHelpers()

@@ -9,8 +9,8 @@ namespace Game.Network.Common
 	/// </summary>
 	public class MessageHelper
 	{
-		private const float floatToByteDegree = 255f / 360f;
-		private const float byteToFloatDegree = 360f / 255f;
+		private const float FloatToByteDegree = 255f / 360f;
+		private const float ByteToFloatDegree = 360f / 255f;
 
 		public Vector3 ReadVector3(IMessageReader reader)
 		{
@@ -21,13 +21,12 @@ namespace Game.Network.Common
 			return new Vector3(x, y, z);
 		}
 
-		public Vector3 ReadVector3FromVector3b(IMessageReader reader)
+		public Vector3 ReadByteAngles(IMessageReader reader)
 		{
-			float x = reader.ReadByte() * byteToFloatDegree;
-			float y = reader.ReadByte() * byteToFloatDegree;
-			float z = reader.ReadByte() * byteToFloatDegree;
+			float angleX = AngleByteToFloat(reader.ReadByte());
+			float angleY = (reader.ReadByte());
 
-			return new Vector3(x, y, z);
+			return new Vector3(angleX, angleY, 0);
 		}
 
 		public void WriteVector3(Vector3 vector, IMessageWriter writer)
@@ -37,11 +36,29 @@ namespace Game.Network.Common
 			writer.Write(vector.Z);
 		}
 
-		public void WriteVector3AsVector3b(Vector3 angle, IMessageWriter writer)
+		public void WriteByteAngles(Vector3 angle, IMessageWriter writer)
 		{
-			writer.Write((byte)(angle.X * floatToByteDegree));
-			writer.Write((byte)(angle.Y * floatToByteDegree));
-			writer.Write((byte)(angle.Z * floatToByteDegree));
+			writer.Write(AngleFloatToByte(angle.X));
+			writer.Write(AngleFloatToByte(angle.Y));
+		}
+
+		public byte AngleFloatToByte(float angle)
+		{
+			if (angle > 360)
+			{
+				angle = 360;
+			}
+			else if (angle < 0)
+			{
+				angle = 0;
+			}
+
+			return (byte)(angle * FloatToByteDegree);
+		}
+
+		public float AngleByteToFloat(byte angle)
+		{
+			return angle * ByteToFloatDegree;
 		}
 	}
 }

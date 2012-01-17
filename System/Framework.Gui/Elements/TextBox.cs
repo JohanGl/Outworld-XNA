@@ -157,6 +157,7 @@ namespace Framework.Gui
 		public override void SetFocus(bool state)
 		{
 			IsFocused = state;
+			SetCaretIndex(text.Length);
 		}
 
 		public override void UpdateLayout(GuiManager guiManager, Rectangle availableSize)
@@ -339,7 +340,7 @@ namespace Framework.Gui
 
 		private bool IsCharacterWithinFontRange(char character)
 		{
-			return character <= 126;
+			return character >= 32 && character <= 126;
 		}
 
 		public override void Render(GraphicsDevice device, SpriteBatch spriteBatch)
@@ -349,12 +350,10 @@ namespace Framework.Gui
 			
 			if (IsFocused)
 			{
-				// Render the text
 				spriteBatch.DrawString(info.SpriteFont, text, textPosition, Color.White * Opacity);
 			}
 			else
 			{
-				// Render the text
 				spriteBatch.DrawString(info.SpriteFont, text, textPosition, Color.White * 0.5f);
 				isCaretVisible = false;
 			}

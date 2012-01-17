@@ -12,6 +12,7 @@ using Game.Network.Servers.Settings;
 using Microsoft.Xna.Framework.Graphics;
 using Outworld.Scenes.Debug.Audio;
 using Outworld.Scenes.Debug.Models;
+using Outworld.Scenes.Debug.Network;
 using Outworld.Scenes.Debug.Terrain;
 using Outworld.Scenes.InGame;
 using Outworld.Scenes.MainMenu;
@@ -42,10 +43,6 @@ namespace Outworld
 
 		public void Initialize(GameContext gameContext)
 		{
-			float x = BitConverter.ToSingle(new byte[] { 112, 144, 222, 65 }, 0);
-			float y = BitConverter.ToSingle(new byte[] { 37, 229, 42, 66 }, 0);
-			float z = BitConverter.ToSingle(new byte[] { 200, 197, 46, 65 }, 0);
-			
 			// Register all globally accessible objects
 			ServiceLocator.Register<GlobalSettings>(new SettingsHandler().GetGlobalSettings());
 			ServiceLocator.Register<IMessageHandler>(CreateMessageHandler());
@@ -62,11 +59,12 @@ namespace Outworld
 			gameContext.Resources.Textures.Add("Global.TerrainMergeMask", content.Load<Texture2D>(@"Terrain\TerrainMergeMask"));
 
 			// Initialize the root scene of this game package
-			gameContext.Scenes.Add(new MainMenuScene());
+			//gameContext.Scenes.Add(new MainMenuScene());
 			//gameContext.Scenes.Add(new NewGameScene());
 			//gameContext.Scenes.Add(new TerrainDebugScene());
 			//gameContext.Scenes.Add(new ModelScene());
 			//gameContext.Scenes.Add(new AudioScene());
+			gameContext.Scenes.Add(new NetworkScene());
 		}
 
 		public void Shutdown()

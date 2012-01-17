@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Framework.Core.Diagnostics.Logging;
 using Framework.Core.Messaging;
 using Framework.Core.Services;
@@ -162,6 +163,7 @@ namespace Game.Network.Clients
 			// Add a global message for this event
 			var notificationMessage = new NetworkMessage()
 			{
+				ClientId = clientId,
 				Type = connected ? NetworkMessage.MessageType.Connected : NetworkMessage.MessageType.Disconnected,
 				Text = string.Format("Player {0} {1}", clientId, connected ? "connected" : "disconnected")
 			};
@@ -276,6 +278,7 @@ namespace Game.Network.Clients
 		{
 			client.Writer.WriteNewMessage();
 			client.Writer.Write((byte)PacketType.GameSettings);
+			client.Writer.Write((long)DateTime.UtcNow.Millisecond);
 			client.Send(MessageDeliveryMethod.ReliableUnordered);
 		}
 
@@ -285,7 +288,7 @@ namespace Game.Network.Clients
 			client.Writer.Write((byte)PacketType.ClientSpatial);
 			messageHelper.WriteVector3(position, client.Writer);
 			messageHelper.WriteVector3(velocity, client.Writer);
-			messageHelper.WriteVector3(angle, client.Writer);
+			messageHelper.WriteByteAngles(angle, client.Writer);
 			SendMessage();
 		}
 

@@ -8,6 +8,7 @@ namespace Game.Network.Clients
 	/// </summary>
 	public class NetworkMessage : IMessage
 	{
+		public byte ClientId;
 		public MessageType Type;
 		public ClientActionType ClientActionType;
 		public string Text;
