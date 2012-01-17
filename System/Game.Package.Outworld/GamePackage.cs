@@ -59,12 +59,11 @@ namespace Outworld
 			gameContext.Resources.Textures.Add("Global.TerrainMergeMask", content.Load<Texture2D>(@"Terrain\TerrainMergeMask"));
 
 			// Initialize the root scene of this game package
-			//gameContext.Scenes.Add(new MainMenuScene());
-			//gameContext.Scenes.Add(new NewGameScene());
+			gameContext.Scenes.Add(new MainMenuScene());
 			//gameContext.Scenes.Add(new TerrainDebugScene());
 			//gameContext.Scenes.Add(new ModelScene());
 			//gameContext.Scenes.Add(new AudioScene());
-			gameContext.Scenes.Add(new NetworkScene());
+			//gameContext.Scenes.Add(new NetworkScene());
 		}
 
 		public void Shutdown()

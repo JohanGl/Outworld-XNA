@@ -119,7 +119,6 @@
     <Compile Include="Scenes\MainMenu\ChildScenes\MainScene.cs" />
     <Compile Include="Scenes\MainMenu\ChildScenes\NewGameScene.cs" />
     <Compile Include="Scenes\MainMenu\MainMenuScene.cs" />
-    <Compile Include="Scenes\NewGameScene\NewGameScene.cs" />
     <Compile Include="Settings\Global\Entities\Audio\AudioSettings.cs" />
     <Compile Include="Settings\Global\Entities\Input\InputGamePadSettings.cs" />
     <Compile Include="Settings\Global\Entities\Input\InputKeyboardSettings.cs" />
