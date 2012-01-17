@@ -89,19 +89,50 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 						if (client.Id == message.ClientId)
 						{
-							var radarEntity = new RadarEntity();
-							radarEntity.Id = message.ClientId;
-							radarEntity.Opacity = 1.0f;
-							radarEntity.Color = Color.LightGreen;
-							radarEntity.Position = client.Position;
+							if (!containsRadarEntityId(client.Id))
+							{
+								var radarEntity = new RadarEntity();
+								radarEntity.Id = message.ClientId;
+								radarEntity.Opacity = 1.0f;
+								radarEntity.Color = Color.LightGreen;
+								radarEntity.Position = client.Position;
 
-							Radar.RadarEntities.Add(radarEntity);
+								Radar.RadarEntities.Add(radarEntity);
+							}
 						}
 					}
 				}
 			}
 
+			for (int i = 0; i < Radar.RadarEntities.Count; i++)
+			{
+				var radarEntity = Radar.RadarEntities[i];
+				
+				for (int j = 0; j < clients.Count; j++)
+				{
+					if (radarEntity.Id == clients[j].Id)
+					{
+						radarEntity.Position = clients[j].Position;
+					}
+				}
+			}
+
 			Radar.Update(gameTime);
+		}
+
+		private bool containsRadarEntityId(int id)
+		{
+			for (int i = 0; i < Radar.RadarEntities.Count; i++)
+			{
+				var radarEntity = Radar.RadarEntities[i];
+
+				if (id == radarEntity.Id)
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 }
