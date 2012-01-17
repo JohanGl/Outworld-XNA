@@ -7,21 +7,18 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 	{
 		public int Id;
 		public Vector3 Position;
-		public RadarEntityColor Color;
+		public Color Color;
 		public float Opacity;
 
-		public enum RadarEntityColor
-		{
-			Yellow,
-			Red,
-			Green
-		};
+		public Vector2 LockedPosition;
 
-		public void Initialize(int id, RadarEntityColor color, Vector3 position)
+		public void Initialize(int id, Color color, Vector3 position)
 		{
 			Id = id;
 			Color = color;
 			Position = position;
+
+			LockedPosition = new Vector2(-1, -1);
 		}
 	}
 }

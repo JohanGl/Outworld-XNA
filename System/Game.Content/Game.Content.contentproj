@@ -395,20 +395,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\Scenes\InGame\RedRadarEntity.png">
-      <Name>RedRadarEntity</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Gui\Scenes\InGame\YellowRadarEntity.png">
-      <Name>YellowRadarEntity</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Gui\Scenes\InGame\GreenRadarEntity.png">
-      <Name>GreenRadarEntity</Name>
+    <Compile Include="Gui\Scenes\InGame\RadarEntity.png">
+      <Name>RadarEntity</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

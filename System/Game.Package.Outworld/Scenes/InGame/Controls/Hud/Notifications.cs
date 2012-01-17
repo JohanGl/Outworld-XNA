@@ -18,7 +18,7 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 		private GameContext context;
 		private Vector2 positionTitle;
-		public GameTimer fadeTimer;
+		private GameTimer fadeTimer;
 
 		private int capacity;
 		private List<NotificationItem> items;
