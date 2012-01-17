@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Framework.Core.Common;
 using Framework.Core.Diagnostics.Logging;
 using Framework.Network.Messages;
@@ -166,7 +167,7 @@ namespace Game.Network.Servers
 				switch ((PacketType)message.Data[0])
 				{
 					case PacketType.GameSettings:
-						SendGameSettings(message);
+						ReceivedGameSettingsRequest(message);
 						break;
 
 					case PacketType.ClientSpatial:
@@ -230,6 +231,28 @@ namespace Game.Network.Servers
 			server.Writer.Write(e.Type == ClientStatusType.Connected);
 
 			server.Broadcast(MessageDeliveryMethod.ReliableUnordered, GetClientIdAsLong(e.ClientId));
+		}
+
+		private void ReceivedGameSettingsRequest(Message message)
+		{
+			//byte clientId = connectionIds[message.ClientId];
+
+			//if (!clients.ContainsKey(clientId))
+			//{
+			//    return;
+			//}
+
+			//// Get the client system time for syncronization
+			//server.Reader.ReadNewMessage(message);
+			//server.Reader.ReadByte();
+			//long clientTime = server.Reader.ReadInt64();
+
+			//long currentTime = Stopwatch.GetTimestamp();
+			//long travelTime = (currentTime - clientTime) / 2;
+
+			//clients[clientId].SystemTime = 0;
+
+			SendGameSettings(message);
 		}
 
 		private void SendGameSettings(Message message)
@@ -389,13 +412,13 @@ namespace Game.Network.Servers
 					// Write the client spatial data
 					messageHelper.WriteVector3(client.Value.SpatialData[length].Position, server.Writer);
 					messageHelper.WriteVector3(client.Value.SpatialData[length].Velocity, server.Writer);
-					messageHelper.WriteByteAngles(client.Value.SpatialData[length].Angle, server.Writer);
+					messageHelper.WriteVector3(client.Value.SpatialData[length].Angle, server.Writer);
 				}
 				else
 				{
 					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
 					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
-					messageHelper.WriteByteAngles(Vector3.Zero, server.Writer);
+					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
 				}
 			}
 

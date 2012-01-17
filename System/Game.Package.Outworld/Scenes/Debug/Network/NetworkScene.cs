@@ -17,12 +17,8 @@ namespace Outworld.Scenes.Debug.Network
 		{
 			base.Initialize(context);
 
-			long ticks1 = Stopwatch.GetTimestamp();
-
 			gameServer = ServiceLocator.Get<IGameServer>();
 			gameClient = ServiceLocator.Get<IGameClient>();
-
-			long ticks2 = Stopwatch.GetTimestamp();
 
 			// Create the connection between the client and server
 			gameServer.Start();

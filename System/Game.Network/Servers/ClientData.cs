@@ -5,6 +5,7 @@ namespace Game.Network.Servers
 {
 	public class ClientData
 	{
+		public long SystemTime;
 		public int Timeout;
 		public List<ClientSpatialData> SpatialData { get; set; }
 		public List<ClientAction> Actions { get; set; }

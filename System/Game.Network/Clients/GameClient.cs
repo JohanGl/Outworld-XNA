@@ -278,7 +278,7 @@ namespace Game.Network.Clients
 		{
 			client.Writer.WriteNewMessage();
 			client.Writer.Write((byte)PacketType.GameSettings);
-			client.Writer.Write((long)DateTime.UtcNow.Millisecond);
+			client.Writer.Write(Stopwatch.GetTimestamp());
 			client.Send(MessageDeliveryMethod.ReliableUnordered);
 		}
 
