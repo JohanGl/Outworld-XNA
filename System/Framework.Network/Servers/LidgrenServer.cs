@@ -38,10 +38,13 @@ namespace Framework.Network.Servers
 		{
 			var netPeerConfiguration = new NetPeerConfiguration("LidgrenConfig");
 			netPeerConfiguration.Port = configuration.Port;
+			netPeerConfiguration.DisableMessageType(NetIncomingMessageType.UnconnectedData);
+			netPeerConfiguration.DisableMessageType(NetIncomingMessageType.DiscoveryRequest);
+			netPeerConfiguration.DisableMessageType(NetIncomingMessageType.DiscoveryResponse);
 
 			server = new NetServer(netPeerConfiguration);
 
-			Reader = new DefaultMessageReader();
+			Reader = new LidgrenMessageReader(server);
 			Writer = new LidgrenMessageWriter(server);
 
 			connections.Clear();
@@ -155,6 +158,7 @@ namespace Framework.Network.Servers
 		{
 			var message = new Message();
 			message.ClientId = messageIn.SenderConnection.RemoteUniqueIdentifier;
+			message.RemoteTimeOffset = messageIn.SenderConnection.RemoteTimeOffset;
 			message.Data = new byte[messageIn.LengthBytes];
 			messageIn.ReadBytes(message.Data, 0, messageIn.LengthBytes);
 			Messages.Add(message);
@@ -206,7 +210,7 @@ namespace Framework.Network.Servers
 					ClientId = messageIn.SenderConnection.RemoteUniqueIdentifier,
 					Type = MessageType.Disconnect
 				};
-	
+
 				Messages.Add(message);
 
 				Logger.Log<LidgrenServer>(LogLevel.Info, string.Format("Client {0} disconnected with IP {1}", senderId, messageIn.SenderEndpoint.Address));

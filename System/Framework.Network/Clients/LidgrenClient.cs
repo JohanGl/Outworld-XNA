@@ -38,7 +38,7 @@ namespace Framework.Network.Clients
 			var netPeerConfiguration = new NetPeerConfiguration("LidgrenConfig");
 			client = new NetClient(netPeerConfiguration);
 
-			Reader = new DefaultMessageReader();
+			Reader = new LidgrenMessageReader(client);
 			Writer = new LidgrenMessageWriter(client);
 		}
 

@@ -286,6 +286,7 @@ namespace Game.Network.Clients
 		{
 			InitializeMessageWriter();
 			client.Writer.Write((byte)PacketType.ClientSpatial);
+			client.Writer.WriteTimeStamp();
 			messageHelper.WriteVector3(position, client.Writer);
 			messageHelper.WriteVector3(velocity, client.Writer);
 			messageHelper.WriteByteAngles(angle, client.Writer);

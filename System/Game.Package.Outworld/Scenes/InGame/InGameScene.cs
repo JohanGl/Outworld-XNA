@@ -239,7 +239,7 @@ namespace Outworld.Scenes.InGame
 
 			skinnedModelPlayer = new SkinnedModel();
 			skinnedModelPlayer.Initialize(Context.Resources.Models["Player"]);
-			skinnedModelPlayer.SetAnimationClip("Run");
+			skinnedModelPlayer.SetAnimationClip("Idle");
 
 			// Sounds
 			audioHandler.LoadSound("Walking1", @"Audio\Sounds\Characters\Walking01");
@@ -450,13 +450,10 @@ namespace Outworld.Scenes.InGame
 
 		private void RenderServerEntities()
 		{
-			//var camera = Context.View.Cameras["Default"];
-
-			//// Render the current player (debug)
-			//var position = playerSpatial.Position + new Vector3(5f, 0.2f, 0);
-			//var angle = new Vector3(0, playerSpatial.Angle.X + 180f, 0);
-
-			//RenderSkinnedPlayer(currentClientAction, position, angle);
+			// Render the current player (debug)
+			var position = playerSpatial.Position + new Vector3(5f, 0.2f, 0);
+			var angle = new Vector3(0, playerSpatial.Angle.X + 180f, 0);
+			RenderSkinnedPlayer(currentClientAction, position, angle);
 
 			// Render all server entities
 			for (int i = 0; i < gameClient.ServerEntities.Count; i++)
@@ -472,17 +469,17 @@ namespace Outworld.Scenes.InGame
 		{
 			var camera = Context.View.Cameras["Default"];
 
-			if (currentClientAction != previousClientAction)
-			{
-				if (animation >= (byte)ClientActionType.RunDirection1 && animation <= (byte)ClientActionType.RunDirection8)
-				{
-					skinnedModelPlayer.SetAnimationClip("Run");
-				}
-				else
-				{
-					skinnedModelPlayer.SetAnimationClip("Idle");
-				}
-			}
+			//if (currentClientAction != previousClientAction)
+			//{
+			//    if (animation >= (byte)ClientActionType.RunDirection1 && animation <= (byte)ClientActionType.RunDirection8)
+			//    {
+			//        skinnedModelPlayer.SetAnimationClip("Run");
+			//    }
+			//    else
+			//    {
+			//        skinnedModelPlayer.SetAnimationClip("Idle");
+			//    }
+			//}
 
 			skinnedModelPlayer.Render(camera.View, camera.Projection, position + new Vector3(0, -0.725f, 0), angle.X);
 		}

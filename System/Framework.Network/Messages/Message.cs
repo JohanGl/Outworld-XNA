@@ -5,9 +5,10 @@
 	/// </summary>
 	public struct Message
 	{
+		public MessageType Type;
 		public long ClientId;
 		public byte[] Data;
-		public MessageType Type;
+		public float RemoteTimeOffset;
 	}
 
 	public enum MessageType

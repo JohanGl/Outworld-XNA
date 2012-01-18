@@ -289,13 +289,13 @@ namespace Game.Network.Servers
 
 			server.Reader.ReadNewMessage(message);
 			server.Reader.ReadByte();
+			float timeStamp = server.Reader.ReadTimeStamp();
 
 			var clientSpatialData = new ClientSpatialData();
 			clientSpatialData.ClientId = clientId;
 			clientSpatialData.Position = messageHelper.ReadVector3(server.Reader);
 			clientSpatialData.Velocity = messageHelper.ReadVector3(server.Reader);
 			clientSpatialData.Angle = messageHelper.ReadByteAngles(server.Reader);
-			clientSpatialData.Time = DateTime.UtcNow;
 
 			clients[clientSpatialData.ClientId].SpatialData.Add(clientSpatialData);
 
@@ -304,6 +304,8 @@ namespace Game.Network.Servers
 			{
 				clients[clientSpatialData.ClientId].SpatialData.RemoveAt(0);
 			}
+
+			//System.Diagnostics.Debug.WriteLine("Client: " + timeStamp + ", Server: ");
 		}
 
 		private void ReceivedClientActions(Message message)

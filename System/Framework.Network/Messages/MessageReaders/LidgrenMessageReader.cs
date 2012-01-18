@@ -1,16 +1,29 @@
 ﻿using System;
+using Lidgren.Network;
 
 namespace Framework.Network.Messages.MessageReaders
 {
-	public class DefaultMessageReader : IMessageReader
+	public class LidgrenMessageReader : IMessageReader
 	{
+		private NetPeer peer;
 		private Message readMessage;
 		private int readMessagePosition;
+
+		public LidgrenMessageReader(NetPeer peer)
+		{
+			this.peer = peer;
+		}
 
 		public void ReadNewMessage(Message message)
 		{
 			readMessage = message;
 			readMessagePosition = 0;
+		}
+
+		public float ReadTimeStamp()
+		{
+			float remoteTime = ReadFloat();
+			return remoteTime - readMessage.RemoteTimeOffset;
 		}
 
 		public bool ReadBool()
@@ -36,6 +49,11 @@ namespace Framework.Network.Messages.MessageReaders
 		public Int64 ReadInt64()
 		{
 			return BitConverter.ToInt64(ReadMessageBytes(8), 0);
+		}
+
+		public UInt16 ReadUInt16()
+		{
+			return BitConverter.ToUInt16(ReadMessageBytes(16), 0);
 		}
 
 		public float ReadFloat()

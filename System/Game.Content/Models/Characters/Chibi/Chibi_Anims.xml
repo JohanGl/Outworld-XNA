@@ -13,7 +13,7 @@
 				<ClipName>Idle</ClipName>
 				<StartFrame>5100</StartFrame>
 				<EndFrame>7854</EndFrame>
-				<Duration>2</Duration>
+				<Duration>3</Duration>
 			</Item>
 			<Item>
 				<ClipName>Run</ClipName>

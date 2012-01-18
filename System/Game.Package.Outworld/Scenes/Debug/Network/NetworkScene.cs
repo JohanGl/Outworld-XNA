@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using Framework.Core.Common;
 using Framework.Core.Contexts;
 using Framework.Core.Scenes;
 using Framework.Core.Services;
@@ -12,6 +14,7 @@ namespace Outworld.Scenes.Debug.Network
 	{
 		private IGameServer gameServer;
 		private IGameClient gameClient;
+		private GameTimer sendTimer;
 
 		public override void Initialize(GameContext context)
 		{
@@ -23,6 +26,8 @@ namespace Outworld.Scenes.Debug.Network
 			// Create the connection between the client and server
 			gameServer.Start();
 			gameClient.Connect();
+
+			sendTimer = new GameTimer(TimeSpan.FromMilliseconds(1000 / 20), SendClientSpatial);
 		}
 
 		public override void LoadContent()
@@ -43,10 +48,17 @@ namespace Outworld.Scenes.Debug.Network
 			{
 				return;
 			}
+
+			sendTimer.Update(gameTime);
 		}
 
 		public override void Render(GameTime gameTime)
 		{
+		}
+
+		private void SendClientSpatial()
+		{
+			gameClient.SendClientSpatial(new Vector3(0), new Vector3(1), new Vector3(2));
 		}
 	}
 }

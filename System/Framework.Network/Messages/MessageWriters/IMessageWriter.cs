@@ -5,6 +5,7 @@ namespace Framework.Network.Messages.MessageWriters
 	public interface IMessageWriter
 	{
 		void WriteNewMessage();
+		void WriteTimeStamp();
 		void Write(bool source);
 		void Write(byte source);
 		void Write(Int16 source);
