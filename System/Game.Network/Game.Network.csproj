@@ -92,19 +92,34 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Clients\GameClientReaders.cs" />
+    <Compile Include="Clients\GameClientWriters.cs" />
     <Compile Include="Clients\Events\ClientActionsEventArgs.cs" />
-    <Compile Include="Common\ClientAction.cs" />
-    <Compile Include="Common\NetworkMessage.cs" />
-    <Compile Include="Clients\ServerEntity.cs" />
-    <Compile Include="Common\ClientSpatialData.cs" />
+    <Compile Include="Clients\Entities\ServerEntity.cs" />
     <Compile Include="Clients\Events\ClientSpatialEventArgs.cs" />
     <Compile Include="Clients\GameClient.cs" />
     <Compile Include="Clients\Events\GameSettingsEventArgs.cs" />
     <Compile Include="Clients\IGameClient.cs" />
     <Compile Include="Clients\Settings\GameClientSettings.cs" />
-    <Compile Include="Common\Protocol.cs" />
-    <Compile Include="Common\MessageHelper.cs" />
-    <Compile Include="Servers\ClientData.cs" />
+    <Compile Include="Common\Entities\ClientAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\Entities\ClientSpatial.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\Entities\RecordedMessage.cs" />
+    <Compile Include="Common\Helpers\MessageHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\NetworkMessage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\Protocol.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Servers\GameServerWriters.cs" />
+    <Compile Include="Servers\GameServerReaders.cs" />
+    <Compile Include="Servers\Entities\ClientData.cs" />
     <Compile Include="Servers\GameServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Servers\IGameServer.cs" />

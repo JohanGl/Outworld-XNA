@@ -31,6 +31,14 @@ namespace Framework.Network.Clients
 			}
 		}
 
+		public float TimeStamp
+		{
+			get
+			{
+				return (float)NetTime.Now;
+			}
+		}
+
 		public void Initialize(IClientConfiguration configuration)
 		{
 			this.configuration = configuration;

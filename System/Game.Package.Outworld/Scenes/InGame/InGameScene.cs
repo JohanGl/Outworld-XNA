@@ -329,8 +329,6 @@ namespace Outworld.Scenes.InGame
 			{
 				messageHandler.AddMessage("ClientActions", new PlayerMessage() { Type = ClientActionType.Damaged });
 				messageHandler.AddMessage("ClientActions", new PlayerMessage() { Type = ClientActionType.Dead });
-
-				//audioHandler.PlaySound3d("a", "Walking1", 1f, playerSpatial.Position);
 			}
 			else if (Context.Input.Keyboard.KeyboardState[Keys.F2].WasJustPressed)
 			{
@@ -517,28 +515,28 @@ namespace Outworld.Scenes.InGame
 		{
 			if (gameClient.IsConnected)
 			{
-				//var messages = messageHandler.GetMessages<PlayerMessage>("ClientActions");
+				var playerActions = messageHandler.GetMessages<PlayerMessage>("ClientActions");
 
-				//if (messages.Count > 0)
-				//{
-				//    var actions = new List<ClientAction>();
+				if (playerActions.Count > 0)
+				{
+				    var actions = new List<ClientAction>();
 
-				//    for (int i = 0; i < messages.Count; i++)
-				//    {
-				//        actions.Add(new ClientAction() { Type = messages[i].Type });
-				//        currentClientAction = (byte)messages[i].Type;
-				//    }
+				    for (int i = 0; i < playerActions.Count; i++)
+				    {
+				        actions.Add(new ClientAction() { Type = playerActions[i].Type });
+				        currentClientAction = (byte)playerActions[i].Type;
+				    }
 
-				//    gameClient.BeginCombinedMessage();
-				//    gameClient.SendClientSpatial(playerSpatial.Position, playerSpatial.Velocity, playerSpatial.Angle);
-				//    gameClient.SendClientActions(actions);
-				//    gameClient.EndCombinedMessage();
-				//}
-				//else
-				//{
+				    gameClient.BeginCombinedMessage();
+				    gameClient.SendClientSpatial(playerSpatial.Position, playerSpatial.Velocity, playerSpatial.Angle);
+				    gameClient.SendClientActions(actions);
+				    gameClient.EndCombinedMessage();
+				}
+				else
+				{
 					// Sends our current spatial data to the server
 					gameClient.SendClientSpatial(playerSpatial.Position, playerSpatial.Velocity, playerSpatial.Angle);
-				//}
+				}
 			}
 
 			messageHandler.Clear("ClientActions");
@@ -554,9 +552,9 @@ namespace Outworld.Scenes.InGame
 
 		private void gameClient_GetClientSpatialCompleted(object sender, ClientSpatialEventArgs e)
 		{
-			for (int i = 0; i < e.ClientData.Length; i++)
+			for (int i = 0; i < e.Client.Length; i++)
 			{
-				var clientData = e.ClientData[i];
+				var clientData = e.Client[i];
 
 				// Forced spatial update from the server
 				if (clientData.ClientId == gameClient.ClientId)

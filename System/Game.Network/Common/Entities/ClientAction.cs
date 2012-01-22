@@ -1,12 +1,10 @@
-﻿using System;
-
-namespace Game.Network.Common
+﻿namespace Game.Network.Common
 {
 	public struct ClientAction
 	{
-		public DateTime Time;
-
 		public byte ClientId;
+		public float TimeStamp;
+
 		public ClientActionType Type;
 	}
 }

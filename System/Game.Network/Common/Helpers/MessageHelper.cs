@@ -1,7 +1,6 @@
 ﻿using Framework.Network.Messages.MessageReaders;
 using Framework.Network.Messages.MessageWriters;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
 
 namespace Game.Network.Common
 {

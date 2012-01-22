@@ -63,6 +63,11 @@ namespace Framework.Network.Messages.MessageWriters
 			messageOut.Write(source);
 		}
 
+		public byte[] GetBytes()
+		{
+			return messageOut.PeekDataBuffer();
+		}
+
 		public object GetMessage()
 		{
 			return messageOut;

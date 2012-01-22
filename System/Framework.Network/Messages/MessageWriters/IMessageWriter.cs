@@ -14,6 +14,7 @@ namespace Framework.Network.Messages.MessageWriters
 		void Write(float source);
 		void Write(double source);
 		void Write(string source);
+		byte[] GetBytes();
 		object GetMessage();
 	}
 }

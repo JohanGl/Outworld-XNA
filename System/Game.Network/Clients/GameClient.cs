@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Framework.Core.Diagnostics.Logging;
 using Framework.Core.Messaging;
 using Framework.Core.Services;
 using Framework.Network.Clients;
 using Framework.Network.Clients.Configurations;
-using Framework.Network.Messages;
-using Game.Network.Clients.Events;
 using Game.Network.Clients.Settings;
 using Game.Network.Common;
 using Game.World;
@@ -15,15 +12,8 @@ using Microsoft.Xna.Framework;
 
 namespace Game.Network.Clients
 {
-	public class GameClient : IGameClient
+	public partial class GameClient : IGameClient
 	{
-		public event EventHandler<GameSettingsEventArgs> GetGameSettingsCompleted;
-		public event EventHandler<ClientSpatialEventArgs> GetClientSpatialCompleted;
-		public event EventHandler<ClientActionsEventArgs> GetClientActionsCompleted;
-		public WorldContext World { get; set; }
-		public byte ClientId { get; set; }
-		public List<ServerEntity> ServerEntities { get; set; }
-
 		public bool IsConnected
 		{
 			get
@@ -32,13 +22,21 @@ namespace Game.Network.Clients
 			}
 		}
 
+		public float TimeStamp
+		{
+			get
+			{
+				return client.TimeStamp;
+			}
+		}
+
+		public WorldContext World { get; set; }
+		public byte ClientId { get; set; }
+		public List<ServerEntity> ServerEntities { get; set; }
+
 		private IClient client;
 		private readonly MessageHelper messageHelper;
 		private IMessageHandler messageHandler;
-
-		// Handled combined messages
-		private bool isCombined;
-		private bool isCombinedInitialized;
 
 		public GameClient()
 		{
@@ -124,121 +122,6 @@ namespace Game.Network.Clients
 			}
 		}
 
-		private void ReceivedGameSettings(Message message)
-		{
-			if (GetGameSettingsCompleted != null)
-			{
-				var args = new GameSettingsEventArgs();
-
-				// Read the message
-				client.Reader.ReadNewMessage(message);
-				client.Reader.ReadByte();
-				args.ClientId = client.Reader.ReadByte();
-				args.Seed = client.Reader.ReadInt32();
-				args.Gravity = messageHelper.ReadVector3(client.Reader);
-
-				// Assign the client id
-				ClientId = args.ClientId;
-
-				byte totalClients = client.Reader.ReadByte();
-
-				for (int i = 0; i < totalClients; i++)
-				{
-					byte currentClientId = client.Reader.ReadByte();
-					UpdateServerEntities(currentClientId, true);
-				}
-
-				GetGameSettingsCompleted(this, args);
-			}
-		}
-
-		private void ReceivedClientStatus(Message message)
-		{
-			// Read the message
-			client.Reader.ReadNewMessage(message);
-			client.Reader.ReadByte();
-			byte clientId = client.Reader.ReadByte();
-			bool connected = client.Reader.ReadBool();
-
-			// Add a global message for this event
-			var notificationMessage = new NetworkMessage()
-			{
-				ClientId = clientId,
-				Type = connected ? NetworkMessage.MessageType.Connected : NetworkMessage.MessageType.Disconnected,
-				Text = string.Format("Player {0} {1}", clientId, connected ? "connected" : "disconnected")
-			};
-
-			messageHandler.AddMessage("GameClient", notificationMessage);
-
-			UpdateServerEntities(clientId, connected);
-		}
-
-		private void ReceivedClientSpatial(Message message)
-		{
-			if (GetClientSpatialCompleted != null)
-			{
-				var args = new ClientSpatialEventArgs();
-
-				// Read the message
-				client.Reader.ReadNewMessage(message);
-				client.Reader.ReadByte();
-
-				// Find out how many clients that are included in the message
-				byte clients = client.Reader.ReadByte();
-
-				// Initialize and retrieve all client spatial data
-				args.ClientData = new ClientSpatialData[clients];
-
-				for (byte i = 0; i < clients; i++)
-				{
-					var data = new ClientSpatialData();
-					data.ClientId = client.Reader.ReadByte();
-					data.Position = messageHelper.ReadVector3(client.Reader);
-					data.Velocity = messageHelper.ReadVector3(client.Reader);
-					data.Angle = messageHelper.ReadVector3(client.Reader);
-
-					args.ClientData[i] = data;
-				}
-
-				GetClientSpatialCompleted(this, args);
-			}
-		}
-
-		private void ReceivedClientActions(Message message)
-		{
-			if (GetClientActionsCompleted != null)
-			{
-				var args = new ClientActionsEventArgs();
-
-				// Read the message
-				client.Reader.ReadNewMessage(message);
-				client.Reader.ReadByte();
-
-				// Get the number of clients in this message
-				byte clients = client.Reader.ReadByte();
-
-				for (byte i = 0; i < clients; i++)
-				{
-					// Get the id of the current client
-					byte clientId = client.Reader.ReadByte();
-
-					// Get the number of actions for the current client
-					byte actions = client.Reader.ReadByte();
-
-					for (byte j = 0; j < actions; j++)
-					{
-						args.ClientActions.Add(new ClientAction()
-						{
-							ClientId = clientId,
-							Type = (ClientActionType)client.Reader.ReadByte()
-						});
-					}
-				}
-
-				GetClientActionsCompleted(this, args);
-			}
-		}
-
 		private void UpdateServerEntities(byte clientId, bool connected)
 		{
 			// Skip self
@@ -272,73 +155,6 @@ namespace Game.Network.Clients
 					break;
 				}
 			}
-		}
-
-		public void GetGameSettings()
-		{
-			client.Writer.WriteNewMessage();
-			client.Writer.Write((byte)PacketType.GameSettings);
-			client.Writer.Write(Stopwatch.GetTimestamp());
-			client.Send(MessageDeliveryMethod.ReliableUnordered);
-		}
-
-		public void SendClientSpatial(Vector3 position, Vector3 velocity, Vector3 angle)
-		{
-			InitializeMessageWriter();
-			client.Writer.Write((byte)PacketType.ClientSpatial);
-			client.Writer.WriteTimeStamp();
-			messageHelper.WriteVector3(position, client.Writer);
-			messageHelper.WriteVector3(velocity, client.Writer);
-			messageHelper.WriteByteAngles(angle, client.Writer);
-			SendMessage();
-		}
-
-		public void SendClientActions(List<ClientAction> actions)
-		{
-			InitializeMessageWriter();
-			client.Writer.Write((byte)PacketType.ClientActions);
-			client.Writer.Write((byte)actions.Count);
-
-			for (int i = 0; i < actions.Count; i++)
-			{
-				client.Writer.Write((byte)actions[i].Type);
-			}
-
-			SendMessage();
-		}
-
-		private void InitializeMessageWriter()
-		{
-			if (!isCombined)
-			{
-				client.Writer.WriteNewMessage();
-			}
-			else if (isCombined && !isCombinedInitialized)
-			{
-				client.Writer.WriteNewMessage();
-				client.Writer.Write((byte)PacketType.Combined);
-				isCombinedInitialized = true;
-			}
-		}
-
-		private void SendMessage()
-		{
-			if (!isCombined)
-			{
-				client.Send(MessageDeliveryMethod.Unreliable);
-			}
-		}
-
-		public void BeginCombinedMessage()
-		{
-			isCombined = true;
-			isCombinedInitialized = false;
-		}
-
-		public void EndCombinedMessage()
-		{
-			client.Send(MessageDeliveryMethod.Unreliable);
-			isCombined = false;
 		}
 	}
 }

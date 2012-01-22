@@ -34,6 +34,14 @@ namespace Framework.Network.Servers
 			}
 		}
 
+		public float TimeStamp
+		{
+			get
+			{
+				return (float)NetTime.Now;
+			}
+		}
+
 		public void Initialize(IServerConfiguration configuration)
 		{
 			var netPeerConfiguration = new NetPeerConfiguration("LidgrenConfig");

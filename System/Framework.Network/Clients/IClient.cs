@@ -19,5 +19,6 @@ namespace Framework.Network.Clients
 		void Send(MessageDeliveryMethod method);
 
 		bool IsConnected { get; }
+		float TimeStamp { get; }
 	}
 }
