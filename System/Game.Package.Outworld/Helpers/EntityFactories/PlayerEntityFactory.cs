@@ -7,6 +7,7 @@ using Game.Entities.Outworld;
 using Game.Entities.Outworld.Characters;
 using Game.Entities.Outworld.World;
 using Game.Entities.Outworld.World.SpatialSensor;
+using Game.Network.Clients;
 using Game.World;
 using Outworld.Players;
 using Outworld.Settings.Global;
@@ -23,6 +24,7 @@ namespace Outworld.Helpers.EntityFactories
 			var player = new Entity();
 
 			var globalSettings = ServiceLocator.Get<GlobalSettings>();
+			var gameClient = ServiceLocator.Get<IGameClient>();
 
 			// Spatial
 			var spatial = new SpatialComponent()
@@ -59,7 +61,7 @@ namespace Outworld.Helpers.EntityFactories
 			player.Components.Add(playerInput);
 
 			// Player
-			var playerComponent = new PlayerComponent(worldContext.PhysicsHandler, worldContext.TerrainContext.TerrainContextCollisionHelper) { Owner = player };
+			var playerComponent = new PlayerComponent(gameClient, worldContext.PhysicsHandler, worldContext.TerrainContext.TerrainContextCollisionHelper) { Owner = player };
 			player.Components.Add(playerComponent);
 
 			// Initialize all components

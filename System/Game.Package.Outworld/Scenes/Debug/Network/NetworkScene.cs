@@ -62,22 +62,32 @@ namespace Outworld.Scenes.Debug.Network
 
 			if (Context.Input.Keyboard.KeyboardState[Keys.F1].WasJustPressed)
 			{
-				messageHandler.AddMessage("ClientActions", new PlayerMessage() { TimeStamp = gameClient.TimeStamp, Type = ClientActionType.Jump });
+				messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.Jump));
 			}
 			else if (Context.Input.Keyboard.KeyboardState[Keys.F2].WasJustPressed)
 			{
-				messageHandler.AddMessage("ClientActions", new PlayerMessage() { TimeStamp = gameClient.TimeStamp, Type = ClientActionType.Damaged });
-				messageHandler.AddMessage("ClientActions", new PlayerMessage() { TimeStamp = gameClient.TimeStamp, Type = ClientActionType.Dead });
+				messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.Damaged));
+				messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.Dead));
 			}
 			else if (Context.Input.Keyboard.KeyboardState[Keys.F3].WasJustPressed)
 			{
-				messageHandler.AddMessage("ClientActions", new PlayerMessage() { TimeStamp = gameClient.TimeStamp, Type = ClientActionType.RunDirection1 });
-				messageHandler.AddMessage("ClientActions", new PlayerMessage() { TimeStamp = gameClient.TimeStamp, Type = ClientActionType.Fall });
-				messageHandler.AddMessage("ClientActions", new PlayerMessage() { TimeStamp = gameClient.TimeStamp, Type = ClientActionType.Land });
-				messageHandler.AddMessage("ClientActions", new PlayerMessage() { TimeStamp = gameClient.TimeStamp, Type = ClientActionType.Damaged });
+				messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.RunDirection1));
+				messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.Fall));
+				messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.Land));
+				messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.Damaged));
 			}
 
 			sendTimer.Update(gameTime);
+		}
+
+		private PlayerMessage GetPlayerMessage(ClientActionType type)
+		{
+			var message = new PlayerMessage();
+			message.ClientAction = new ClientAction();
+			message.ClientAction.TimeStamp = gameClient.TimeStamp;
+			message.ClientAction.Type = type;
+
+			return message;
 		}
 
 		public override void Render(GameTime gameTime)
@@ -94,13 +104,7 @@ namespace Outworld.Scenes.Debug.Network
 
 				for (int i = 0; i < playerActions.Count; i++)
 				{
-					var action = new ClientAction()
-					{
-						TimeStamp = playerActions[i].TimeStamp,
-						Type = playerActions[i].Type
-					};
-
-					actions.Add(action);
+					actions.Add(playerActions[i].ClientAction);
 				}
 
 				gameClient.BeginCombinedMessage();

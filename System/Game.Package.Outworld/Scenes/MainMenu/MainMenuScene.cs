@@ -21,6 +21,7 @@ namespace Outworld.Scenes.MainMenu
 		private GuiManager gui;
 		private IAudioHandler audioHandler;
 		private TextBlock title;
+		private bool isSoundEnabled;
 
 		public override void LoadContent()
 		{
@@ -40,6 +41,8 @@ namespace Outworld.Scenes.MainMenu
 			audioHandler.LoadSound("ButtonHighlight", @"Audio\Sounds\Gui\ButtonPress01");
 
 			InitializeGui();
+
+			isSoundEnabled = true;
 
 			// Initialize all child scenes
 			var mainScene = new MainScene();
@@ -130,7 +133,7 @@ namespace Outworld.Scenes.MainMenu
 
 		private void GuiOnElementStateChanged(object sender, ElementStateChangeArgs e)
 		{
-			if (!(sender is ImageButton))
+			if (!(sender is ImageButton) || !isSoundEnabled)
 			{
 				return;
 			}
@@ -189,6 +192,11 @@ namespace Outworld.Scenes.MainMenu
 					gui.Elements[6].Visibility = Visibility.Visible;
 					break;
 			}
+		}
+
+		public void DisableSound()
+		{
+			isSoundEnabled = false;
 		}
 	}
 }

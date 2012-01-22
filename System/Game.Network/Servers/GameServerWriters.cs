@@ -40,6 +40,7 @@ namespace Game.Network.Servers
 			server.Send(message.ClientId, MessageDeliveryMethod.ReliableOrdered);
 		}
 
+		// TODO: Optimize broadcast
 		private void BroadcastClientSpatial()
 		{
 			if (clients.Count < 2)

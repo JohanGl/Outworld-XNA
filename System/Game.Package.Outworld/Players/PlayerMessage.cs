@@ -5,7 +5,6 @@ namespace Game.Network.Clients
 {
 	public class PlayerMessage : IMessage
 	{
-		public float TimeStamp;
-		public ClientActionType Type;
+		public ClientAction ClientAction;
 	}
 }

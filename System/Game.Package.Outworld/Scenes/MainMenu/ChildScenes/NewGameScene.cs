@@ -112,6 +112,7 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 			switch ((ButtonCommand)button.Tag)
 			{
 				case ButtonCommand.HostGame:
+					((MainMenuScene)Parent).DisableSound();
 					CreateHost();
 					break;
 
