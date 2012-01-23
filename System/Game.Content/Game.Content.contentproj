@@ -376,15 +376,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\Scenes\InGame\RadarEntity.png">
-      <Name>RadarEntity</Name>
+    <Compile Include="Models\Characters\Chibi\chibiSpaceMarineDiffuse.png">
+      <Name>chibiSpaceMarineDiffuse</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Characters\Chibi\chibiSpaceMarineDiffuse.png">
-      <Name>chibiSpaceMarineDiffuse</Name>
+    <Compile Include="Gui\Scenes\InGame\RadarEntity.png">
+      <Name>RadarEntity</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

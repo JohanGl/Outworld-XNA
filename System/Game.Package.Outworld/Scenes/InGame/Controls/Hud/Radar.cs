@@ -17,23 +17,17 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 		private Vector2 uiCenter;
 		private Vector2 uiCenterForRadarCompass;
 		private float radarDetectionRange;
-		private float radarDetectionRangeSquared;
 		private Vector2 radarCompassOrigin;
 
 		public List<RadarEntity> RadarEntities;
 		public Vector3 Center;
 		public float Angle;
 
-		private GameTimer fadeTimer;
-
 		public void Initialize(GameContext context)
 		{
 			RadarEntities = new List<RadarEntity>();
 
 			radarDetectionRange = 84.0f;
-			radarDetectionRangeSquared = (radarDetectionRange*radarDetectionRange);
-
-			fadeTimer = new GameTimer(TimeSpan.FromMilliseconds(50));
 
 			radarBaseImage = context.Resources.Textures["Gui.Hud.Radar"];
 			radarCompass = context.Resources.Textures["Gui.Hud.RadarCompass"];
@@ -60,50 +54,28 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 		public void Update(GameTime gameTime)
 		{
-			// Update all entities fade state
-			if (fadeTimer.Update(gameTime))
+			for (int i = 0; i < RadarEntities.Count; i++)
 			{
-				for (int i = 0; i < RadarEntities.Count; i++)
+				var entity = RadarEntities[i];
+				Vector2 diffVect = new Vector2(entity.Position.X - Center.X, entity.Position.Z - Center.Z);
+				float distance = diffVect.Length();
+
+//				entity.Opacity = (radarDetectionRangeSquared / distance);
+
+				if (distance >= radarDetectionRange)
 				{
-					var entity = RadarEntities[i];
-					Vector2 diffVect = new Vector2(entity.Position.X - Center.X, entity.Position.Z - Center.Z);
-					float distance = diffVect.LengthSquared();
-					
+					entity.Position2D = Vector2.Normalize(diffVect);
+					entity.Position2D *= radarDetectionRange;
 
-					if (distance >= radarDetectionRangeSquared)
-					{
-						if(entity.LockedPosition.X == -1 && 
-							entity.LockedPosition.Y == -1)
-						{
-							entity.LockedPosition = diffVect;
-						}
+					entity.Opacity = 0.5f;
 
-						if (entity.Opacity > 0.0f)
-						{
-							entity.Opacity -= 0.05f;
-						}
-						else
-						{
-							entity.Opacity = 0.0f;
-						}
-					}
-					else
-					{
-						if (entity.LockedPosition.X != -1 &&
-							entity.LockedPosition.Y != -1)
-						{
-							entity.LockedPosition = new Vector2(-1, -1);
-						}
-
-						if (entity.Opacity <= 1.0f)
-						{
-							entity.Opacity += 0.05f;
-						}
-						else
-						{
-							entity.Opacity = 1.0f;
-						}
-					}
+					//entity.Opacity = (entity.Opacity < 0.0f) ? 0.0f : entity.Opacity;
+				}
+				else
+				{
+//					entity.Opacity = (entity.Opacity > 1.0f) ? 1.0f : entity.Opacity;
+					entity.Position2D = diffVect;
+					entity.Opacity = 1.0f;
 				}
 			}
 		}
@@ -125,25 +97,13 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 			{
 				var entity = RadarEntities[i];
 
-				Vector2 diffVect = new Vector2();
+				entity.Position2D *= ((Width / 2) / radarDetectionRange);
 
-				if (entity.LockedPosition.X != -1 &&
-					entity.LockedPosition.Y != -1)
-				{
-					diffVect = entity.LockedPosition;
-				}
-				else
-				{
-					diffVect = new Vector2(entity.Position.X - Center.X, entity.Position.Z - Center.Z);
-				}
+				entity.Position2D = Vector2.Transform(entity.Position2D, Matrix.CreateRotationZ(radian));
 
-				diffVect *= ((Width / 2) / radarDetectionRange);
+				entity.Position2D += uiCenter;
 
-				diffVect = Vector2.Transform(diffVect, Matrix.CreateRotationZ(radian));
-
-				diffVect += uiCenter;
-
-				spriteBatch.Draw(radarEntityImage, diffVect, entity.Color * entity.Opacity);
+				spriteBatch.Draw(radarEntityImage, entity.Position2D, entity.Color * entity.Opacity);
 			}
 		}
 		

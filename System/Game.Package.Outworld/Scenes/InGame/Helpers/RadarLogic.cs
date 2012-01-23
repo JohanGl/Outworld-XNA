@@ -49,7 +49,8 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 			var radarEntityC = new RadarEntity();
 			radarEntityC.Opacity = 1.0f;
 			radarEntityC.Color = Color.LightGreen;
-			radarEntityC.Position = new Vector3(94, 38, 41);
+//			radarEntityC.Position = new Vector3(94, 38, 41);
+			radarEntityC.Position = new Vector3(120, 38, 65);
 			radarEntityC.Id = 97;
 
 			Radar.RadarEntities.Add(radarEntityA);
