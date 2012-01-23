@@ -31,6 +31,14 @@ namespace Framework.Network.Clients
 			}
 		}
 
+		public float TimeStamp
+		{
+			get
+			{
+				return (float)NetTime.Now;
+			}
+		}
+
 		public void Initialize(IClientConfiguration configuration)
 		{
 			this.configuration = configuration;
@@ -38,7 +46,7 @@ namespace Framework.Network.Clients
 			var netPeerConfiguration = new NetPeerConfiguration("LidgrenConfig");
 			client = new NetClient(netPeerConfiguration);
 
-			Reader = new DefaultMessageReader();
+			Reader = new LidgrenMessageReader(client);
 			Writer = new LidgrenMessageWriter(client);
 		}
 

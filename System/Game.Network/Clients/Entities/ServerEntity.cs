@@ -9,5 +9,6 @@ namespace Game.Network.Clients
 		public Vector3 Velocity;
 		public Vector3 Angle;
 		public byte Animation;
+		public byte PreviousAnimation;
 	}
 }

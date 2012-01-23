@@ -68,6 +68,7 @@ namespace Outworld.Scenes.InGame
 		private GameTimer timerUpdateCurrentProcess;
 		private byte currentClientAction;
 		private byte previousClientAction;
+		private List<ClientAction> clientActions;
 
 		private SkinnedModel skinnedModelPlayer;
 		private Vector3 soundPosition;
@@ -101,6 +102,8 @@ namespace Outworld.Scenes.InGame
 			InitializePlayer();
 			InitializeTimers();
 			InitializeAudio();
+
+			clientActions = new List<ClientAction>();
 
 			new LogFilterHelper().FilterTerrain();
 			//new LogFilterHelper().FilterAll();
@@ -240,7 +243,7 @@ namespace Outworld.Scenes.InGame
 
 			skinnedModelPlayer = new SkinnedModel();
 			skinnedModelPlayer.Initialize(Context.Resources.Models["Player"]);
-			skinnedModelPlayer.SetAnimationClip("Run");
+			skinnedModelPlayer.SetAnimationClip("Idle");
 
 			// Sounds
 			audioHandler.LoadSound("Walking1", @"Audio\Sounds\Characters\Walking01");
@@ -324,25 +327,6 @@ namespace Outworld.Scenes.InGame
 				{
 					Context.Scenes.AddChild(this, new InGameMenuScene(), true);
 				}
-			}
-
-			if (Context.Input.Keyboard.KeyboardState[Keys.F1].WasJustPressed)
-			{
-				messageHandler.AddMessage("ClientActions", new PlayerMessage() { Type = ClientActionType.Damaged });
-				messageHandler.AddMessage("ClientActions", new PlayerMessage() { Type = ClientActionType.Dead });
-
-				//audioHandler.PlaySound3d("a", "Walking1", 1f, playerSpatial.Position);
-			}
-			else if (Context.Input.Keyboard.KeyboardState[Keys.F2].WasJustPressed)
-			{
-				// Add a global message for this event
-				var notificationMessage = new NetworkMessage()
-				{
-					Type = NetworkMessage.MessageType.Disconnected,
-					Text = "Player 2 disconnected"
-				};
-
-				messageHandler.AddMessage("GameClient", notificationMessage);
 			}
 
 			// Debug tool shortcuts
@@ -451,29 +435,26 @@ namespace Outworld.Scenes.InGame
 
 		private void RenderServerEntities()
 		{
-			//var camera = Context.View.Cameras["Default"];
-
-			//// Render the current player (debug)
+			// Render the current player (debug)
 			//var position = playerSpatial.Position + new Vector3(5f, 0.2f, 0);
 			//var angle = new Vector3(0, playerSpatial.Angle.X + 180f, 0);
-
 			//RenderSkinnedPlayer(currentClientAction, position, angle);
 
 			// Render all server entities
 			for (int i = 0; i < gameClient.ServerEntities.Count; i++)
 			{
 				var entity = gameClient.ServerEntities[i];
-				RenderSkinnedPlayer(entity.Animation, entity.Position, new Vector3(entity.Angle.X, 0, 0));
+				RenderSkinnedRemotePlayer(entity.Animation, entity.PreviousAnimation, entity.Position, new Vector3(entity.Angle.X, 0, 0));
 			}
 
 			previousClientAction = currentClientAction;
 		}
 
-		private void RenderSkinnedPlayer(byte animation, Vector3 position, Vector3 angle)
+		private void RenderSkinnedRemotePlayer(byte animation, byte previousAnimation, Vector3 position, Vector3 angle)
 		{
 			var camera = Context.View.Cameras["Default"];
 
-			if (currentClientAction != previousClientAction)
+			if (animation != previousAnimation)
 			{
 				if (animation >= (byte)ClientActionType.RunDirection1 && animation <= (byte)ClientActionType.RunDirection8)
 				{
@@ -484,6 +465,25 @@ namespace Outworld.Scenes.InGame
 					skinnedModelPlayer.SetAnimationClip("Idle");
 				}
 			}
+
+			skinnedModelPlayer.Render(camera.View, camera.Projection, position + new Vector3(0, -0.725f, 0), angle.X);
+		}
+
+		private void RenderSkinnedPlayer(byte animation, Vector3 position, Vector3 angle)
+		{
+			var camera = Context.View.Cameras["Default"];
+
+			//if (currentClientAction != previousClientAction)
+			//{
+			//    if (animation >= (byte)ClientActionType.RunDirection1 && animation <= (byte)ClientActionType.RunDirection8)
+			//    {
+			//        skinnedModelPlayer.SetAnimationClip("Run");
+			//    }
+			//    else
+			//    {
+			//        skinnedModelPlayer.SetAnimationClip("Idle");
+			//    }
+			//}
 
 			skinnedModelPlayer.Render(camera.View, camera.Projection, position + new Vector3(0, -0.725f, 0), angle.X);
 		}
@@ -521,28 +521,28 @@ namespace Outworld.Scenes.InGame
 		{
 			if (gameClient.IsConnected)
 			{
-				//var messages = messageHandler.GetMessages<PlayerMessage>("ClientActions");
+				var playerActions = messageHandler.GetMessages<PlayerMessage>("ClientActions");
 
-				//if (messages.Count > 0)
-				//{
-				//    var actions = new List<ClientAction>();
+				if (playerActions.Count > 0)
+				{
+				    clientActions.Clear();
 
-				//    for (int i = 0; i < messages.Count; i++)
-				//    {
-				//        actions.Add(new ClientAction() { Type = messages[i].Type });
-				//        currentClientAction = (byte)messages[i].Type;
-				//    }
+				    for (int i = 0; i < playerActions.Count; i++)
+				    {
+						clientActions.Add(playerActions[i].ClientAction);
+						currentClientAction = (byte)playerActions[i].ClientAction.Type;
+				    }
 
-				//    gameClient.BeginCombinedMessage();
-				//    gameClient.SendClientSpatial(playerSpatial.Position, playerSpatial.Velocity, playerSpatial.Angle);
-				//    gameClient.SendClientActions(actions);
-				//    gameClient.EndCombinedMessage();
-				//}
-				//else
-				//{
+				    gameClient.BeginCombinedMessage();
+				    gameClient.SendClientSpatial(playerSpatial.Position, playerSpatial.Velocity, playerSpatial.Angle);
+					gameClient.SendClientActions(clientActions);
+				    gameClient.EndCombinedMessage();
+				}
+				else
+				{
 					// Sends our current spatial data to the server
 					gameClient.SendClientSpatial(playerSpatial.Position, playerSpatial.Velocity, playerSpatial.Angle);
-				//}
+				}
 			}
 
 			messageHandler.Clear("ClientActions");
@@ -558,9 +558,9 @@ namespace Outworld.Scenes.InGame
 
 		private void gameClient_GetClientSpatialCompleted(object sender, ClientSpatialEventArgs e)
 		{
-			for (int i = 0; i < e.ClientData.Length; i++)
+			for (int i = 0; i < e.Client.Length; i++)
 			{
-				var clientData = e.ClientData[i];
+				var clientData = e.Client[i];
 
 				// Forced spatial update from the server
 				if (clientData.ClientId == gameClient.ClientId)
@@ -596,6 +596,8 @@ namespace Outworld.Scenes.InGame
 
 					if (serverEntity.Id == action.ClientId)
 					{
+						serverEntity.PreviousAnimation = serverEntity.Animation;
+
 						if (action.Type == ClientActionType.Idle)
 						{
 							serverEntity.Animation = 0;
@@ -622,6 +624,10 @@ namespace Outworld.Scenes.InGame
 							};
 
 							messageHandler.AddMessage("GameClient", notificationMessage);
+						}
+						else
+						{
+							serverEntity.Animation = 0;
 						}
 
 						break;
