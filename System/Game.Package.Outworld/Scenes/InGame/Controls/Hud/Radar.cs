@@ -33,7 +33,7 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 		{
 			RadarEntities = new List<RadarEntity>();
 
-			radarOtherDetectionRange = radarDetectionRange + 10.0f;
+			radarOtherDetectionRange = radarDetectionRange + 25.0f;
 
 			radarBaseImage = context.Resources.Textures["Gui.Hud.Radar"];
 			radarCompass = context.Resources.Textures["Gui.Hud.RadarCompass"];
@@ -71,11 +71,11 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 					entity.Position2D = Vector2.Normalize(diffVect);
 					entity.Position2D *= radarDetectionRange;
 
-//					entity.Opacity = 0.5f;
-//					Console.WriteLine(distance.ToString() + " <= " radarOtherDetectionRange);
 					if (distance <= radarOtherDetectionRange)
 					{
-						entity.Opacity = radarOtherDetectionRange - distance;
+//						entity.Opacity = radarOtherDetectionRange - distance;
+						entity.Opacity = (radarOtherDetectionRange / radarOtherDetectionRange) - (distance / radarOtherDetectionRange);
+						Console.WriteLine("Opacity: " + entity.Opacity.ToString() + "   " + (radarOtherDetectionRange / radarOtherDetectionRange) + " - " + (distance / radarOtherDetectionRange));
 					}
 					else
 					{
