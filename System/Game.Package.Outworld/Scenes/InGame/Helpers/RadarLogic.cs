@@ -28,7 +28,7 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 			playerSpatial = player.Components.Get<SpatialComponent>();
 			
-			Radar = new Radar();
+			Radar = new Radar(84.0f);
 			Radar.Initialize(context);
 			Radar.Center = playerSpatial.Position;
 

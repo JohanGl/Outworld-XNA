@@ -105,8 +105,8 @@ namespace Outworld.Scenes.InGame
 
 			clientActions = new List<ClientAction>();
 
-			new LogFilterHelper().FilterTerrain();
-			//new LogFilterHelper().FilterAll();
+			//new LogFilterHelper().FilterTerrain();
+			new LogFilterHelper().FilterAll();
 		}
 
 		private void InitializeHelpers()

@@ -17,17 +17,23 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 		private Vector2 uiCenter;
 		private Vector2 uiCenterForRadarCompass;
 		private float radarDetectionRange;
+		private float radarOtherDetectionRange;
 		private Vector2 radarCompassOrigin;
 
 		public List<RadarEntity> RadarEntities;
 		public Vector3 Center;
 		public float Angle;
 
+		public Radar(float detectionRange)
+		{
+			radarDetectionRange = detectionRange;
+		}
+
 		public void Initialize(GameContext context)
 		{
 			RadarEntities = new List<RadarEntity>();
 
-			radarDetectionRange = 84.0f;
+			radarOtherDetectionRange = radarDetectionRange + 10.0f;
 
 			radarBaseImage = context.Resources.Textures["Gui.Hud.Radar"];
 			radarCompass = context.Resources.Textures["Gui.Hud.RadarCompass"];
@@ -60,20 +66,24 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 				Vector2 diffVect = new Vector2(entity.Position.X - Center.X, entity.Position.Z - Center.Z);
 				float distance = diffVect.Length();
 
-//				entity.Opacity = (radarDetectionRangeSquared / distance);
-
 				if (distance >= radarDetectionRange)
 				{
 					entity.Position2D = Vector2.Normalize(diffVect);
 					entity.Position2D *= radarDetectionRange;
 
-					entity.Opacity = 0.5f;
-
-					//entity.Opacity = (entity.Opacity < 0.0f) ? 0.0f : entity.Opacity;
+//					entity.Opacity = 0.5f;
+//					Console.WriteLine(distance.ToString() + " <= " radarOtherDetectionRange);
+					if (distance <= radarOtherDetectionRange)
+					{
+						entity.Opacity = radarOtherDetectionRange - distance;
+					}
+					else
+					{
+						entity.Opacity = 0.0f;
+					}
 				}
 				else
 				{
-//					entity.Opacity = (entity.Opacity > 1.0f) ? 1.0f : entity.Opacity;
 					entity.Position2D = diffVect;
 					entity.Opacity = 1.0f;
 				}
