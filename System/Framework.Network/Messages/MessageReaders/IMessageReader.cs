@@ -5,6 +5,7 @@ namespace Framework.Network.Messages.MessageReaders
 	public interface IMessageReader
 	{
 		void ReadNewMessage(Message message);
+		float ReadTimeStamp();
 		bool ReadBool();
 		byte ReadByte();
 		Int16 ReadInt16();

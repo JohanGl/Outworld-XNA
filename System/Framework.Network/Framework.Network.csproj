@@ -100,7 +100,7 @@
     <Compile Include="Clients\IClient.cs" />
     <Compile Include="Clients\LidgrenClient.cs" />
     <Compile Include="Messages\MessageReaders\IMessageReader.cs" />
-    <Compile Include="Messages\MessageReaders\DefaultMessageReader.cs" />
+    <Compile Include="Messages\MessageReaders\LidgrenMessageReader.cs" />
     <Compile Include="Messages\MessageWriters\LidgrenMessageWriter.cs" />
     <Compile Include="Messages\MessageWriters\IMessageWriter.cs" />
     <Compile Include="Messages\Message.cs" />

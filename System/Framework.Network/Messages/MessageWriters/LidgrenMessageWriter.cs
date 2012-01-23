@@ -7,7 +7,6 @@ namespace Framework.Network.Messages.MessageWriters
 	{
 		private NetPeer peer;
 		private NetOutgoingMessage messageOut;
-		private NetOutgoingMessage messageOutPrevious;
 
 		public LidgrenMessageWriter(NetPeer peer)
 		{
@@ -16,8 +15,12 @@ namespace Framework.Network.Messages.MessageWriters
 
 		public void WriteNewMessage()
 		{
-			messageOutPrevious = messageOut;
 			messageOut = peer.CreateMessage();
+		}
+
+		public void WriteTimeStamp()
+		{
+			messageOut.WriteTime(NetTime.Now, false);
 		}
 
 		public void Write(bool source)
@@ -58,6 +61,11 @@ namespace Framework.Network.Messages.MessageWriters
 		public void Write(string source)
 		{
 			messageOut.Write(source);
+		}
+
+		public byte[] GetBytes()
+		{
+			return messageOut.PeekDataBuffer();
 		}
 
 		public object GetMessage()

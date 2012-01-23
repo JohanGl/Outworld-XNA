@@ -102,6 +102,9 @@ namespace Framework.Animations.System
 			{
 				currentKeyframe = 0;
 				boneTransforms[keyframes[0].Bone] = keyframes[0].Transform;
+
+				// Initialize bone transforms to the bind pose.
+				//skinningDataValue.BindPose.CopyTo(boneTransforms, 0);
 			}
 
 			currentTimeValue = time;

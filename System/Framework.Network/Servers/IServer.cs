@@ -20,5 +20,6 @@ namespace Framework.Network.Servers
 		void Broadcast(MessageDeliveryMethod method, long? excludedClientId = null);
 
 		bool IsStarted { get; }
+		float TimeStamp { get; }
 	}
 }

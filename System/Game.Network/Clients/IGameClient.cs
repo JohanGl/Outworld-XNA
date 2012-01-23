@@ -16,6 +16,7 @@ namespace Game.Network.Clients
 
 		byte ClientId { get; }
 		bool IsConnected { get; }
+		float TimeStamp { get; }
 		WorldContext World { get; set; }
 		List<ServerEntity> ServerEntities { get; set; }
 

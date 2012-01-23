@@ -40,6 +40,7 @@ namespace Outworld.Players
 		private PlayerInputComponent inputComponent;
 		private IMessageHandler messageHandler;
 
+		private IGameClient gameClient;
 		private IPhysicsHandler physicsHandler;
 		private TerrainContextCollisionHelper terrainContextCollisionHelper;
 		private GlobalSettings globalSettings;
@@ -49,8 +50,9 @@ namespace Outworld.Players
 
 		private byte collisionHandlerCounter;
 
-		public PlayerComponent(IPhysicsHandler physicsHandler, TerrainContextCollisionHelper terrainContextCollisionHelper)
+		public PlayerComponent(IGameClient gameClient, IPhysicsHandler physicsHandler, TerrainContextCollisionHelper terrainContextCollisionHelper)
 		{
+			this.gameClient = gameClient;
 			this.physicsHandler = physicsHandler;
 			this.terrainContextCollisionHelper = terrainContextCollisionHelper;
 
@@ -161,7 +163,7 @@ namespace Outworld.Players
 
 			if (clientAction != previousClientAction)
 			{
-				messageHandler.AddMessage("ClientActions", new PlayerMessage() { Type = clientAction });
+				messageHandler.AddMessage("ClientActions", GetPlayerMessage(clientAction));
 			}
 
 			previousClientAction = clientAction;
@@ -182,7 +184,7 @@ namespace Outworld.Players
 			animationHandler.Animations[AnimationType.DeathCameraTilt].Start();
 			animationHandler.Animations[AnimationType.DeathCameraOffsetY].Start();
 
-			messageHandler.AddMessage("ClientActions", new PlayerMessage() { Type = ClientActionType.Dead });
+			messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.Dead));
 		}
 
 		public void ToggleStandCrouch()
@@ -226,6 +228,16 @@ namespace Outworld.Players
 					});
 				}
 			}
+		}
+
+		private PlayerMessage GetPlayerMessage(ClientActionType type)
+		{
+			var message = new PlayerMessage();
+			message.ClientAction = new ClientAction();
+			message.ClientAction.TimeStamp = gameClient.TimeStamp;
+			message.ClientAction.Type = type;
+
+			return message;
 		}
 	}
 }

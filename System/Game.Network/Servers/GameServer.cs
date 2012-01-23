@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Framework.Core.Common;
 using Framework.Core.Diagnostics.Logging;
 using Framework.Network.Messages;
@@ -13,7 +12,7 @@ using Microsoft.Xna.Framework;
 
 namespace Game.Network.Servers
 {
-	public class GameServer : IGameServer
+	public partial class GameServer : IGameServer
 	{
 		public GameServerSettings Settings { get; private set; }
 		public WorldSimulation World { get; private set; }
@@ -25,21 +24,16 @@ namespace Game.Network.Servers
 		private GameTimer tickrateTimer;
 		private GameTimer checkClientTimeoutsTimer;
 
-		private Dictionary<PacketType, int> packetSizeLookup;
-		private int combinedMessageStartIndex;
-
 		public GameServer()
 		{
 			messageHelper = new MessageHelper();
 			clients = new Dictionary<byte, ClientData>();
 			connectionIds = new Dictionary<long, byte>();
 
-			tickrateTimer = new GameTimer(TimeSpan.FromMilliseconds(1000 / 30));
+			tickrateTimer = new GameTimer(TimeSpan.FromMilliseconds(1000 / 20));
 			checkClientTimeoutsTimer = new GameTimer(TimeSpan.FromSeconds(20));
 
-			packetSizeLookup = new Dictionary<PacketType, int>();
-			packetSizeLookup.Add(PacketType.ClientSpatial, 28);
-			packetSizeLookup.Add(PacketType.ClientActions, 0);
+			InitializePacketSizeLookup();
 
 			Logger.RegisterLogLevelsFor<GameServer>(Logger.LogLevels.Adaptive);
 		}
@@ -220,269 +214,6 @@ namespace Game.Network.Servers
 				}
 
 				BroadcastClientStatusChanged(args);
-			}
-		}
-
-		private void BroadcastClientStatusChanged(ClientStatusArgs e)
-		{
-			server.Writer.WriteNewMessage();
-			server.Writer.Write((byte)PacketType.ClientStatus);
-			server.Writer.Write(e.ClientId);
-			server.Writer.Write(e.Type == ClientStatusType.Connected);
-
-			server.Broadcast(MessageDeliveryMethod.ReliableUnordered, GetClientIdAsLong(e.ClientId));
-		}
-
-		private void ReceivedGameSettingsRequest(Message message)
-		{
-			//byte clientId = connectionIds[message.ClientId];
-
-			//if (!clients.ContainsKey(clientId))
-			//{
-			//    return;
-			//}
-
-			//// Get the client system time for syncronization
-			//server.Reader.ReadNewMessage(message);
-			//server.Reader.ReadByte();
-			//long clientTime = server.Reader.ReadInt64();
-
-			//long currentTime = Stopwatch.GetTimestamp();
-			//long travelTime = (currentTime - clientTime) / 2;
-
-			//clients[clientId].SystemTime = 0;
-
-			SendGameSettings(message);
-		}
-
-		private void SendGameSettings(Message message)
-		{
-			byte clientId = connectionIds[message.ClientId];
-
-			server.Writer.WriteNewMessage();
-			server.Writer.Write((byte)PacketType.GameSettings);
-
-			server.Writer.Write(clientId);
-			server.Writer.Write(Settings.World.Seed);
-			messageHelper.WriteVector3(Settings.World.Gravity, server.Writer);
-			server.Writer.Write((byte)(clients.Count - 1));
-
-			foreach (var pair in clients)
-			{
-				if (pair.Key != clientId)
-				{
-					server.Writer.Write(pair.Key);
-				}
-			}
-
-			server.Send(message.ClientId, MessageDeliveryMethod.ReliableOrdered);
-		}
-
-		private void ReceivedClientSpatial(Message message)
-		{
-			byte clientId = connectionIds[message.ClientId];
-
-			if (!clients.ContainsKey(clientId))
-			{
-				return;
-			}
-
-			server.Reader.ReadNewMessage(message);
-			server.Reader.ReadByte();
-
-			var clientSpatialData = new ClientSpatialData();
-			clientSpatialData.ClientId = clientId;
-			clientSpatialData.Position = messageHelper.ReadVector3(server.Reader);
-			clientSpatialData.Velocity = messageHelper.ReadVector3(server.Reader);
-			clientSpatialData.Angle = messageHelper.ReadByteAngles(server.Reader);
-			clientSpatialData.Time = DateTime.UtcNow;
-
-			clients[clientSpatialData.ClientId].SpatialData.Add(clientSpatialData);
-
-			// Keep a maximum of 2 entries
-			if (clients[clientSpatialData.ClientId].SpatialData.Count > 2)
-			{
-				clients[clientSpatialData.ClientId].SpatialData.RemoveAt(0);
-			}
-		}
-
-		private void ReceivedClientActions(Message message)
-		{
-			byte clientId = connectionIds[message.ClientId];
-
-			if (!clients.ContainsKey(clientId))
-			{
-				return;
-			}
-
-			server.Reader.ReadNewMessage(message);
-			server.Reader.ReadByte();
-
-			int actions = server.Reader.ReadByte();
-
-			for (int i = 0; i < actions; i++)
-			{
-				var action = new ClientAction()
-				{
-					Time = DateTime.UtcNow,
-					Type = (ClientActionType)server.Reader.ReadByte()
-				};
-
-				clients[clientId].Actions.Add(action);
-
-				// Keep a maximum of 10 entries per server tickRate update
-				if (clients[clientId].Actions.Count > 10)
-				{
-					clients[clientId].Actions.RemoveAt(0);
-				}
-			}
-		}
-
-		private void ReceivedCombinedMessage(Message message)
-		{
-			byte clientId = connectionIds[message.ClientId];
-
-			if (!clients.ContainsKey(clientId))
-			{
-				return;
-			}
-
-			combinedMessageStartIndex = 1;
-
-			while (HasMoreMessagesInCombinedMessage(message))
-			{
-				server.Messages.Add(GetNextMessageInCombinedMessage(message));
-			}
-		}
-
-		private bool HasMoreMessagesInCombinedMessage(Message message)
-		{
-			return (combinedMessageStartIndex < message.Data.Length);
-		}
-
-		private Message GetNextMessageInCombinedMessage(Message message)
-		{
-			var type = (PacketType)message.Data[combinedMessageStartIndex];
-			var size = packetSizeLookup[type];
-
-			// Dynamic size packet?
-			if (size == 0)
-			{
-				// The second byte represents the length of the packet (+ 2 for the header and length bytes)
-				size = message.Data[combinedMessageStartIndex + 1] + 2;
-			}
-
-			var result = new Message
-			{
-				ClientId = message.ClientId,
-				Type = MessageType.Data,
-				Data = new byte[size]
-			};
-
-			Array.Copy(message.Data, combinedMessageStartIndex, result.Data, 0, size);
-			combinedMessageStartIndex += size;
-
-			return result;
-		}
-
-		private void BroadcastClientSpatial()
-		{
-			if (clients.Count < 2)
-			{
-				return;
-			}
-
-			// Write the header
-			server.Writer.WriteNewMessage();
-			server.Writer.Write((byte)PacketType.ClientSpatial);
-
-			// Total number of clients in the message
-			server.Writer.Write((byte)clients.Count);
-
-			// Write all client positions
-			foreach (var client in clients)
-			{
-				int length = client.Value.SpatialData.Count - 1;
-
-				// Write the current client id
-				server.Writer.Write(client.Key);
-
-				if (length >= 0)
-				{
-					// Write the client spatial data
-					messageHelper.WriteVector3(client.Value.SpatialData[length].Position, server.Writer);
-					messageHelper.WriteVector3(client.Value.SpatialData[length].Velocity, server.Writer);
-					messageHelper.WriteVector3(client.Value.SpatialData[length].Angle, server.Writer);
-				}
-				else
-				{
-					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
-					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
-					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
-				}
-			}
-
-			server.Broadcast(MessageDeliveryMethod.UnreliableSequenced);
-		}
-
-		private void BroadcastClientActions()
-		{
-			if (clients.Count < 2)
-			{
-				return;
-			}
-
-			int clientsWithActions = 0;
-
-			foreach (var client in clients.Values)
-			{
-				if (client.Actions.Count > 0)
-				{
-					clientsWithActions++;
-				}
-			}
-
-			if (clientsWithActions == 0)
-			{
-				return;
-			}
-
-			bool hasDataToSend = false;
-
-			// Write the header
-			server.Writer.WriteNewMessage();
-			server.Writer.Write((byte)PacketType.ClientActions);
-			server.Writer.Write((byte)clientsWithActions);
-
-			foreach (var client in clients)
-			{
-				var clientData = client.Value;
-
-				if (clientData.Actions.Count == 0)
-				{
-					continue;
-				}
-
-				hasDataToSend = true;
-
-				// Write the current client id and number of actions
-				server.Writer.Write(client.Key);
-				server.Writer.Write((byte)clientData.Actions.Count);
-
-				for (int i = 0; i < clientData.Actions.Count; i++)
-				{
-					var action = clientData.Actions[i];
-
-					// Write the current client action
-					server.Writer.Write((byte)action.Type);
-				}
-
-				clientData.Actions.Clear();
-			}
-
-			if (hasDataToSend)
-			{
-				server.Broadcast(MessageDeliveryMethod.ReliableSequenced);
 			}
 		}
 
