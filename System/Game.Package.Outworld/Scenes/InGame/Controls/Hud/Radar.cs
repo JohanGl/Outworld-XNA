@@ -17,23 +17,24 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 		private Vector2 uiCenter;
 		private Vector2 uiCenterForRadarCompass;
 		private float radarDetectionRange;
-		private float radarOtherDetectionRange;
+		private float radarInnerDetectionRange;
+		private float radarScale;
 		private Vector2 radarCompassOrigin;
 
 		public List<RadarEntity> RadarEntities;
 		public Vector3 Center;
 		public float Angle;
 
-		public Radar(float detectionRange)
+		public Radar(float detectionRange, float fadeInterval)
 		{
 			radarDetectionRange = detectionRange;
+			radarInnerDetectionRange = radarDetectionRange - fadeInterval;
+			radarScale = (1.0f / (radarDetectionRange - radarInnerDetectionRange));
 		}
 
 		public void Initialize(GameContext context)
 		{
 			RadarEntities = new List<RadarEntity>();
-
-			radarOtherDetectionRange = radarDetectionRange + 25.0f;
 
 			radarBaseImage = context.Resources.Textures["Gui.Hud.Radar"];
 			radarCompass = context.Resources.Textures["Gui.Hud.RadarCompass"];
@@ -66,26 +67,23 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 				Vector2 diffVect = new Vector2(entity.Position.X - Center.X, entity.Position.Z - Center.Z);
 				float distance = diffVect.Length();
 
-				if (distance >= radarDetectionRange)
+				if (distance <= radarDetectionRange)
 				{
-					entity.Position2D = Vector2.Normalize(diffVect);
-					entity.Position2D *= radarDetectionRange;
-
-					if (distance <= radarOtherDetectionRange)
+					if (distance >= radarInnerDetectionRange)
 					{
-//						entity.Opacity = radarOtherDetectionRange - distance;
-						entity.Opacity = (radarOtherDetectionRange / radarOtherDetectionRange) - (distance / radarOtherDetectionRange);
-						Console.WriteLine("Opacity: " + entity.Opacity.ToString() + "   " + (radarOtherDetectionRange / radarOtherDetectionRange) + " - " + (distance / radarOtherDetectionRange));
+						entity.Position2D = Vector2.Normalize(diffVect);
+						entity.Position2D *= radarInnerDetectionRange;
+						entity.Opacity = radarScale * (radarDetectionRange - distance);
 					}
 					else
 					{
-						entity.Opacity = 0.0f;
+						entity.Position2D = diffVect;
+						entity.Opacity = 1.0f;
 					}
 				}
 				else
 				{
-					entity.Position2D = diffVect;
-					entity.Opacity = 1.0f;
+					entity.Opacity = 0.0f;
 				}
 			}
 		}
@@ -107,7 +105,7 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 			{
 				var entity = RadarEntities[i];
 
-				entity.Position2D *= ((Width / 2) / radarDetectionRange);
+				entity.Position2D *= ((Width / 2) / radarInnerDetectionRange);
 
 				entity.Position2D = Vector2.Transform(entity.Position2D, Matrix.CreateRotationZ(radian));
 

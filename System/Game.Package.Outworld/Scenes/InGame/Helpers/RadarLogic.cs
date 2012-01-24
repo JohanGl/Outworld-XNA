@@ -28,7 +28,7 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 			playerSpatial = player.Components.Get<SpatialComponent>();
 			
-			Radar = new Radar(84.0f);
+			Radar = new Radar(84.0f, 12.0f);
 			Radar.Initialize(context);
 			Radar.Center = playerSpatial.Position;
 
@@ -49,7 +49,6 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 			var radarEntityC = new RadarEntity();
 			radarEntityC.Opacity = 1.0f;
 			radarEntityC.Color = Color.LightGreen;
-//			radarEntityC.Position = new Vector3(94, 38, 41);
 			radarEntityC.Position = new Vector3(120, 38, 65);
 			radarEntityC.Id = 97;
 
