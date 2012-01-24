@@ -34,27 +34,40 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 
 			messageHandler = ServiceLocator.Get<IMessageHandler>();
 
-			var radarEntityA = new RadarEntity();
-			radarEntityA.Opacity = 1.0f;
-			radarEntityA.Color = Color.Yellow;
-			radarEntityA.Position = new Vector3(-14, 42, -23);
-			radarEntityA.Id = 99;
+			for(int i = 0; i < clients.Count; i++)
+			{
+				var client = clients[i];
 
-			var radarEntityB = new RadarEntity();
-			radarEntityB.Opacity = 1.0f;
-			radarEntityB.Color = Color.Red;
-			radarEntityB.Position = new Vector3(51, 45, -22);
-			radarEntityB.Id = 98;
+				var radarEntityA = new RadarEntity();
+				radarEntityA.Opacity = 1.0f;
+				radarEntityA.Color = Color.LightGreen;
+				radarEntityA.Position = client.Position;
+				radarEntityA.Id = client.Id;
 
-			var radarEntityC = new RadarEntity();
-			radarEntityC.Opacity = 1.0f;
-			radarEntityC.Color = Color.LightGreen;
-			radarEntityC.Position = new Vector3(120, 38, 65);
-			radarEntityC.Id = 97;
+				Radar.RadarEntities.Add(radarEntityA);
+			}
 
-			Radar.RadarEntities.Add(radarEntityA);
-			Radar.RadarEntities.Add(radarEntityB);
-			Radar.RadarEntities.Add(radarEntityC);
+			//var radarEntityA = new RadarEntity();
+			//radarEntityA.Opacity = 1.0f;
+			//radarEntityA.Color = Color.Yellow;
+			//radarEntityA.Position = new Vector3(-14, 42, -23);
+			//radarEntityA.Id = 99;
+
+			//var radarEntityB = new RadarEntity();
+			//radarEntityB.Opacity = 1.0f;
+			//radarEntityB.Color = Color.Red;
+			//radarEntityB.Position = new Vector3(51, 45, -22);
+			//radarEntityB.Id = 98;
+
+			//var radarEntityC = new RadarEntity();
+			//radarEntityC.Opacity = 1.0f;
+			//radarEntityC.Color = Color.LightGreen;
+			//radarEntityC.Position = new Vector3(120, 38, 65);
+			//radarEntityC.Id = 97;
+
+			//Radar.RadarEntities.Add(radarEntityA);
+			//Radar.RadarEntities.Add(radarEntityB);
+			//Radar.RadarEntities.Add(radarEntityC);
 		}
 
 		public void Update(GameTime gameTime)
