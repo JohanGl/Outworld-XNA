@@ -11,7 +11,6 @@ namespace Framework.Network.Servers
 {
 	public class LidgrenServer : IServer
 	{
-		public event EventHandler<ClientStatusArgs> ClientStatusChanged;
 		public List<Message> Messages { get; set; }
 		public IMessageReader Reader { get; set; }
 		public IMessageWriter Writer { get; set; }

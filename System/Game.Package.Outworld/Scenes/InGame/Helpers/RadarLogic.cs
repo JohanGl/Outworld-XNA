@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Framework.Core.Contexts;
 using Framework.Core.Messaging;
 using Framework.Core.Services;
+using Game.Entities;
 using Game.Entities.Outworld;
 using Game.Entities.Outworld.World;
 using Game.Network.Clients;
@@ -75,7 +76,7 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 			Radar.Center = playerSpatial.Position;
 			Radar.Angle = -playerSpatial.Angle.X + 180;
 
-			var messages = messageHandler.GetMessages<NetworkMessage>("GameClient");
+			var messages = messageHandler.GetMessages<NetworkMessage>(MessageHandlerType.GameClient);
 
 			for (int i = 0; i < messages.Count; i++ )
 			{

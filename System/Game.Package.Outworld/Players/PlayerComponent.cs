@@ -5,6 +5,7 @@ using Framework.Core.Services;
 using Framework.Physics;
 using Framework.Physics.RigidBodies;
 using Framework.Physics.RigidBodies.Shapes;
+using Game.Entities;
 using Game.Entities.Outworld.Characters;
 using Game.Entities.Outworld.World;
 using Game.Entities.Outworld.World.SpatialSensor;
@@ -163,7 +164,7 @@ namespace Outworld.Players
 
 			if (clientAction != previousClientAction)
 			{
-				messageHandler.AddMessage("ClientActions", GetPlayerMessage(clientAction));
+				messageHandler.AddMessage(MessageHandlerType.ClientActions, GetPlayerMessage(clientAction));
 			}
 
 			previousClientAction = clientAction;
@@ -184,7 +185,7 @@ namespace Outworld.Players
 			animationHandler.Animations[AnimationType.DeathCameraTilt].Start();
 			animationHandler.Animations[AnimationType.DeathCameraOffsetY].Start();
 
-			messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.Dead));
+			messageHandler.AddMessage(MessageHandlerType.ClientActions, GetPlayerMessage(ClientActionType.Dead));
 		}
 
 		public void ToggleStandCrouch()

@@ -53,7 +53,7 @@ namespace Game.Network.Servers
 
 					clientsToRemove.Add(pair.Key);
 
-					Logger.Log<LidgrenServer>(LogLevel.Debug, "Log: Client:{0} Disconnected due to TimeOut.", pair.Key.ToString());
+					Logger.Log<LidgrenServer>(LogLevel.Debug, "Log: Client: {0} disconnected due to timeout.", pair.Key.ToString());
 				}
 			}
 

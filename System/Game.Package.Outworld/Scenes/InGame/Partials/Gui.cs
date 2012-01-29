@@ -1,6 +1,7 @@
 ﻿using System;
 using Framework.Core.Common;
 using Framework.Gui;
+using Game.Entities;
 using Game.Entities.Outworld;
 using Game.Entities.Outworld.World.SpatialSensor;
 using Game.Network.Clients;
@@ -64,12 +65,12 @@ namespace Outworld.Scenes.InGame
 
 		private void UpdateNetworkNotifications(GameTime gameTime)
 		{
-			if (messageHandler.MessageGroups.ContainsKey("GameClient"))
+			if (messageHandler.MessageGroups.ContainsKey(MessageHandlerType.GameClient))
 			{
 				bool connectedPlayers = false;
 				bool disconnectedPlayers = false;
 
-				var messages = messageHandler.GetMessages<NetworkMessage>("GameClient");
+				var messages = messageHandler.GetMessages<NetworkMessage>(MessageHandlerType.GameClient);
 
 				for (int i = 0; i < messages.Count; i++)
 				{

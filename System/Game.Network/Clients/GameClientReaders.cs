@@ -1,5 +1,6 @@
 ﻿using System;
 using Framework.Network.Messages;
+using Game.Entities;
 using Game.Network.Clients.Events;
 using Game.Network.Common;
 
@@ -55,7 +56,7 @@ namespace Game.Network.Clients
 				Text = string.Format("Player {0} {1}", clientId, connected ? "connected" : "disconnected")
 			};
 
-			messageHandler.AddMessage("GameClient", notificationMessage);
+			messageHandler.AddMessage(MessageHandlerType.GameClient, notificationMessage);
 
 			UpdateServerEntities(clientId, connected);
 		}

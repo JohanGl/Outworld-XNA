@@ -7,41 +7,41 @@ namespace Framework.Core.Messaging
 	/// </summary>
 	public class DefaultMessageHandler : IMessageHandler
 	{
-		public Dictionary<string, List<IMessage>> MessageGroups { get; set; }
+		public Dictionary<int, List<IMessage>> MessageGroups { get; set; }
 
 		public DefaultMessageHandler()
 		{
-			MessageGroups = new Dictionary<string, List<IMessage>>();
+			MessageGroups = new Dictionary<int, List<IMessage>>();
 		}
 
-		public void AddMessage(string id, IMessage message)
+		public void AddMessage(int groupId, IMessage message)
 		{
-			if (!MessageGroups.ContainsKey(id))
+			if (!MessageGroups.ContainsKey(groupId))
 			{
-				MessageGroups.Add(id, new List<IMessage>());
+				MessageGroups.Add(groupId, new List<IMessage>());
 			}
 
-			MessageGroups[id].Add(message);
+			MessageGroups[groupId].Add(message);
 		}
 
-		public List<T> GetMessages<T>(string id)
+		public List<T> GetMessages<T>(int groupId)
 		{
 			var result = new List<T>();
 
-			if (MessageGroups.ContainsKey(id))
+			if (MessageGroups.ContainsKey(groupId))
 			{
-				for (int i = 0; i < MessageGroups[id].Count; i++)
+				for (int i = 0; i < MessageGroups[groupId].Count; i++)
 				{
-					result.Add((T)MessageGroups[id][i]);
+					result.Add((T)MessageGroups[groupId][i]);
 				}
 			}
 
 			return result;
 		}
 
-		public void Clear(string id)
+		public void Clear(int groupId)
 		{
-			MessageGroups.Remove(id);
+			MessageGroups.Remove(groupId);
 		}
 
 		public void Clear()

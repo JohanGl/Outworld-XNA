@@ -33,7 +33,7 @@ namespace Outworld.Scenes.Debug.Network
 			gameServer.Start();
 			gameClient.Connect();
 
-			sendTimer = new GameTimer(TimeSpan.FromMilliseconds(1000 / 20), SendClientSpatial);
+			//sendTimer = new GameTimer(TimeSpan.FromMilliseconds(1000 / 20), SendClientSpatial);
 
 			Context.Input.Keyboard.ClearMappings();
 			Context.Input.Keyboard.AddMapping(Keys.F1);
@@ -62,19 +62,6 @@ namespace Outworld.Scenes.Debug.Network
 
 			if (Context.Input.Keyboard.KeyboardState[Keys.F1].WasJustPressed)
 			{
-				messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.Jump));
-			}
-			else if (Context.Input.Keyboard.KeyboardState[Keys.F2].WasJustPressed)
-			{
-				messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.Damaged));
-				messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.Dead));
-			}
-			else if (Context.Input.Keyboard.KeyboardState[Keys.F3].WasJustPressed)
-			{
-				messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.RunDirection1));
-				messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.Fall));
-				messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.Land));
-				messageHandler.AddMessage("ClientActions", GetPlayerMessage(ClientActionType.Damaged));
 			}
 
 			sendTimer.Update(gameTime);
@@ -92,32 +79,6 @@ namespace Outworld.Scenes.Debug.Network
 
 		public override void Render(GameTime gameTime)
 		{
-		}
-
-		private void SendClientSpatial()
-		{
-			var playerActions = messageHandler.GetMessages<PlayerMessage>("ClientActions");
-
-			if (playerActions.Count > 0)
-			{
-				var actions = new List<ClientAction>();
-
-				for (int i = 0; i < playerActions.Count; i++)
-				{
-					actions.Add(playerActions[i].ClientAction);
-				}
-
-				gameClient.BeginCombinedMessage();
-				gameClient.SendClientSpatial(new Vector3(1), new Vector3(2), new Vector3(3));
-				gameClient.SendClientActions(actions);
-				gameClient.EndCombinedMessage();
-
-				messageHandler.Clear("ClientActions");
-			}
-			else
-			{
-				gameClient.SendClientSpatial(new Vector3(1), new Vector3(2), new Vector3(3));
-			}
 		}
 	}
 }

@@ -5,12 +5,13 @@
 	/// </summary>
 	public enum PacketType : byte
 	{
-		Unknown = 0,
-		Combined,
-		GameSettings,
-		ClientStatus,
-		ClientSpatial,
-		ClientActions,
+		Unknown = 0,			// Default type to track incorrect code (code which forgets to set this type)
+		Combined,				// Marks that the package is a combination of packages
+		GameSettings,			// Startup information for when a client first joins a game
+		Sequence,				// Server packet sequence information used to track the sync of states between the server and client
+		ClientStatus,			// Connection and disconnection packet for clients
+		ClientSpatial,			// Client position, velocity and angles
+		ClientActions			// Client actions such as running, jumping, shooting etc
 	}
 
 	/// <summary>

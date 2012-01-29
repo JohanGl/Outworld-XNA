@@ -5,6 +5,7 @@ using Framework.Core.Messaging;
 using Framework.Core.Services;
 using Framework.Network.Clients;
 using Framework.Network.Clients.Configurations;
+using Game.Entities;
 using Game.Network.Clients.Settings;
 using Game.Network.Common;
 using Game.World;
@@ -72,7 +73,7 @@ namespace Game.Network.Clients
 		public void Update(GameTime gameTime)
 		{
 			client.Update();
-			messageHandler.Clear("GameClient");
+			messageHandler.Clear(MessageHandlerType.GameClient);
 
 			for (int i = 0; i < client.Messages.Count; i++)
 			{

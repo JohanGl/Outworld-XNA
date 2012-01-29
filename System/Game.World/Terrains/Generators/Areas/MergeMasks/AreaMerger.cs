@@ -89,12 +89,6 @@ namespace Game.World.Terrains.Generators.Areas.MergeMasks
 			random = new Random(location2i.GetHashCode());
 			NoiseAreaType noiseAreaType;
 
-			// TODO: Remove this debug code
-			if (area.Info.Location.ToString() == "0,0,3")
-			{
-				int a = 10;
-			}
-
 			// Loop through all columns of the area
 			for (int z = 0; z < Area.Size.Z; z++)
 			{

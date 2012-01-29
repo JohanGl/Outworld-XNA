@@ -22,7 +22,6 @@ namespace Game.World.Terrains.Rendering
 		private TerrainVisibility terrainVisibility;
 		private Area area;
 		private TerrainMesh mesh;
-		private Vector3 cameraViewNormal;
 
 		public void Initialize(TerrainVisibility terrainVisibility, GameContext context)
 		{

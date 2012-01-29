@@ -79,11 +79,10 @@ namespace Framework.Animations.Pipeline
 		// TODO: Use for sub-animations
 		private void ReadOpaqueData(NodeContent node)
 		{
-			if (node.OpaqueData.Count > 0)
-			{
-				int a = 10;
-				//var a = node.OpaqueData.GetValue<string>("AnimName", null);
-			}
+			//if (node.OpaqueData.Count > 0)
+			//{
+			//    var a = node.OpaqueData.GetValue<string>("AnimName", null);
+			//}
 		}
 
 		/// <summary>

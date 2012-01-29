@@ -12,6 +12,7 @@ using Framework.Core.Scenes;
 using Framework.Core.Scenes.Cameras;
 using Framework.Core.Services;
 using Framework.Physics.Renderers;
+using Game.Entities;
 using Game.Entities.Outworld;
 using Game.Entities.Outworld.Characters;
 using Game.Entities.Outworld.World;
@@ -521,7 +522,7 @@ namespace Outworld.Scenes.InGame
 		{
 			if (gameClient.IsConnected)
 			{
-				var playerActions = messageHandler.GetMessages<PlayerMessage>("ClientActions");
+				var playerActions = messageHandler.GetMessages<PlayerMessage>(MessageHandlerType.ClientActions);
 
 				if (playerActions.Count > 0)
 				{
@@ -545,7 +546,7 @@ namespace Outworld.Scenes.InGame
 				}
 			}
 
-			messageHandler.Clear("ClientActions");
+			messageHandler.Clear(MessageHandlerType.ClientActions);
 		}
 
 		private void SaveBreadCrumb()
@@ -623,7 +624,7 @@ namespace Outworld.Scenes.InGame
 								Text = string.Format("Player {0} died", action.ClientId)
 							};
 
-							messageHandler.AddMessage("GameClient", notificationMessage);
+							messageHandler.AddMessage(MessageHandlerType.GameClient, notificationMessage);
 						}
 						else
 						{
