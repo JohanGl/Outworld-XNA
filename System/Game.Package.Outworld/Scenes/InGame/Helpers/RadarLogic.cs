@@ -82,7 +82,7 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 			{
 				var message = messages[i];
 
-				if (message.Type == NetworkMessage.MessageType.Disconnected)
+				if (message.Type == NetworkMessageType.Disconnected)
 				{
 					for(int j = 0; j < Radar.RadarEntities.Count; j++)
 					{
@@ -95,7 +95,7 @@ namespace Outworld.Scenes.InGame.Controls.Hud
 						}
 					}
 				}
-				else if(message.Type == NetworkMessage.MessageType.Connected)
+				else if(message.Type == NetworkMessageType.Connected)
 				{
 					for (int j = 0; j < clients.Count; j++)
 					{

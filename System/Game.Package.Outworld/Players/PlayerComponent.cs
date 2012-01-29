@@ -46,8 +46,8 @@ namespace Outworld.Players
 		private TerrainContextCollisionHelper terrainContextCollisionHelper;
 		private GlobalSettings globalSettings;
 		private bool isDying;
-		private ClientActionType clientAction;
-		private ClientActionType previousClientAction;
+		private ServerEntityEventType serverEntityEvent;
+		private ServerEntityEventType previousServerEntityEvent;
 
 		private byte collisionHandlerCounter;
 
@@ -153,21 +153,21 @@ namespace Outworld.Players
 			if (spatialSensor.State[SpatialSensorStateType.HorizontalMovement].IsActive)
 			{
 				// Calculate the new direction enum value
-				int newDirection = (int)ClientActionType.RunDirection1 + (inputComponent.MovementDirection - 1);
-				clientAction = (ClientActionType)newDirection;
+				int newDirection = (int)ServerEntityEventType.RunDirection1 + (inputComponent.MovementDirection - 1);
+				serverEntityEvent = (ServerEntityEventType)newDirection;
 			}
 			// Idle
 			else
 			{
-				clientAction = ClientActionType.Idle;
+				serverEntityEvent = ServerEntityEventType.Idle;
 			}
 
-			if (clientAction != previousClientAction)
+			if (serverEntityEvent != previousServerEntityEvent)
 			{
-				messageHandler.AddMessage(MessageHandlerType.ClientActions, GetPlayerMessage(clientAction));
+				messageHandler.AddMessage(MessageHandlerType.ServerEntityEvents, GetPlayerMessage(serverEntityEvent));
 			}
 
-			previousClientAction = clientAction;
+			previousServerEntityEvent = serverEntityEvent;
 		}
 
 		public void Kill()
@@ -185,7 +185,7 @@ namespace Outworld.Players
 			animationHandler.Animations[AnimationType.DeathCameraTilt].Start();
 			animationHandler.Animations[AnimationType.DeathCameraOffsetY].Start();
 
-			messageHandler.AddMessage(MessageHandlerType.ClientActions, GetPlayerMessage(ClientActionType.Dead));
+			messageHandler.AddMessage(MessageHandlerType.ServerEntityEvents, GetPlayerMessage(ServerEntityEventType.Dead));
 		}
 
 		public void ToggleStandCrouch()
@@ -231,7 +231,7 @@ namespace Outworld.Players
 			}
 		}
 
-		private PlayerMessage GetPlayerMessage(ClientActionType type)
+		private PlayerMessage GetPlayerMessage(ServerEntityEventType type)
 		{
 			var message = new PlayerMessage();
 			message.ClientAction = new ClientAction();

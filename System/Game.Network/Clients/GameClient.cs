@@ -45,6 +45,9 @@ namespace Game.Network.Clients
 			ServerEntities = new List<ServerEntity>();
 			messageHandler = ServiceLocator.Get<IMessageHandler>();
 			Logger.RegisterLogLevelsFor<GameClient>(Logger.LogLevels.Adaptive);
+
+			actionSequence = 0;
+			unacknowledgedActions = new Dictionary<byte, List<ClientAction>>(256);
 		}
 
 		public void Initialize(GameClientSettings settings)
@@ -81,25 +84,29 @@ namespace Game.Network.Clients
 
 				switch ((PacketType)message.Data[0])
 				{
-					case PacketType.ClientStatus:
-						ReceivedClientStatus(message);
-						break;
-
 					case PacketType.GameSettings:
 						ReceivedGameSettings(message);
 						break;
 
-					case PacketType.ClientSpatial:
+					case PacketType.Sequence:
+						ReceivedSequence(message);
+						break;
+
+					case PacketType.EntityStatus:
+						ReceivedClientStatus(message);
+						break;
+
+					case PacketType.EntitySpatial:
 						ReceivedClientSpatial(message);
 						break;
 
-					case PacketType.ClientActions:
+					case PacketType.EntityEvents:
 						ReceivedClientActions(message);
 						break;
 				}
 
 				// TODO: Temp Debug
-				if ((PacketType)message.Data[0] != PacketType.ClientSpatial)
+				if ((PacketType)message.Data[0] != PacketType.EntitySpatial)
 				{
 					string bytes = "";
 					for (int j = 0; j < message.Data.Length; j++)

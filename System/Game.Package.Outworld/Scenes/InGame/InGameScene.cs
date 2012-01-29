@@ -457,7 +457,7 @@ namespace Outworld.Scenes.InGame
 
 			if (animation != previousAnimation)
 			{
-				if (animation >= (byte)ClientActionType.RunDirection1 && animation <= (byte)ClientActionType.RunDirection8)
+				if (animation >= (byte)ServerEntityEventType.RunDirection1 && animation <= (byte)ServerEntityEventType.RunDirection8)
 				{
 					skinnedModelPlayer.SetAnimationClip("Run");
 				}
@@ -522,7 +522,7 @@ namespace Outworld.Scenes.InGame
 		{
 			if (gameClient.IsConnected)
 			{
-				var playerActions = messageHandler.GetMessages<PlayerMessage>(MessageHandlerType.ClientActions);
+				var playerActions = messageHandler.GetMessages<PlayerMessage>(MessageHandlerType.ServerEntityEvents);
 
 				if (playerActions.Count > 0)
 				{
@@ -546,7 +546,7 @@ namespace Outworld.Scenes.InGame
 				}
 			}
 
-			messageHandler.Clear(MessageHandlerType.ClientActions);
+			messageHandler.Clear(MessageHandlerType.ServerEntityEvents);
 		}
 
 		private void SaveBreadCrumb()
@@ -599,28 +599,28 @@ namespace Outworld.Scenes.InGame
 					{
 						serverEntity.PreviousAnimation = serverEntity.Animation;
 
-						if (action.Type == ClientActionType.Idle)
+						if (action.Type == ServerEntityEventType.Idle)
 						{
 							serverEntity.Animation = 0;
 						}
-						else if (action.Type == ClientActionType.RunDirection1 ||
-								 action.Type == ClientActionType.RunDirection2 ||
-								 action.Type == ClientActionType.RunDirection3 ||
-								 action.Type == ClientActionType.RunDirection4 ||
-								 action.Type == ClientActionType.RunDirection5 ||
-								 action.Type == ClientActionType.RunDirection6 ||
-								 action.Type == ClientActionType.RunDirection7 ||
-								 action.Type == ClientActionType.RunDirection8)
+						else if (action.Type == ServerEntityEventType.RunDirection1 ||
+								 action.Type == ServerEntityEventType.RunDirection2 ||
+								 action.Type == ServerEntityEventType.RunDirection3 ||
+								 action.Type == ServerEntityEventType.RunDirection4 ||
+								 action.Type == ServerEntityEventType.RunDirection5 ||
+								 action.Type == ServerEntityEventType.RunDirection6 ||
+								 action.Type == ServerEntityEventType.RunDirection7 ||
+								 action.Type == ServerEntityEventType.RunDirection8)
 						{
 							serverEntity.Animation = 1;
 						}
-						else if (action.Type == ClientActionType.Dead)
+						else if (action.Type == ServerEntityEventType.Dead)
 						{
 							// Add a global message for this event
 							var notificationMessage = new NetworkMessage()
 							{
-								Type = NetworkMessage.MessageType.ClientAction,
-								ClientActionType = ClientActionType.Dead,
+								Type = NetworkMessageType.ClientAction,
+								ServerEntityEventType = ServerEntityEventType.Dead,
 								Text = string.Format("Player {0} died", action.ClientId)
 							};
 

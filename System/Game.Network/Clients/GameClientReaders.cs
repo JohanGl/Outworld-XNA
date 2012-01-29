@@ -52,7 +52,7 @@ namespace Game.Network.Clients
 			var notificationMessage = new NetworkMessage()
 			{
 				ClientId = clientId,
-				Type = connected ? NetworkMessage.MessageType.Connected : NetworkMessage.MessageType.Disconnected,
+				Type = connected ? NetworkMessageType.Connected : NetworkMessageType.Disconnected,
 				Text = string.Format("Player {0} {1}", clientId, connected ? "connected" : "disconnected")
 			};
 
@@ -81,6 +81,7 @@ namespace Game.Network.Clients
 				{
 					var data = new ClientSpatial();
 					data.ClientId = client.Reader.ReadByte();
+					data.TimeStamp = client.Reader.ReadTimeStamp();
 					data.Position = messageHelper.ReadVector3(client.Reader);
 					data.Velocity = messageHelper.ReadVector3(client.Reader);
 					data.Angle = messageHelper.ReadVector3(client.Reader);
@@ -115,15 +116,31 @@ namespace Game.Network.Clients
 
 					for (byte j = 0; j < actions; j++)
 					{
-						args.ClientActions.Add(new ClientAction()
-						{
-							ClientId = clientId,
-							Type = (ClientActionType)client.Reader.ReadByte()
-						});
+						var action = new ClientAction();
+						action.ClientId = clientId;
+						action.TimeStamp = client.Reader.ReadTimeStamp();
+						action.Type = (ServerEntityEventType)client.Reader.ReadByte();
+
+						args.ClientActions.Add(action);
 					}
 				}
 
 				GetClientActionsCompleted(this, args);
+			}
+		}
+
+		private void ReceivedSequence(Message message)
+		{
+			// Read the message
+			client.Reader.ReadNewMessage(message);
+			client.Reader.ReadByte();
+			int sequenceCount = client.Reader.ReadByte();
+
+			// Acknowledge all sequences within the message
+			for (int i = 0; i < sequenceCount; i++)
+			{
+				byte currentSequence = client.Reader.ReadByte();
+				unacknowledgedActions.Remove(currentSequence);
 			}
 		}
 	}

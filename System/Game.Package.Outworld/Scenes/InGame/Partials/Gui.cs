@@ -78,17 +78,17 @@ namespace Outworld.Scenes.InGame
 
 					notifications.AddNotification(message.Text);
 
-					if (message.Type == NetworkMessage.MessageType.Connected)
+					if (message.Type == NetworkMessageType.Connected)
 					{
 						connectedPlayers = true;
 					}
-					else if (message.Type == NetworkMessage.MessageType.Disconnected)
+					else if (message.Type == NetworkMessageType.Disconnected)
 					{
 						disconnectedPlayers = true;
 					}
-					else if (message.Type == NetworkMessage.MessageType.ClientAction)
+					else if (message.Type == NetworkMessageType.ClientAction)
 					{
-						if (message.ClientActionType == ClientActionType.Dead)
+						if (message.ServerEntityEventType == ServerEntityEventType.Dead)
 						{
 							audioHandler.PlaySound("Notification2");
 						}

@@ -109,16 +109,16 @@ namespace Game.Network.Servers
 				return;
 			}
 
-			// Check for and remove clients that have timed out
-			if (checkClientTimeoutsTimer.Update(gameTime))
-			{
-				CheckClientTimeouts(gameTime);
-			}
-
 			// Skip the packet updates below if the tickrate hasnt been reached
 			if (!tickrateTimer.Update(gameTime))
 			{
 				return;
+			}
+
+			// Check for and remove clients that have timed out
+			if (checkClientTimeoutsTimer.Update(gameTime))
+			{
+				CheckClientTimeouts(gameTime);
 			}
 
 			// Check for new messages and store them if available
@@ -164,11 +164,11 @@ namespace Game.Network.Servers
 						ReceivedGameSettingsRequest(message);
 						break;
 
-					case PacketType.ClientSpatial:
+					case PacketType.EntitySpatial:
 						ReceivedClientSpatial(message);
 						break;
 
-					case PacketType.ClientActions:
+					case PacketType.EntityEvents:
 						ReceivedClientActions(message);
 						break;
 
@@ -178,7 +178,7 @@ namespace Game.Network.Servers
 				}
 
 				// TODO: Temp Debug
-				if ((PacketType)message.Data[0] != PacketType.ClientSpatial)
+				if ((PacketType)message.Data[0] != PacketType.EntitySpatial)
 				{
 					string bytes = "";
 					for (int j = 0; j < message.Data.Length; j++)
