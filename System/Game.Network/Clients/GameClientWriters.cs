@@ -10,7 +10,9 @@ namespace Game.Network.Clients
 		// Handled combined messages
 		private bool isCombined;
 		private bool isCombinedInitialized;
-
+		
+		private byte actionSequence;
+		private Dictionary<byte, List<ClientAction>> unacknowledgedActions;
 		//private List<RecordedMessage> recordedMessages = new List<RecordedMessage>();
 
 		public void GetGameSettings()
@@ -24,7 +26,7 @@ namespace Game.Network.Clients
 		public void SendClientSpatial(Vector3 position, Vector3 velocity, Vector3 angle)
 		{
 			InitializeMessageWriter();
-			client.Writer.Write((byte)PacketType.ClientSpatial);
+			client.Writer.Write((byte)PacketType.EntitySpatial);
 			client.Writer.WriteTimeStamp();
 			messageHelper.WriteVector3(position, client.Writer);
 			messageHelper.WriteVector3(velocity, client.Writer);
@@ -50,23 +52,42 @@ namespace Game.Network.Clients
 
 		public void SendClientActions(List<ClientAction> actions)
 		{
-			InitializeMessageWriter();
-			client.Writer.Write((byte)PacketType.ClientActions);
-			client.Writer.Write((byte)(actions.Count * 5));
+			// Add the actions to the unacknowledged actions list
+			unacknowledgedActions[actionSequence] = actions;
 
-			for (int i = 0; i < actions.Count; i++)
+			actionSequence++;
+
+			if (actionSequence > 255)
 			{
-				client.Writer.Write(actions[i].TimeStamp);
-				client.Writer.Write((byte)actions[i].Type);
+				actionSequence = 0;
 			}
 
-			SendMessage();
+			SendUnacknowledgedActions();
 
 			// Recorded messages
 			//var recordedMessage = new RecordedMessage();
 			//recordedMessage.Actions = new List<ClientAction>();
 			//recordedMessage.Actions.AddRange(actions);
 			//recordedMessages.Add(recordedMessage);
+		}
+
+		private void SendUnacknowledgedActions()
+		{
+			foreach (var actions in unacknowledgedActions)
+			{
+				InitializeMessageWriter();
+				client.Writer.Write((byte)PacketType.EntityEvents);
+				client.Writer.Write(actionSequence);
+				client.Writer.Write((byte)(actions.Value.Count * 5));
+
+				for (int i = 0; i < actions.Value.Count; i++)
+				{
+					client.Writer.Write(actions.Value[i].TimeStamp);
+					client.Writer.Write((byte)actions.Value[i].Type);
+				}
+
+				SendMessage();
+			}
 		}
 
 		private void InitializeMessageWriter()

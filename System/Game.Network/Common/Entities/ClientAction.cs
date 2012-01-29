@@ -5,6 +5,6 @@
 		public byte ClientId;
 		public float TimeStamp;
 
-		public ClientActionType Type;
+		public ServerEntityEventType Type;
 	}
 }

@@ -1,3 +1,4 @@
+using System;
 using Framework.Network.Messages;
 using Framework.Network.Servers;
 using Game.Network.Common;
@@ -7,10 +8,14 @@ namespace Game.Network.Servers
 {
 	public partial class GameServer
 	{
+		// Handled combined messages
+		private bool isCombined;
+		private bool isCombinedInitialized;
+
 		private void BroadcastClientStatusChanged(ClientStatusArgs e)
 		{
 			server.Writer.WriteNewMessage();
-			server.Writer.Write((byte)PacketType.ClientStatus);
+			server.Writer.Write((byte)PacketType.EntityStatus);
 			server.Writer.Write(e.ClientId);
 			server.Writer.Write(e.Type == ClientStatusType.Connected);
 
@@ -49,8 +54,8 @@ namespace Game.Network.Servers
 			}
 
 			// Write the header
-			server.Writer.WriteNewMessage();
-			server.Writer.Write((byte)PacketType.ClientSpatial);
+			InitializeMessageWriter();
+			server.Writer.Write((byte)PacketType.EntitySpatial);
 
 			// Total number of clients in the message
 			server.Writer.Write((byte)clients.Count);
@@ -65,20 +70,24 @@ namespace Game.Network.Servers
 
 				if (length >= 0)
 				{
+					var spatial = client.Value.SpatialData[length];
+
 					// Write the client spatial data
-					messageHelper.WriteVector3(client.Value.SpatialData[length].Position, server.Writer);
-					messageHelper.WriteVector3(client.Value.SpatialData[length].Velocity, server.Writer);
-					messageHelper.WriteVector3(client.Value.SpatialData[length].Angle, server.Writer);
+					server.Writer.Write(spatial.TimeStamp);
+					messageHelper.WriteVector3(spatial.Position, server.Writer);
+					messageHelper.WriteVector3(spatial.Velocity, server.Writer);
+					messageHelper.WriteVector3(spatial.Angle, server.Writer);
 				}
 				else
 				{
+					server.Writer.Write(server.TimeStamp);
 					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
 					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
 					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
 				}
 			}
 
-			server.Broadcast(MessageDeliveryMethod.UnreliableSequenced);
+			SendMessage(MessageDeliveryMethod.Unreliable);
 		}
 
 		private void BroadcastClientActions()
@@ -106,8 +115,8 @@ namespace Game.Network.Servers
 			bool hasDataToSend = false;
 
 			// Write the header
-			server.Writer.WriteNewMessage();
-			server.Writer.Write((byte)PacketType.ClientActions);
+			InitializeMessageWriter();
+			server.Writer.Write((byte)PacketType.EntityEvents);
 			server.Writer.Write((byte)clientsWithActions);
 
 			foreach (var client in clients)
@@ -130,6 +139,7 @@ namespace Game.Network.Servers
 					var action = clientData.Actions[i];
 
 					// Write the current client action
+					server.Writer.Write(action.TimeStamp);
 					server.Writer.Write((byte)action.Type);
 				}
 
@@ -138,8 +148,42 @@ namespace Game.Network.Servers
 
 			if (hasDataToSend)
 			{
-				server.Broadcast(MessageDeliveryMethod.ReliableSequenced);
+				SendMessage(MessageDeliveryMethod.ReliableOrdered);
 			}
+		}
+
+		private void InitializeMessageWriter()
+		{
+			if (!isCombined)
+			{
+				server.Writer.WriteNewMessage();
+			}
+			else if (isCombined && !isCombinedInitialized)
+			{
+				server.Writer.WriteNewMessage();
+				server.Writer.Write((byte)PacketType.Combined);
+				isCombinedInitialized = true;
+			}
+		}
+
+		private void SendMessage(MessageDeliveryMethod deliveryMethod)
+		{
+			if (!isCombined)
+			{
+				server.Broadcast(deliveryMethod);
+			}
+		}
+
+		public void BeginCombinedMessage()
+		{
+			isCombined = true;
+			isCombinedInitialized = false;
+		}
+
+		public void EndCombinedMessage(MessageDeliveryMethod deliveryMethod)
+		{
+			server.Broadcast(deliveryMethod);
+			isCombined = false;
 		}
 	}
 }

@@ -13,8 +13,8 @@ namespace Game.Network.Servers
 		private void InitializePacketSizeLookup()
 		{
 			packetSizeLookup = new Dictionary<PacketType, int>();
-			packetSizeLookup.Add(PacketType.ClientSpatial, 41);
-			packetSizeLookup.Add(PacketType.ClientActions, 0);
+			packetSizeLookup.Add(PacketType.EntitySpatial, 41);
+			packetSizeLookup.Add(PacketType.EntityEvents, 0);
 		}
 
 		private void ReceivedGameSettingsRequest(Message message)
@@ -34,19 +34,19 @@ namespace Game.Network.Servers
 			server.Reader.ReadNewMessage(message);
 			server.Reader.ReadByte();
 
-			var clientSpatialData = new ClientSpatial();
-			clientSpatialData.TimeStamp = server.Reader.ReadTimeStamp();
-			clientSpatialData.ClientId = clientId;
-			clientSpatialData.Position = messageHelper.ReadVector3(server.Reader);
-			clientSpatialData.Velocity = messageHelper.ReadVector3(server.Reader);
-			clientSpatialData.Angle = messageHelper.ReadVector3(server.Reader);
+			var spatial = new ClientSpatial();
+			spatial.ClientId = clientId;
+			spatial.TimeStamp = server.Reader.ReadTimeStamp();
+			spatial.Position = messageHelper.ReadVector3(server.Reader);
+			spatial.Velocity = messageHelper.ReadVector3(server.Reader);
+			spatial.Angle = messageHelper.ReadVector3(server.Reader);
 
-			clients[clientSpatialData.ClientId].SpatialData.Add(clientSpatialData);
+			clients[spatial.ClientId].SpatialData.Add(spatial);
 
 			// Keep a maximum of 100 entries
-			if (clients[clientSpatialData.ClientId].SpatialData.Count > 100)
+			if (clients[spatial.ClientId].SpatialData.Count > 100)
 			{
-				clients[clientSpatialData.ClientId].SpatialData.RemoveAt(0);
+				clients[spatial.ClientId].SpatialData.RemoveAt(0);
 			}
 		}
 
@@ -59,16 +59,22 @@ namespace Game.Network.Servers
 				return;
 			}
 
+			// Header
 			server.Reader.ReadNewMessage(message);
 			server.Reader.ReadByte();
 
+			// Sequence
+			byte sequence = server.Reader.ReadByte();
+			clients[clientId].ActionsSequencesToAcknowledgeOnNextUpdate.Add(sequence);
+
+			// Actions
 			int actions = server.Reader.ReadByte() / 5;
 
 			for (int i = 0; i < actions; i++)
 			{
 				var action = new ClientAction();
 				action.TimeStamp = server.Reader.ReadTimeStamp();
-				action.Type = (ClientActionType)server.Reader.ReadByte();
+				action.Type = (ServerEntityEventType)server.Reader.ReadByte();
 
 				clients[clientId].Actions.Add(action);
 
@@ -110,8 +116,9 @@ namespace Game.Network.Servers
 			// Dynamic size packet?
 			if (size == 0)
 			{
-				// The second byte represents the length of the packet (+ 2 for the header and length bytes)
-				size = message.Data[combinedMessageStartIndex + 1] + 2;
+				// The third byte (combinedMessageStartIndex + 2) represents the length of the
+				// action bytes, then we add + 3 for the header to get the total packet size
+				size = message.Data[combinedMessageStartIndex + 2] + 3;
 			}
 
 			var result = new Message

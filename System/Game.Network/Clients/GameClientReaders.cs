@@ -52,7 +52,7 @@ namespace Game.Network.Clients
 			var notificationMessage = new NetworkMessage()
 			{
 				ClientId = clientId,
-				Type = connected ? NetworkMessage.MessageType.Connected : NetworkMessage.MessageType.Disconnected,
+				Type = connected ? NetworkMessageType.Connected : NetworkMessageType.Disconnected,
 				Text = string.Format("Player {0} {1}", clientId, connected ? "connected" : "disconnected")
 			};
 
@@ -118,12 +118,27 @@ namespace Game.Network.Clients
 						args.ClientActions.Add(new ClientAction()
 						{
 							ClientId = clientId,
-							Type = (ClientActionType)client.Reader.ReadByte()
+							Type = (ServerEntityEventType)client.Reader.ReadByte()
 						});
 					}
 				}
 
 				GetClientActionsCompleted(this, args);
+			}
+		}
+
+		private void ReceivedSequence(Message message)
+		{
+			// Read the message
+			client.Reader.ReadNewMessage(message);
+			client.Reader.ReadByte();
+			int sequenceCount = client.Reader.ReadByte();
+
+			// Acknowledge all sequences within the message
+			for (int i = 0; i < sequenceCount; i++)
+			{
+				byte currentSequence = client.Reader.ReadByte();
+				unacknowledgedActions.Remove(currentSequence);
 			}
 		}
 	}

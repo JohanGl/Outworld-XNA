@@ -8,17 +8,17 @@ namespace Game.Network.Clients
 	/// </summary>
 	public class NetworkMessage : IMessage
 	{
-		public byte ClientId;
-		public MessageType Type;
-		public ClientActionType ClientActionType;
+		public ushort ClientId;
+		public NetworkMessageType Type;
+		public ServerEntityEventType ServerEntityEventType;
 		public string Text;
+	}
 
-		public enum MessageType
-		{
-			Connected,
-			Disconnected,
-			ClientAction,
-			Chat
-		}
+	public enum NetworkMessageType
+	{
+		Connected,
+		Disconnected,
+		ClientAction,
+		Chat
 	}
 }

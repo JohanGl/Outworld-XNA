@@ -67,7 +67,7 @@ namespace Outworld.Scenes.Debug.Network
 			sendTimer.Update(gameTime);
 		}
 
-		private PlayerMessage GetPlayerMessage(ClientActionType type)
+		private PlayerMessage GetPlayerMessage(ServerEntityEventType type)
 		{
 			var message = new PlayerMessage();
 			message.ClientAction = new ClientAction();
