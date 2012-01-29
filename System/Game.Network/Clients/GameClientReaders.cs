@@ -81,6 +81,7 @@ namespace Game.Network.Clients
 				{
 					var data = new ClientSpatial();
 					data.ClientId = client.Reader.ReadByte();
+					data.TimeStamp = client.Reader.ReadTimeStamp();
 					data.Position = messageHelper.ReadVector3(client.Reader);
 					data.Velocity = messageHelper.ReadVector3(client.Reader);
 					data.Angle = messageHelper.ReadVector3(client.Reader);
@@ -115,11 +116,12 @@ namespace Game.Network.Clients
 
 					for (byte j = 0; j < actions; j++)
 					{
-						args.ClientActions.Add(new ClientAction()
-						{
-							ClientId = clientId,
-							Type = (ServerEntityEventType)client.Reader.ReadByte()
-						});
+						var action = new ClientAction();
+						action.ClientId = clientId;
+						action.TimeStamp = client.Reader.ReadTimeStamp();
+						action.Type = (ServerEntityEventType)client.Reader.ReadByte();
+
+						args.ClientActions.Add(action);
 					}
 				}
 
