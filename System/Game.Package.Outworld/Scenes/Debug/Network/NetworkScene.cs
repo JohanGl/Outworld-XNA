@@ -24,6 +24,7 @@ namespace Outworld.Scenes.Debug.Network
 		private IMessageHandler messageHandler;
 		private SpriteBatch spriteBatch;
 
+		private Vector2 interpolate;
 		private List<Snapshot> snapShots;
 		private Texture2D baseImage;
 		private Texture2D pointImage;
@@ -46,6 +47,7 @@ namespace Outworld.Scenes.Debug.Network
 			this.spriteBatch = spriteBatch ?? new SpriteBatch(Context.Graphics.Device);
 
 			time = "";
+			interpolate = new Vector2();
 
 			gameServer = ServiceLocator.Get<IGameServer>();
 			gameClient = ServiceLocator.Get<IGameClient>();
@@ -97,22 +99,38 @@ namespace Outworld.Scenes.Debug.Network
 			if (Context.Input.Keyboard.KeyboardState[Keys.F1].WasJustPressed)
 			{
 				Random random = new Random();
-				TimeSpan randomTime = TimeSpan.FromSeconds(random.Next(0, 10));
+				TimeSpan randomTime = TimeSpan.FromSeconds(random.NextDouble() * 10.0f);
 
 				time = randomTime.ToString();
-				
-				for(int i = 0; i < snapShots.Count; i++)
-				{
-					if(randomTime.Subtract(snapShots[i].Time).Seconds < 1)
-					{
-						state = i-1;
-						if(state < 0)
-						{
-							state = 0;
-						}
 
-						break;
-					}
+				GetNearestSnapshot(randomTime);
+			}
+		}
+
+		private void GetNearestSnapshot(TimeSpan getNearestSnapshot)
+		{
+			if (snapShots[snapShots.Count-1].Time <= getNearestSnapshot)
+			{
+				var posA = snapShots[snapShots.Count - 2].Position;
+				var posB = snapShots[snapShots.Count - 1].Position;
+
+				interpolate = Vector2.Lerp(posA, posB, 1.0f);
+			}
+
+			for(int i = 0; i < snapShots.Count; i++)
+			{
+				if(getNearestSnapshot.Subtract(snapShots[i].Time).TotalSeconds < 0.0f)
+				{
+					var posA = snapShots[i - 1].Position;
+					var posB = snapShots[i].Position;
+
+					float smooth = (float)((getNearestSnapshot.TotalSeconds - snapShots[i - 1].Time.TotalSeconds) / (snapShots[i].Time.TotalSeconds - snapShots[i - 1].Time.TotalSeconds));
+
+					time += " Smooth:" + smooth;
+
+					interpolate = Vector2.Lerp(posA, posB, smooth);
+
+					break;
 				}
 			}
 		}
@@ -134,9 +152,6 @@ namespace Outworld.Scenes.Debug.Network
 			Vector2 position = new Vector2(0.0f, 0.0f);
 			spriteBatch.Draw(baseImage, position, Color.White);
 
-			var posA = snapShots[state].Position;
-			var posB = snapShots[state + 1].Position;
-
 			spriteBatch.DrawString(Context.Resources.Fonts["Global.Default"],
 										"Time: " + time,
 										new Vector2(3, 0),
@@ -147,9 +162,7 @@ namespace Outworld.Scenes.Debug.Network
 										SpriteEffects.None,
 										0);
 			
-			Vector2 interpolate = Vector2.Lerp(posA,
-								 posB,
-								 0.5f);
+
 			spriteBatch.Draw(pointImage, interpolate, Color.White);
 			
 			spriteBatch.End();
