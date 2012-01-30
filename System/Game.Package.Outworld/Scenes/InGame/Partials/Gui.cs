@@ -88,7 +88,7 @@ namespace Outworld.Scenes.InGame
 					}
 					else if (message.Type == NetworkMessageType.ClientAction)
 					{
-						if (message.ServerEntityEventType == ServerEntityEventType.Dead)
+						if (message.EntityEventType == EntityEventType.Dead)
 						{
 							audioHandler.PlaySound("Notification2");
 						}

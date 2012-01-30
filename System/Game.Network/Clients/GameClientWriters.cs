@@ -11,8 +11,6 @@ namespace Game.Network.Clients
 		private bool isCombined;
 		private bool isCombinedInitialized;
 		
-		private byte actionSequence;
-		private Dictionary<byte, List<ClientAction>> unacknowledgedActions;
 		//private List<RecordedMessage> recordedMessages = new List<RecordedMessage>();
 
 		public void GetGameSettings()
@@ -50,44 +48,25 @@ namespace Game.Network.Clients
 			//}
 		}
 
-		public void SendClientActions(List<ClientAction> actions)
+		public void SendClientActions(List<EntityEvent> actions)
 		{
-			// Add the actions to the unacknowledged actions list
-			unacknowledgedActions[actionSequence] = actions;
+			InitializeMessageWriter();
+			client.Writer.Write((byte)PacketType.EntityEvents);
+			client.Writer.Write((byte)(actions.Count * 5));
 
-			actionSequence++;
-
-			if (actionSequence > 255)
+			for (int i = 0; i < actions.Count; i++)
 			{
-				actionSequence = 0;
+				client.Writer.Write(actions[i].TimeStamp);
+				client.Writer.Write((byte)actions[i].Type);
 			}
 
-			SendUnacknowledgedActions();
+			SendMessage(MessageDeliveryMethod.ReliableUnordered);
 
 			// Recorded messages
 			//var recordedMessage = new RecordedMessage();
 			//recordedMessage.Actions = new List<ClientAction>();
 			//recordedMessage.Actions.AddRange(actions);
 			//recordedMessages.Add(recordedMessage);
-		}
-
-		private void SendUnacknowledgedActions()
-		{
-			foreach (var actions in unacknowledgedActions)
-			{
-				InitializeMessageWriter();
-				client.Writer.Write((byte)PacketType.EntityEvents);
-				client.Writer.Write(actionSequence);
-				client.Writer.Write((byte)(actions.Value.Count * 5));
-
-				for (int i = 0; i < actions.Value.Count; i++)
-				{
-					client.Writer.Write(actions.Value[i].TimeStamp);
-					client.Writer.Write((byte)actions.Value[i].Type);
-				}
-
-				SendMessage();
-			}
 		}
 
 		private void InitializeMessageWriter()
@@ -104,11 +83,11 @@ namespace Game.Network.Clients
 			}
 		}
 
-		private void SendMessage()
+		private void SendMessage(MessageDeliveryMethod method = MessageDeliveryMethod.Unreliable)
 		{
 			if (!isCombined)
 			{
-				client.Send(MessageDeliveryMethod.Unreliable);
+				client.Send(method);
 			}
 		}
 

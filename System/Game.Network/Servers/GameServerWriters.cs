@@ -1,6 +1,5 @@
-using System;
+using System.Collections.Generic;
 using Framework.Network.Messages;
-using Framework.Network.Servers;
 using Game.Network.Common;
 using Microsoft.Xna.Framework;
 
@@ -12,43 +11,60 @@ namespace Game.Network.Servers
 		private bool isCombined;
 		private bool isCombinedInitialized;
 
-		private void BroadcastClientStatusChanged(ClientStatusArgs e)
+		private void BroadcastClientStatusChanged(EntityStatusArgs e)
 		{
 			server.Writer.WriteNewMessage();
 			server.Writer.Write((byte)PacketType.EntityStatus);
-			server.Writer.Write(e.ClientId);
-			server.Writer.Write(e.Type == ClientStatusType.Connected);
+			server.Writer.Write(e.Id);
+			server.Writer.Write(e.StatusType == EntityStatusType.Connected);
 
-			server.Broadcast(MessageDeliveryMethod.ReliableUnordered, GetClientIdAsLong(e.ClientId));
+			server.Broadcast(MessageDeliveryMethod.ReliableUnordered, GetClientIdAsLong(e.Id));
 		}
 
 		private void SendGameSettings(Message message)
 		{
-			byte clientId = connectionIds[message.ClientId];
+			var clientId = connectionIds[message.ClientId];
+
+			var clients = GetEntitiesOfType(EntityType.Client);
 
 			server.Writer.WriteNewMessage();
 			server.Writer.Write((byte)PacketType.GameSettings);
-
 			server.Writer.Write(clientId);
 			server.Writer.Write(Settings.World.Seed);
 			messageHelper.WriteVector3(Settings.World.Gravity, server.Writer);
 			server.Writer.Write((byte)(clients.Count - 1));
 
-			foreach (var pair in clients)
+			foreach (var client in clients)
 			{
-				if (pair.Key != clientId)
+				if (client.Id != clientId)
 				{
-					server.Writer.Write(pair.Key);
+					server.Writer.Write(client.Id);
 				}
 			}
 
-			server.Send(message.ClientId, MessageDeliveryMethod.ReliableOrdered);
+			server.Send(message.ClientId, MessageDeliveryMethod.ReliableUnordered);
 		}
 
-		// TODO: Optimize broadcast
-		private void BroadcastClientSpatial()
+		private void BroadcastClientSpatial(List<EntityInfo> clients)
 		{
 			if (clients.Count < 2)
+			{
+				return;
+			}
+
+			// Send individual packets to all clients
+			for (ushort i = 0; i < clients.Count; i++)
+			{
+				SendClientSpatial(clients[i], clients);
+			}
+		}
+
+		private void SendClientSpatial(EntityInfo client, List<EntityInfo> clients)
+		{
+			var otherClients = GetClientsWithinViewDistance(client, clients);
+
+			// No other clients nearby
+			if (otherClients.Count == 0)
 			{
 				return;
 			}
@@ -58,98 +74,108 @@ namespace Game.Network.Servers
 			server.Writer.Write((byte)PacketType.EntitySpatial);
 
 			// Total number of clients in the message
-			server.Writer.Write((byte)clients.Count);
+			server.Writer.Write((byte)otherClients.Count);
 
-			// Write all client positions
-			foreach (var client in clients)
+			// Send the spatial data of all other clients within view distance to the player
+			for (int i = 0; i < otherClients.Count; i++)
 			{
-				int length = client.Value.SpatialData.Count - 1;
+				server.Writer.Write(otherClients[i].Id);
 
-				// Write the current client id
-				server.Writer.Write(client.Key);
-
-				if (length >= 0)
-				{
-					var spatial = client.Value.SpatialData[length];
-
-					// Write the client spatial data
-					server.Writer.Write(spatial.TimeStamp);
-					messageHelper.WriteVector3(spatial.Position, server.Writer);
-					messageHelper.WriteVector3(spatial.Velocity, server.Writer);
-					messageHelper.WriteVector3(spatial.Angle, server.Writer);
-				}
-				else
-				{
-					server.Writer.Write(server.TimeStamp);
-					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
-					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
-					messageHelper.WriteVector3(Vector3.Zero, server.Writer);
-				}
+				// Write the client spatial data
+				var spatial = otherClients[i].CurrentSpatial;
+				server.Writer.Write(spatial.TimeStamp);
+				messageHelper.WriteVector3(spatial.Position, server.Writer);
+				messageHelper.WriteVector3(spatial.Velocity, server.Writer);
+				messageHelper.WriteVector3(spatial.Angle, server.Writer);
 			}
 
 			SendMessage(MessageDeliveryMethod.Unreliable);
 		}
 
-		private void BroadcastClientActions()
+		private void BroadcastClientActions(List<EntityInfo> clients)
 		{
 			if (clients.Count < 2)
 			{
 				return;
 			}
 
-			int clientsWithActions = 0;
-
-			foreach (var client in clients.Values)
+			// Send individual packets to all clients
+			for (ushort i = 0; i < clients.Count; i++)
 			{
-				if (client.Actions.Count > 0)
-				{
-					clientsWithActions++;
-				}
+				SendClientActions(clients[i], clients);
 			}
+		}
 
-			if (clientsWithActions == 0)
+		private void SendClientActions(EntityInfo client, List<EntityInfo> clients)
+		{
+			var otherClients = GetClientsWithinViewDistance(client, clients);
+
+			// No other clients nearby
+			if (otherClients.Count == 0)
 			{
 				return;
 			}
 
-			bool hasDataToSend = false;
+			tempActions.Clear();
+
+			for (int i = 0; i < otherClients.Count; i++)
+			{
+				var actions = otherClients[i].GetRecentActions(server.TimeStamp);
+
+				if (actions.Count > 0)
+				{
+					tempActions.Add(otherClients[i].Id, actions);
+				}
+			}
+
+			// No relevant actions for other clients
+			if (tempActions.Count == 0)
+			{
+				return;
+			}
 
 			// Write the header
 			InitializeMessageWriter();
 			server.Writer.Write((byte)PacketType.EntityEvents);
-			server.Writer.Write((byte)clientsWithActions);
+			server.Writer.Write((ushort)tempActions.Count);
 
-			foreach (var client in clients)
+			// Loop through all entities and their actions
+			foreach (var pair in tempActions)
 			{
-				var clientData = client.Value;
+				// Write the current entity id
+				server.Writer.Write(pair.Key);
 
-				if (clientData.Actions.Count == 0)
+				// Write the current entity actions
+				for (int i = 0; i < pair.Value.Count; i++)
 				{
-					continue;
-				}
+					var action = pair.Value[i];
 
-				hasDataToSend = true;
-
-				// Write the current client id and number of actions
-				server.Writer.Write(client.Key);
-				server.Writer.Write((byte)clientData.Actions.Count);
-
-				for (int i = 0; i < clientData.Actions.Count; i++)
-				{
-					var action = clientData.Actions[i];
-
-					// Write the current client action
 					server.Writer.Write(action.TimeStamp);
 					server.Writer.Write((byte)action.Type);
 				}
-
-				clientData.Actions.Clear();
 			}
 
-			if (hasDataToSend)
+			SendMessage(MessageDeliveryMethod.ReliableUnordered);
+		}
+
+		private List<EntityInfo> GetClientsWithinViewDistance(EntityInfo client, List<EntityInfo> clients)
+		{
+			var otherClients = new List<EntityInfo>();
+
+			for (ushort i = 0; i < clients.Count; i++)
 			{
-				SendMessage(MessageDeliveryMethod.ReliableOrdered);
+				var otherClient = clients[i];
+
+				if (otherClient.Id != client.Id)
+				{
+					if (otherClient.IsWithinViewDistanceOf(client))
+					{
+						otherClients.Add(otherClient);
+					}
+				}
 			}
+
+			return otherClients;
 		}
 
 		private void InitializeMessageWriter()

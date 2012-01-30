@@ -41,6 +41,11 @@ namespace Framework.Network.Messages.MessageReaders
 			return BitConverter.ToInt16(ReadMessageBytes(2), 0);
 		}
 
+		public UInt16 ReadUInt16()
+		{
+			return BitConverter.ToUInt16(ReadMessageBytes(2), 0);
+		}
+
 		public Int32 ReadInt32()
 		{
 			return BitConverter.ToInt32(ReadMessageBytes(4), 0);
@@ -49,11 +54,6 @@ namespace Framework.Network.Messages.MessageReaders
 		public Int64 ReadInt64()
 		{
 			return BitConverter.ToInt64(ReadMessageBytes(8), 0);
-		}
-
-		public UInt16 ReadUInt16()
-		{
-			return BitConverter.ToUInt16(ReadMessageBytes(16), 0);
 		}
 
 		public float ReadFloat()

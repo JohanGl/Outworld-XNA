@@ -4,7 +4,7 @@ namespace Game.Network.Common
 {
 	public class RecordedMessage
 	{
-		public ClientSpatial Spatial;
-		public List<ClientAction> Actions;
+		public EntitySpatial Spatial;
+		public List<EntityEvent> Actions;
 	}
 }

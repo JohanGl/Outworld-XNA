@@ -46,8 +46,8 @@ namespace Outworld.Players
 		private TerrainContextCollisionHelper terrainContextCollisionHelper;
 		private GlobalSettings globalSettings;
 		private bool isDying;
-		private ServerEntityEventType serverEntityEvent;
-		private ServerEntityEventType previousServerEntityEvent;
+		private EntityEventType entityEvent;
+		private EntityEventType previousEntityEvent;
 
 		private byte collisionHandlerCounter;
 
@@ -89,25 +89,9 @@ namespace Outworld.Players
 		{
 			AreaHelper.FindAreaLocation(spatial.Position, ref spatial.Area);
 
-			// Handle death animations
 			if (isDying)
 			{
-				if (animationHandler.Animations[AnimationType.DeathCameraRoll].IsRunning)
-				{
-					spatial.Angle.Z = animationHandler.Animations[AnimationType.DeathCameraRoll].CurrentValue;
-				}
-
-				if (animationHandler.Animations[AnimationType.DeathCameraTilt].IsRunning)
-				{
-					spatial.Angle.Y = animationHandler.Animations[AnimationType.DeathCameraTilt].CurrentValue;
-				}
-
-				if (animationHandler.Animations[AnimationType.DeathCameraOffsetY].IsRunning)
-				{
-					CameraOffsetY = animationHandler.Animations[AnimationType.DeathCameraOffsetY].CurrentValue;
-				}
-
-				isDying = animationHandler.HasRunningAnimations;
+				HandleDying();
 			}
 			else
 			{
@@ -147,27 +131,47 @@ namespace Outworld.Players
 			animationHandler.Update();
 		}
 
+		private void HandleDying()
+		{
+			if (animationHandler.Animations[AnimationType.DeathCameraRoll].IsRunning)
+			{
+				spatial.Angle.Z = animationHandler.Animations[AnimationType.DeathCameraRoll].CurrentValue;
+			}
+
+			if (animationHandler.Animations[AnimationType.DeathCameraTilt].IsRunning)
+			{
+				spatial.Angle.Y = animationHandler.Animations[AnimationType.DeathCameraTilt].CurrentValue;
+			}
+
+			if (animationHandler.Animations[AnimationType.DeathCameraOffsetY].IsRunning)
+			{
+				CameraOffsetY = animationHandler.Animations[AnimationType.DeathCameraOffsetY].CurrentValue;
+			}
+
+			isDying = animationHandler.HasRunningAnimations;
+		}
+
 		private void UpdateMovement()
 		{
 			// Running
 			if (spatialSensor.State[SpatialSensorStateType.HorizontalMovement].IsActive)
 			{
 				// Calculate the new direction enum value
-				int newDirection = (int)ServerEntityEventType.RunDirection1 + (inputComponent.MovementDirection - 1);
-				serverEntityEvent = (ServerEntityEventType)newDirection;
+				int newDirection = (int)EntityEventType.RunDirection1 + (inputComponent.MovementDirection - 1);
+				entityEvent = (EntityEventType)newDirection;
 			}
 			// Idle
 			else
 			{
-				serverEntityEvent = ServerEntityEventType.Idle;
+				entityEvent = EntityEventType.Idle;
 			}
 
-			if (serverEntityEvent != previousServerEntityEvent)
+			if (entityEvent != previousEntityEvent)
 			{
-				messageHandler.AddMessage(MessageHandlerType.ServerEntityEvents, GetPlayerMessage(serverEntityEvent));
+				messageHandler.AddMessage(MessageHandlerType.ServerEntityEvents, GetPlayerMessage(entityEvent));
 			}
 
-			previousServerEntityEvent = serverEntityEvent;
+			previousEntityEvent = entityEvent;
 		}
 
 		public void Kill()
@@ -185,7 +189,7 @@ namespace Outworld.Players
 			animationHandler.Animations[AnimationType.DeathCameraTilt].Start();
 			animationHandler.Animations[AnimationType.DeathCameraOffsetY].Start();
 
-			messageHandler.AddMessage(MessageHandlerType.ServerEntityEvents, GetPlayerMessage(ServerEntityEventType.Dead));
+			messageHandler.AddMessage(MessageHandlerType.ServerEntityEvents, GetPlayerMessage(EntityEventType.Dead));
 		}
 
 		public void ToggleStandCrouch()
@@ -231,12 +235,12 @@ namespace Outworld.Players
 			}
 		}
 
-		private PlayerMessage GetPlayerMessage(ServerEntityEventType type)
+		private PlayerMessage GetPlayerMessage(EntityEventType type)
 		{
 			var message = new PlayerMessage();
-			message.ClientAction = new ClientAction();
-			message.ClientAction.TimeStamp = gameClient.TimeStamp;
-			message.ClientAction.Type = type;
+			message.EntityEvent = new EntityEvent();
+			message.EntityEvent.TimeStamp = gameClient.TimeStamp;
+			message.EntityEvent.Type = type;
 
 			return message;
 		}

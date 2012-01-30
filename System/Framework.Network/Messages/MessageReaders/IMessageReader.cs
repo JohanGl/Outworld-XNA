@@ -9,6 +9,7 @@ namespace Framework.Network.Messages.MessageReaders
 		bool ReadBool();
 		byte ReadByte();
 		Int16 ReadInt16();
+		UInt16 ReadUInt16();
 		Int32 ReadInt32();
 		Int64 ReadInt64();
 		float ReadFloat();

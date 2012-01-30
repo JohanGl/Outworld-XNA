@@ -21,7 +21,7 @@ namespace Game.Network.Clients
 				// Read the message
 				client.Reader.ReadNewMessage(message);
 				client.Reader.ReadByte();
-				args.ClientId = client.Reader.ReadByte();
+				args.ClientId = client.Reader.ReadUInt16();
 				args.Seed = client.Reader.ReadInt32();
 				args.Gravity = messageHelper.ReadVector3(client.Reader);
 
@@ -75,18 +75,18 @@ namespace Game.Network.Clients
 				byte clients = client.Reader.ReadByte();
 
 				// Initialize and retrieve all client spatial data
-				args.Client = new ClientSpatial[clients];
+				args.Entity = new EntitySpatial[clients];
 
 				for (byte i = 0; i < clients; i++)
 				{
-					var data = new ClientSpatial();
-					data.ClientId = client.Reader.ReadByte();
+					var data = new EntitySpatial();
+					data.Id = client.Reader.ReadByte();
 					data.TimeStamp = client.Reader.ReadTimeStamp();
 					data.Position = messageHelper.ReadVector3(client.Reader);
 					data.Velocity = messageHelper.ReadVector3(client.Reader);
 					data.Angle = messageHelper.ReadVector3(client.Reader);
 
-					args.Client[i] = data;
+					args.Entity[i] = data;
 				}
 
 				GetClientSpatialCompleted(this, args);
@@ -116,31 +116,16 @@ namespace Game.Network.Clients
 
 					for (byte j = 0; j < actions; j++)
 					{
-						var action = new ClientAction();
-						action.ClientId = clientId;
+						var action = new EntityEvent();
+						action.Id = clientId;
 						action.TimeStamp = client.Reader.ReadTimeStamp();
-						action.Type = (ServerEntityEventType)client.Reader.ReadByte();
+						action.Type = (EntityEventType)client.Reader.ReadByte();
 
 						args.ClientActions.Add(action);
 					}
 				}
 
 				GetClientActionsCompleted(this, args);
-			}
-		}
-
-		private void ReceivedSequence(Message message)
-		{
-			// Read the message
-			client.Reader.ReadNewMessage(message);
-			client.Reader.ReadByte();
-			int sequenceCount = client.Reader.ReadByte();
-
-			// Acknowledge all sequences within the message
-			for (int i = 0; i < sequenceCount; i++)
-			{
-				byte currentSequence = client.Reader.ReadByte();
-				unacknowledgedActions.Remove(currentSequence);
 			}
 		}
 	}

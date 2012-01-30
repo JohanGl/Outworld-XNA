@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Framework.Core.Contexts;
 using Framework.Core.Messaging;
 using Framework.Core.Services;
@@ -7,6 +6,7 @@ using Game.Entities;
 using Game.Entities.Outworld;
 using Game.Entities.Outworld.World;
 using Game.Network.Clients;
+using Game.Network.Common;
 using Microsoft.Xna.Framework;
 
 namespace Outworld.Scenes.InGame.Controls.Hud

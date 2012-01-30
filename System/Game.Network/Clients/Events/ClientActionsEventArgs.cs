@@ -6,11 +6,11 @@ namespace Game.Network.Clients.Events
 {
 	public class ClientActionsEventArgs : EventArgs
 	{
-		public List<ClientAction> ClientActions;
+		public List<EntityEvent> ClientActions;
 
 		public ClientActionsEventArgs()
 		{
-			ClientActions = new List<ClientAction>();
+			ClientActions = new List<EntityEvent>();
 		}
 	}
 }

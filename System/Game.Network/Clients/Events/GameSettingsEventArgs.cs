@@ -5,7 +5,7 @@ namespace Game.Network.Clients
 {
 	public class GameSettingsEventArgs : EventArgs
 	{
-		public byte ClientId;
+		public ushort ClientId;
 		public int Seed;
 		public Vector3 Gravity;
 	}

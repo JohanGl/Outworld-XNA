@@ -24,9 +24,9 @@ namespace Game.Network.Servers
 
 		private void ReceivedClientSpatial(Message message)
 		{
-			byte clientId = connectionIds[message.ClientId];
+			var clientId = connectionIds[message.ClientId];
 
-			if (!clients.ContainsKey(clientId))
+			if (!entities.ContainsKey(clientId))
 			{
 				return;
 			}
@@ -34,27 +34,27 @@ namespace Game.Network.Servers
 			server.Reader.ReadNewMessage(message);
 			server.Reader.ReadByte();
 
-			var spatial = new ClientSpatial();
-			spatial.ClientId = clientId;
+			var spatial = new EntitySpatial();
+			spatial.Id = clientId;
 			spatial.TimeStamp = server.Reader.ReadTimeStamp();
 			spatial.Position = messageHelper.ReadVector3(server.Reader);
 			spatial.Velocity = messageHelper.ReadVector3(server.Reader);
 			spatial.Angle = messageHelper.ReadVector3(server.Reader);
 
-			clients[spatial.ClientId].SpatialData.Add(spatial);
+			entities[clientId].SpatialData.Add(spatial);
 
 			// Keep a maximum of 100 entries
-			if (clients[spatial.ClientId].SpatialData.Count > 100)
+			if (entities[clientId].SpatialData.Count > 100)
 			{
-				clients[spatial.ClientId].SpatialData.RemoveAt(0);
+				entities[clientId].SpatialData.RemoveAt(0);
 			}
 		}
 
 		private void ReceivedClientActions(Message message)
 		{
-			byte clientId = connectionIds[message.ClientId];
+			var clientId = connectionIds[message.ClientId];
 
-			if (!clients.ContainsKey(clientId))
+			if (!entities.ContainsKey(clientId))
 			{
 				return;
 			}
@@ -63,34 +63,30 @@ namespace Game.Network.Servers
 			server.Reader.ReadNewMessage(message);
 			server.Reader.ReadByte();
 
-			// Sequence
-			byte sequence = server.Reader.ReadByte();
-			clients[clientId].ActionsSequencesToAcknowledgeOnNextUpdate.Add(sequence);
-
 			// Actions
 			int actions = server.Reader.ReadByte() / 5;
 
 			for (int i = 0; i < actions; i++)
 			{
-				var action = new ClientAction();
+				var action = new EntityEvent();
 				action.TimeStamp = server.Reader.ReadTimeStamp();
-				action.Type = (ServerEntityEventType)server.Reader.ReadByte();
+				action.Type = (EntityEventType)server.Reader.ReadByte();
 
-				clients[clientId].Actions.Add(action);
+				entities[clientId].Actions.Add(action);
 
 				// Keep a maximum of 100 entries
-				if (clients[clientId].Actions.Count > 100)
+				if (entities[clientId].Actions.Count > 100)
 				{
-					clients[clientId].Actions.RemoveAt(0);
+					entities[clientId].Actions.RemoveAt(0);
 				}
 			}
 		}
 
 		private void ReceivedCombinedMessage(Message message)
 		{
-			byte clientId = connectionIds[message.ClientId];
+			var clientId = connectionIds[message.ClientId];
 
-			if (!clients.ContainsKey(clientId))
+			if (!entities.ContainsKey(clientId))
 			{
 				return;
 			}
@@ -116,9 +112,9 @@ namespace Game.Network.Servers
 			// Dynamic size packet?
 			if (size == 0)
 			{
-				// The third byte (combinedMessageStartIndex + 2) represents the length of the
-				// action bytes, then we add + 3 for the header to get the total packet size
-				size = message.Data[combinedMessageStartIndex + 2] + 3;
+				// The third byte (combinedMessageStartIndex + 1) represents the length of the
+				// action bytes, then we add + 2 for the header to get the total packet size
+				size = message.Data[combinedMessageStartIndex + 1] + 2;
 			}
 
 			var result = new Message

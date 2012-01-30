@@ -14,7 +14,7 @@ namespace Game.Network.Clients
 		event EventHandler<ClientSpatialEventArgs> GetClientSpatialCompleted;
 		event EventHandler<ClientActionsEventArgs> GetClientActionsCompleted;
 
-		byte ClientId { get; }
+		ushort ClientId { get; }
 		bool IsConnected { get; }
 		float TimeStamp { get; }
 		WorldContext World { get; set; }
@@ -27,7 +27,7 @@ namespace Game.Network.Clients
 
 		void GetGameSettings();
 		void SendClientSpatial(Vector3 position, Vector3 velocity, Vector3 angle);
-		void SendClientActions(List<ClientAction> actions);
+		void SendClientActions(List<EntityEvent> actions);
 
 		void BeginCombinedMessage();
 		void EndCombinedMessage();

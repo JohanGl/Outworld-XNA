@@ -32,7 +32,7 @@ namespace Game.Network.Clients
 		}
 
 		public WorldContext World { get; set; }
-		public byte ClientId { get; set; }
+		public ushort ClientId { get; set; }
 		public List<ServerEntity> ServerEntities { get; set; }
 
 		private IClient client;
@@ -45,9 +45,6 @@ namespace Game.Network.Clients
 			ServerEntities = new List<ServerEntity>();
 			messageHandler = ServiceLocator.Get<IMessageHandler>();
 			Logger.RegisterLogLevelsFor<GameClient>(Logger.LogLevels.Adaptive);
-
-			actionSequence = 0;
-			unacknowledgedActions = new Dictionary<byte, List<ClientAction>>(256);
 		}
 
 		public void Initialize(GameClientSettings settings)
@@ -86,10 +83,6 @@ namespace Game.Network.Clients
 				{
 					case PacketType.GameSettings:
 						ReceivedGameSettings(message);
-						break;
-
-					case PacketType.Sequence:
-						ReceivedSequence(message);
 						break;
 
 					case PacketType.EntityStatus:

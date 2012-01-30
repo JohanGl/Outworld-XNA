@@ -9,6 +9,7 @@ namespace Framework.Network.Messages.MessageWriters
 		void Write(bool source);
 		void Write(byte source);
 		void Write(Int16 source);
+		void Write(UInt16 source);
 		void Write(Int32 source);
 		void Write(Int64 source);
 		void Write(float source);
