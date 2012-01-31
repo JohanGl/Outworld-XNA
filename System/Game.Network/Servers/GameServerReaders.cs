@@ -22,7 +22,7 @@ namespace Game.Network.Servers
 			SendGameSettings(message);
 		}
 
-		private void ReceivedClientSpatial(Message message)
+		private void ReceivedEntitySpatial(Message message)
 		{
 			var clientId = connectionIds[message.ClientId];
 
@@ -50,7 +50,7 @@ namespace Game.Network.Servers
 			}
 		}
 
-		private void ReceivedClientActions(Message message)
+		private void ReceivedEntityEvents(Message message)
 		{
 			var clientId = connectionIds[message.ClientId];
 
@@ -63,21 +63,21 @@ namespace Game.Network.Servers
 			server.Reader.ReadNewMessage(message);
 			server.Reader.ReadByte();
 
-			// Actions
-			int actions = server.Reader.ReadByte() / 5;
+			// Events
+			int events = server.Reader.ReadByte() / 5;
 
-			for (int i = 0; i < actions; i++)
+			for (int i = 0; i < events; i++)
 			{
-				var action = new EntityEvent();
-				action.TimeStamp = server.Reader.ReadTimeStamp();
-				action.Type = (EntityEventType)server.Reader.ReadByte();
+				var entityEvent = new EntityEvent();
+				entityEvent.TimeStamp = server.Reader.ReadTimeStamp();
+				entityEvent.Type = (EntityEventType)server.Reader.ReadByte();
 
-				entities[clientId].Actions.Add(action);
+				entities[clientId].Events.Add(entityEvent);
 
 				// Keep a maximum of 100 entries
-				if (entities[clientId].Actions.Count > 100)
+				if (entities[clientId].Events.Count > 100)
 				{
-					entities[clientId].Actions.RemoveAt(0);
+					entities[clientId].Events.RemoveAt(0);
 				}
 			}
 		}
@@ -112,9 +112,15 @@ namespace Game.Network.Servers
 			// Dynamic size packet?
 			if (size == 0)
 			{
-				// The third byte (combinedMessageStartIndex + 1) represents the length of the
-				// action bytes, then we add + 2 for the header to get the total packet size
-				size = message.Data[combinedMessageStartIndex + 1] + 2;
+				if (type == PacketType.EntityEvents)
+				{
+					// The byte at (combinedMessageStartIndex + 1) represents the length of all events, then we add + 2 for the header to get the total packet size
+					size = message.Data[combinedMessageStartIndex + 1] + 2;
+				}
+				else
+				{
+					throw new NotImplementedException("Implement this type!");
+				}
 			}
 
 			var result = new Message

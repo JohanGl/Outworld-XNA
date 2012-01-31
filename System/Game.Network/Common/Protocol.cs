@@ -14,7 +14,7 @@
 	}
 
 	/// <summary>
-	/// Defines all available entity actions/triggers/events
+	/// Defines all available entity events
 	/// </summary>
 	public enum EntityEventType : byte
 	{

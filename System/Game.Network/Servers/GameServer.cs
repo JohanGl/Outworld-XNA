@@ -20,7 +20,7 @@ namespace Game.Network.Servers
 		private IServer server;
 		private Dictionary<long, ushort> connectionIds;
 		private Dictionary<ushort, EntityInfo> entities;
-		private Dictionary<ushort, List<EntityEvent>> tempActions;
+		private Dictionary<ushort, List<EntityEvent>> tempEntityEvents;
 		private MessageHelper messageHelper;
 		private GameTimer tickrateTimer;
 		private GameTimer timeoutTimer;
@@ -30,7 +30,7 @@ namespace Game.Network.Servers
 			messageHelper = new MessageHelper();
 			entities = new Dictionary<ushort, EntityInfo>();
 			connectionIds = new Dictionary<long, ushort>();
-			tempActions = new Dictionary<ushort, List<EntityEvent>>();
+			tempEntityEvents = new Dictionary<ushort, List<EntityEvent>>();
 
 			tickrateTimer = new GameTimer(TimeSpan.FromMilliseconds(1000 / 20));
 			timeoutTimer = new GameTimer(TimeSpan.FromSeconds(20));
@@ -113,8 +113,8 @@ namespace Game.Network.Servers
 			var clients = GetEntitiesOfType(EntityType.Client);
 
 			// Send updates to the clients
-			BroadcastClientSpatial(clients);
-			BroadcastClientActions(clients);
+			BroadcastEntitySpatial(clients);
+			BroadcastEntityEvents(clients);
 
 			// Update the world
 			World.Update(gameTime);
@@ -175,11 +175,11 @@ namespace Game.Network.Servers
 						break;
 
 					case PacketType.EntitySpatial:
-						ReceivedClientSpatial(message);
+						ReceivedEntitySpatial(message);
 						break;
 
 					case PacketType.EntityEvents:
-						ReceivedClientActions(message);
+						ReceivedEntityEvents(message);
 						break;
 				}
 
@@ -208,7 +208,7 @@ namespace Game.Network.Servers
 				{
 					args.StatusType = EntityStatusType.Connected;
 					args.Id = CreateClientIdAsShortMapping(message.ClientId);
-					entities.Add(args.Id, new EntityInfo());
+					entities.Add(args.Id, new EntityInfo(args.Id));
 				}
 				else
 				{
@@ -245,7 +245,7 @@ namespace Game.Network.Servers
 
 					if (foundNewId)
 					{
-						newId = (byte)i;
+						newId = (ushort)i;
 						break;
 					}
 				}

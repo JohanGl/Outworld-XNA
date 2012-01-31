@@ -86,7 +86,7 @@ namespace Outworld.Scenes.InGame
 					{
 						disconnectedPlayers = true;
 					}
-					else if (message.Type == NetworkMessageType.ClientAction)
+					else if (message.Type == NetworkMessageType.EntityEvent)
 					{
 						if (message.EntityEventType == EntityEventType.Dead)
 						{

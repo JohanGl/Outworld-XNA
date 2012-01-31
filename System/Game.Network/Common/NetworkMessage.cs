@@ -17,7 +17,7 @@ namespace Game.Network.Common
 	{
 		Connected,
 		Disconnected,
-		ClientAction,
+		EntityEvent,
 		Chat
 	}
 }

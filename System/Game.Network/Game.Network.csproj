@@ -94,7 +94,7 @@
   <ItemGroup>
     <Compile Include="Clients\GameClientReaders.cs" />
     <Compile Include="Clients\GameClientWriters.cs" />
-    <Compile Include="Clients\Events\ClientActionsEventArgs.cs" />
+    <Compile Include="Clients\Events\ClientEventsEventArgs.cs" />
     <Compile Include="Clients\Entities\ServerEntity.cs" />
     <Compile Include="Clients\Events\ClientSpatialEventArgs.cs" />
     <Compile Include="Clients\GameClient.cs" />

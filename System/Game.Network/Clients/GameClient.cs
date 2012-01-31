@@ -94,7 +94,7 @@ namespace Game.Network.Clients
 						break;
 
 					case PacketType.EntityEvents:
-						ReceivedClientActions(message);
+						ReceivedEntityEvents(message);
 						break;
 				}
 
@@ -123,7 +123,7 @@ namespace Game.Network.Clients
 			}
 		}
 
-		private void UpdateServerEntities(byte clientId, bool connected)
+		private void UpdateServerEntities(ushort clientId, bool connected)
 		{
 			// Skip self
 			if (ClientId == clientId)
@@ -146,7 +146,7 @@ namespace Game.Network.Clients
 			}
 		}
 
-		private void RemoveServerGameEntityById(byte id)
+		private void RemoveServerGameEntityById(ushort id)
 		{
 			for (int i = 0; i < ServerEntities.Count; i++)
 			{

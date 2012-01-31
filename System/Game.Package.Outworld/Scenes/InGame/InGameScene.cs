@@ -67,9 +67,9 @@ namespace Outworld.Scenes.InGame
 		private GameTimer timerWalkingSounds;
 		private GameTimer timerSaveBreadCrumb;
 		private GameTimer timerUpdateCurrentProcess;
-		private byte currentClientAction;
-		private byte previousClientAction;
-		private List<EntityEvent> clientActions;
+		private byte currentClientEvent;
+		private byte previousClientEvent;
+		private List<EntityEvent> clientEvents;
 
 		private SkinnedModel skinnedModelPlayer;
 		private Vector3 soundPosition;
@@ -91,8 +91,8 @@ namespace Outworld.Scenes.InGame
 			// Initialize the server and client
 			gameServer = ServiceLocator.Get<IGameServer>();
 			gameClient = ServiceLocator.Get<IGameClient>();
-			gameClient.GetClientSpatialCompleted += gameClient_GetClientSpatialCompleted;
-			gameClient.GetClientActionsCompleted += gameClient_GetClientActionsCompleted;
+			gameClient.GetEntitySpatialCompleted += GameEntityGetEntitySpatialCompleted;
+			gameClient.GetEntityEventsCompleted += GameClientGetEntityEventsCompleted;
 
 			physicsRenderer = gameClient.World.PhysicsHandler.CreateRenderer(context.Graphics.Device, (BasicEffect)context.Graphics.Effect);
 
@@ -104,7 +104,7 @@ namespace Outworld.Scenes.InGame
 			InitializeTimers();
 			InitializeAudio();
 
-			clientActions = new List<EntityEvent>();
+			clientEvents = new List<EntityEvent>();
 
 			new LogFilterHelper().FilterTerrain();
 			//new LogFilterHelper().FilterAll();
@@ -439,7 +439,7 @@ namespace Outworld.Scenes.InGame
 			// Render the current player (debug)
 			//var position = playerSpatial.Position + new Vector3(5f, 0.2f, 0);
 			//var angle = new Vector3(0, playerSpatial.Angle.X + 180f, 0);
-			//RenderSkinnedPlayer(currentClientAction, position, angle);
+			//RenderSkinnedPlayer(currentClientEvent, position, angle);
 
 			// Render all server entities
 			for (int i = 0; i < gameClient.ServerEntities.Count; i++)
@@ -448,7 +448,7 @@ namespace Outworld.Scenes.InGame
 				RenderSkinnedRemotePlayer(entity.Animation, entity.PreviousAnimation, entity.Position, new Vector3(entity.Angle.X, 0, 0));
 			}
 
-			previousClientAction = currentClientAction;
+			previousClientEvent = currentClientEvent;
 		}
 
 		private void RenderSkinnedRemotePlayer(byte animation, byte previousAnimation, Vector3 position, Vector3 angle)
@@ -474,9 +474,9 @@ namespace Outworld.Scenes.InGame
 		{
 			var camera = Context.View.Cameras["Default"];
 
-			//if (currentClientAction != previousClientAction)
+			//if (currentClientEvent != previousClientEvent)
 			//{
-			//    if (animation >= (byte)ClientActionType.RunDirection1 && animation <= (byte)ClientActionType.RunDirection8)
+			//    if (animation >= (byte)ClientEventType.RunDirection1 && animation <= (byte)ClientEventType.RunDirection8)
 			//    {
 			//        skinnedModelPlayer.SetAnimationClip("Run");
 			//    }
@@ -522,21 +522,21 @@ namespace Outworld.Scenes.InGame
 		{
 			if (gameClient.IsConnected)
 			{
-				var playerActions = messageHandler.GetMessages<PlayerMessage>(MessageHandlerType.ServerEntityEvents);
+				var playerMessages = messageHandler.GetMessages<PlayerMessage>(MessageHandlerType.ServerEntityEvents);
 
-				if (playerActions.Count > 0)
+				if (playerMessages.Count > 0)
 				{
-				    clientActions.Clear();
+				    clientEvents.Clear();
 
-				    for (int i = 0; i < playerActions.Count; i++)
+				    for (int i = 0; i < playerMessages.Count; i++)
 				    {
-						clientActions.Add(playerActions[i].EntityEvent);
-						currentClientAction = (byte)playerActions[i].EntityEvent.Type;
+						clientEvents.Add(playerMessages[i].EntityEvent);
+						currentClientEvent = (byte)playerMessages[i].EntityEvent.Type;
 				    }
 
 				    gameClient.BeginCombinedMessage();
 				    gameClient.SendClientSpatial(playerSpatial.Position, playerSpatial.Velocity, playerSpatial.Angle);
-					gameClient.SendClientActions(clientActions);
+					gameClient.SendClientEvents(clientEvents);
 				    gameClient.EndCombinedMessage();
 				}
 				else
@@ -557,7 +557,7 @@ namespace Outworld.Scenes.InGame
 			}
 		}
 
-		private void gameClient_GetClientSpatialCompleted(object sender, ClientSpatialEventArgs e)
+		private void GameEntityGetEntitySpatialCompleted(object sender, ClientSpatialEventArgs e)
 		{
 			for (int i = 0; i < e.Entity.Length; i++)
 			{
@@ -585,43 +585,43 @@ namespace Outworld.Scenes.InGame
 			}
 		}
 
-		private void gameClient_GetClientActionsCompleted(object sender, ClientActionsEventArgs e)
+		private void GameClientGetEntityEventsCompleted(object sender, ClientEventsEventArgs e)
 		{
-			for (int i = 0; i < e.ClientActions.Count; i++)
+			for (int i = 0; i < e.Events.Count; i++)
 			{
-				var action = e.ClientActions[i];
+				var entityEvent = e.Events[i];
 
 				for (int j = 0; j < gameClient.ServerEntities.Count; j++)
 				{
 					var serverEntity = gameClient.ServerEntities[j];
 
-					if (serverEntity.Id == action.Id)
+					if (serverEntity.Id == entityEvent.Id)
 					{
 						serverEntity.PreviousAnimation = serverEntity.Animation;
 
-						if (action.Type == EntityEventType.Idle)
+						if (entityEvent.Type == EntityEventType.Idle)
 						{
 							serverEntity.Animation = 0;
 						}
-						else if (action.Type == EntityEventType.RunDirection1 ||
-								 action.Type == EntityEventType.RunDirection2 ||
-								 action.Type == EntityEventType.RunDirection3 ||
-								 action.Type == EntityEventType.RunDirection4 ||
-								 action.Type == EntityEventType.RunDirection5 ||
-								 action.Type == EntityEventType.RunDirection6 ||
-								 action.Type == EntityEventType.RunDirection7 ||
-								 action.Type == EntityEventType.RunDirection8)
+						else if (entityEvent.Type == EntityEventType.RunDirection1 ||
+								 entityEvent.Type == EntityEventType.RunDirection2 ||
+								 entityEvent.Type == EntityEventType.RunDirection3 ||
+								 entityEvent.Type == EntityEventType.RunDirection4 ||
+								 entityEvent.Type == EntityEventType.RunDirection5 ||
+								 entityEvent.Type == EntityEventType.RunDirection6 ||
+								 entityEvent.Type == EntityEventType.RunDirection7 ||
+								 entityEvent.Type == EntityEventType.RunDirection8)
 						{
 							serverEntity.Animation = 1;
 						}
-						else if (action.Type == EntityEventType.Dead)
+						else if (entityEvent.Type == EntityEventType.Dead)
 						{
 							// Add a global message for this event
 							var notificationMessage = new NetworkMessage()
 							{
-								Type = NetworkMessageType.ClientAction,
+								Type = NetworkMessageType.EntityEvent,
 								EntityEventType = EntityEventType.Dead,
-								Text = string.Format("Player {0} died", action.Id)
+								Text = string.Format("Player {0} died", entityEvent.Id)
 							};
 
 							messageHandler.AddMessage(MessageHandlerType.GameClient, notificationMessage);

@@ -5,12 +5,12 @@ namespace Game.Network.Common
 {
 	public class EntityInfo
 	{
-		public ushort Id;
+		public ushort Id { get; private set; }
 		public EntityType Type;
 
 		public int Timeout;
 		public List<EntitySpatial> SpatialData { get; set; }
-		public List<EntityEvent> Actions { get; set; }
+		public List<EntityEvent> Events { get; set; }
 
 		public EntitySpatial CurrentSpatial
 		{
@@ -25,21 +25,21 @@ namespace Game.Network.Common
 			}
 		}
 
-		public List<EntityEvent> GetRecentActions(float currentTimeStamp)
+		public List<EntityEvent> GetRecentEvents(float currentTimeStamp, float seconds = 1f)
 		{
 			var result = new List<EntityEvent>();
 
-			if (Actions.Count > 0)
+			if (Events.Count > 0)
 			{
-				// Traverse backwards in time since the last actions are the most recent
-				for (int i = Actions.Count - 1; i >= 0; i--)
+				// Traverse backwards in time since the last events are the most recent
+				for (int i = Events.Count - 1; i >= 0; i--)
 				{
-					// Get all actions within the last second
-					if (Actions[i].TimeStamp > currentTimeStamp - 1.0f)
+					// Get all events within the last second
+					if (Events[i].TimeStamp > currentTimeStamp - seconds)
 					{
-						result.Add(Actions[i]);
+						result.Add(Events[i]);
 					}
-					// No more relevant actions left
+					// No more relevant events left
 					else
 					{
 						break;
@@ -55,10 +55,11 @@ namespace Game.Network.Common
 			return Vector3.Distance(CurrentSpatial.Position, otherEntity.CurrentSpatial.Position) < 75;
 		}
 
-		public EntityInfo()
+		public EntityInfo(ushort id)
 		{
+			Id = id;
 			SpatialData = new List<EntitySpatial>(110);
-			Actions = new List<EntityEvent>(110);
+			Events = new List<EntityEvent>(110);
 			Timeout = int.MaxValue;
 		}
 	}

@@ -33,7 +33,7 @@ namespace Game.Network.Clients
 
 			// Recorded messages
 			//var recordedMessage = new RecordedMessage();
-			//recordedMessage.Spatial = new ClientSpatial();
+			//recordedMessage.Spatial = new EntitySpatial();
 			//recordedMessage.Spatial.TimeStamp = client.TimeStamp;
 			//recordedMessage.Spatial.Position = position;
 			//recordedMessage.Spatial.Velocity = velocity;
@@ -42,30 +42,30 @@ namespace Game.Network.Clients
 
 			//if (recordedMessages.Count == 1200)
 			//{
-			//    var dumper = new ObjectDumper();
-			//    File.WriteAllText("d:\\recording.xml", dumper.ObjectToXml(recordedMessages));
+			//    var dumper = new Framework.Core.Helpers.ObjectDumper();
+			//    System.IO.File.WriteAllText("d:\\recording.xml", dumper.ObjectToXml(recordedMessages));
 			//    recordedMessages.Clear();
 			//}
 		}
 
-		public void SendClientActions(List<EntityEvent> actions)
+		public void SendClientEvents(List<EntityEvent> events)
 		{
 			InitializeMessageWriter();
 			client.Writer.Write((byte)PacketType.EntityEvents);
-			client.Writer.Write((byte)(actions.Count * 5));
+			client.Writer.Write((byte)(events.Count * 5));
 
-			for (int i = 0; i < actions.Count; i++)
+			for (int i = 0; i < events.Count; i++)
 			{
-				client.Writer.Write(actions[i].TimeStamp);
-				client.Writer.Write((byte)actions[i].Type);
+				client.Writer.Write(events[i].TimeStamp);
+				client.Writer.Write((byte)events[i].Type);
 			}
 
 			SendMessage(MessageDeliveryMethod.ReliableUnordered);
 
 			// Recorded messages
 			//var recordedMessage = new RecordedMessage();
-			//recordedMessage.Actions = new List<ClientAction>();
-			//recordedMessage.Actions.AddRange(actions);
+			//recordedMessage.Events = new List<EntityEvent>();
+			//recordedMessage.Events.AddRange(events);
 			//recordedMessages.Add(recordedMessage);
 		}
 

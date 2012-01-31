@@ -45,7 +45,7 @@ namespace Game.Network.Servers
 			server.Send(message.ClientId, MessageDeliveryMethod.ReliableUnordered);
 		}
 
-		private void BroadcastClientSpatial(List<EntityInfo> clients)
+		private void BroadcastEntitySpatial(List<EntityInfo> clients)
 		{
 			if (clients.Count < 2)
 			{
@@ -55,11 +55,11 @@ namespace Game.Network.Servers
 			// Send individual packets to all clients
 			for (ushort i = 0; i < clients.Count; i++)
 			{
-				SendClientSpatial(clients[i], clients);
+				SendEntitySpatial(clients[i], clients);
 			}
 		}
 
-		private void SendClientSpatial(EntityInfo client, List<EntityInfo> clients)
+		private void SendEntitySpatial(EntityInfo client, List<EntityInfo> clients)
 		{
 			var otherClients = GetClientsWithinViewDistance(client, clients);
 
@@ -92,7 +92,7 @@ namespace Game.Network.Servers
 			SendMessage(MessageDeliveryMethod.Unreliable);
 		}
 
-		private void BroadcastClientActions(List<EntityInfo> clients)
+		private void BroadcastEntityEvents(List<EntityInfo> clients)
 		{
 			if (clients.Count < 2)
 			{
@@ -102,11 +102,11 @@ namespace Game.Network.Servers
 			// Send individual packets to all clients
 			for (ushort i = 0; i < clients.Count; i++)
 			{
-				SendClientActions(clients[i], clients);
+				SendEntityEvents(clients[i], clients);
 			}
 		}
 
-		private void SendClientActions(EntityInfo client, List<EntityInfo> clients)
+		private void SendEntityEvents(EntityInfo client, List<EntityInfo> clients)
 		{
 			var otherClients = GetClientsWithinViewDistance(client, clients);
 
@@ -116,20 +116,20 @@ namespace Game.Network.Servers
 				return;
 			}
 
-			tempActions.Clear();
+			tempEntityEvents.Clear();
 
 			for (int i = 0; i < otherClients.Count; i++)
 			{
-				var actions = otherClients[i].GetRecentActions(server.TimeStamp);
+				var events = otherClients[i].GetRecentEvents(server.TimeStamp);
 
-				if (actions.Count > 0)
+				if (events.Count > 0)
 				{
-					tempActions.Add(otherClients[i].Id, actions);
+					tempEntityEvents.Add(otherClients[i].Id, events);
 				}
 			}
 
-			// No relevant actions for other clients
-			if (tempActions.Count == 0)
+			// No relevant events for other clients
+			if (tempEntityEvents.Count == 0)
 			{
 				return;
 			}
@@ -137,21 +137,21 @@ namespace Game.Network.Servers
 			// Write the header
 			InitializeMessageWriter();
 			server.Writer.Write((byte)PacketType.EntityEvents);
-			server.Writer.Write((ushort)tempActions.Count);
+			server.Writer.Write((ushort)tempEntityEvents.Count);
 
-			// Loop through all entities and their actions
-			foreach (var pair in tempActions)
+			// Loop through all entities and their events
+			foreach (var pair in tempEntityEvents)
 			{
 				// Write the current entity id
 				server.Writer.Write(pair.Key);
 
-				// Write the current entity actions
+				// Write the current entity events
 				for (int i = 0; i < pair.Value.Count; i++)
 				{
-					var action = pair.Value[i];
+					var currentEvent = pair.Value[i];
 
-					server.Writer.Write(action.TimeStamp);
-					server.Writer.Write((byte)action.Type);
+					server.Writer.Write(currentEvent.TimeStamp);
+					server.Writer.Write((byte)currentEvent.Type);
 				}
 			}
 
