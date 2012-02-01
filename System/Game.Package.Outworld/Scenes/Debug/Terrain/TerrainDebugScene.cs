@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Linq;
+using Framework.Animations;
 using Framework.Core.Common;
 using Framework.Core.Contexts;
 using Framework.Core.Scenes;
@@ -8,6 +9,7 @@ using Framework.Core.Scenes.Cameras;
 using Framework.Core.Services;
 using Framework.Gui;
 using Game.Entities.Outworld.World;
+using Game.Network.Common;
 using Game.World.Terrains.Contexts;
 using Game.World.Terrains.Helpers;
 using Game.World.Terrains.Parts.Areas.Helpers;
@@ -35,6 +37,8 @@ namespace Outworld.Scenes.Debug.Terrain
 
 		private KeyboardState currentKeyboardState;
 		private KeyboardState previousKeyboardState;
+
+		float aspectRatio;
 
 		public override void Initialize(GameContext context)
 		{
@@ -73,6 +77,11 @@ namespace Outworld.Scenes.Debug.Terrain
 			InitializeCamera();
 
 			InitializeGui();
+
+			// Models
+			Context.Resources.Models.Add("SkyDome", content.Load<Model>(@"Models\Skies\SkyDome"));
+
+			aspectRatio = Context.Graphics.DeviceManager.GraphicsDevice.Viewport.AspectRatio;
 		}
 
 		private void InitializeGui()
@@ -95,6 +104,9 @@ namespace Outworld.Scenes.Debug.Terrain
 			{
 				resources.Textures.Remove("Tile" + i);
 			}
+
+			// Models
+			resources.Models.Remove("SkyDome");
 		}
 
 		public override void Update(GameTime gameTime)
@@ -152,6 +164,43 @@ namespace Outworld.Scenes.Debug.Terrain
 			Context.Graphics.SpriteBatch.End();
 
 			//gui.Render();
+
+			RenderSkyDome();
+		}
+
+
+		// Set the position of the model in world space, and set the rotation.
+		Vector3 modelPosition = Vector3.Zero;
+		float modelRotation = 0.0f;
+
+		private void RenderSkyDome()
+		{
+			//var camera = Context.View.Cameras["Default"];
+			//skinnedModelPlayer.Render(camera.View, camera.Projection, new Vector3(0, 50.0f, 0), 0.0f);
+
+			// Copy any parent transforms.
+			Matrix[] transforms = new Matrix[Context.Resources.Models["SkyDome"].Bones.Count];
+			Context.Resources.Models["SkyDome"].CopyAbsoluteBoneTransformsTo(transforms);
+			
+			// Draw the model. A model can have multiple meshes, so loop.
+			foreach (ModelMesh mesh in Context.Resources.Models["SkyDome"].Meshes)
+			{
+				// This is where the mesh orientation is set, as well 
+				// as our camera and projection.
+				foreach (BasicEffect effect in mesh.Effects)
+				{
+					effect.EnableDefaultLighting();
+					
+					effect.World = transforms[mesh.ParentBone.Index] * Matrix.CreateRotationY(modelRotation) * Matrix.CreateTranslation(modelPosition);
+
+					effect.View = Matrix.CreateLookAt(camera.Position, Vector3.Zero, Vector3.Up);
+					
+					effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45.0f), aspectRatio, 1.0f, 10000.0f);
+				}
+				// Draw the mesh, using the effects set above.
+				mesh.Draw();
+			}
+//			base.Draw(gameTime);
 		}
 
 		private void InitializeInput()
