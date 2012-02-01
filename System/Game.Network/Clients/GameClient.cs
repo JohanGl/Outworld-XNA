@@ -32,7 +32,7 @@ namespace Game.Network.Clients
 		}
 
 		public WorldContext World { get; set; }
-		public byte ClientId { get; set; }
+		public ushort ClientId { get; set; }
 		public List<ServerEntity> ServerEntities { get; set; }
 
 		private IClient client;
@@ -45,9 +45,6 @@ namespace Game.Network.Clients
 			ServerEntities = new List<ServerEntity>();
 			messageHandler = ServiceLocator.Get<IMessageHandler>();
 			Logger.RegisterLogLevelsFor<GameClient>(Logger.LogLevels.Adaptive);
-
-			actionSequence = 0;
-			unacknowledgedActions = new Dictionary<byte, List<ClientAction>>(256);
 		}
 
 		public void Initialize(GameClientSettings settings)
@@ -88,10 +85,6 @@ namespace Game.Network.Clients
 						ReceivedGameSettings(message);
 						break;
 
-					case PacketType.Sequence:
-						ReceivedSequence(message);
-						break;
-
 					case PacketType.EntityStatus:
 						ReceivedClientStatus(message);
 						break;
@@ -101,7 +94,7 @@ namespace Game.Network.Clients
 						break;
 
 					case PacketType.EntityEvents:
-						ReceivedClientActions(message);
+						ReceivedEntityEvents(message);
 						break;
 				}
 
@@ -130,7 +123,7 @@ namespace Game.Network.Clients
 			}
 		}
 
-		private void UpdateServerEntities(byte clientId, bool connected)
+		private void UpdateServerEntities(ushort clientId, bool connected)
 		{
 			// Skip self
 			if (ClientId == clientId)
@@ -153,7 +146,7 @@ namespace Game.Network.Clients
 			}
 		}
 
-		private void RemoveServerGameEntityById(byte id)
+		private void RemoveServerGameEntityById(ushort id)
 		{
 			for (int i = 0; i < ServerEntities.Count; i++)
 			{

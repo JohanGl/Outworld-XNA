@@ -135,12 +135,12 @@ namespace Outworld.Scenes.Debug.Network
 			}
 		}
 
-		private PlayerMessage GetPlayerMessage(ServerEntityEventType type)
+		private PlayerMessage GetPlayerMessage(EntityEventType type)
 		{
 			var message = new PlayerMessage();
-			message.ClientAction = new ClientAction();
-			message.ClientAction.TimeStamp = gameClient.TimeStamp;
-			message.ClientAction.Type = type;
+			message.EntityEvent = new EntityEvent();
+			message.EntityEvent.TimeStamp = gameClient.TimeStamp;
+			message.EntityEvent.Type = type;
 
 			return message;
 		}

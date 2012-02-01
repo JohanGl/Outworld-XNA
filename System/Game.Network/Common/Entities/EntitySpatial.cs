@@ -2,9 +2,9 @@ using Microsoft.Xna.Framework;
 
 namespace Game.Network.Common
 {
-	public struct ClientSpatial
+	public struct EntitySpatial
 	{
-		public byte ClientId;
+		public ushort Id;
 		public float TimeStamp;
 
 		public Vector3 Position;

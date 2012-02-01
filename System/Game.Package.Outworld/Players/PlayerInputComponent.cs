@@ -4,10 +4,12 @@ using Framework.Core.Messaging;
 using Framework.Core.Scenes.Cameras;
 using Framework.Core.Services;
 using Framework.Physics.Controllers;
+using Game.Entities;
 using Game.Entities.Outworld.World;
 using Game.Entities.System;
 using Game.Entities.System.ComponentModel;
 using Game.Entities.System.EntityModel;
+using Game.Network.Clients;
 using Game.Network.Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -25,6 +27,8 @@ namespace Outworld.Players
 		public bool HasFocus;
 		public byte MovementDirection { get; private set; }
 		public byte PreviousMovementDirection { get; private set; }
+		private IMessageHandler messageHandler;
+		private IGameClient gameClient;
 
 		// Components
 		private SpatialComponent spatialComponent;
@@ -54,6 +58,8 @@ namespace Outworld.Players
 			controller = spatialComponent.RigidBody.Tag as CharacterController;
 
 			var globalSettings = ServiceLocator.Get<GlobalSettings>();
+			messageHandler = ServiceLocator.Get<IMessageHandler>();
+			gameClient = ServiceLocator.Get<IGameClient>();
 
 			// Movement
 			lookAroundAmplifier = globalSettings.Player.Movement.LookAroundAmplifier;
@@ -120,6 +126,7 @@ namespace Outworld.Players
 					if (inputContext.GamePadState[Buttons.A].WasJustPressed)
 					{
 						controller.TryJump = true;
+						messageHandler.AddMessage(MessageHandlerType.ServerEntityEvents, GetPlayerMessage(EntityEventType.Jump));
 					}
 				}
 
@@ -128,6 +135,7 @@ namespace Outworld.Players
 					if (inputContext.Keyboard.KeyboardState[Keys.Space].WasJustPressed)
 					{
 						controller.TryJump = true;
+						messageHandler.AddMessage(MessageHandlerType.ServerEntityEvents, GetPlayerMessage(EntityEventType.Jump));
 					}
 				}
 			}
@@ -352,6 +360,16 @@ namespace Outworld.Players
 					playerComponent.ToggleStandCrouch();
 				}
 			}
+		}
+
+		private PlayerMessage GetPlayerMessage(EntityEventType type)
+		{
+			var message = new PlayerMessage();
+			message.EntityEvent = new EntityEvent();
+			message.EntityEvent.TimeStamp = gameClient.TimeStamp;
+			message.EntityEvent.Type = type;
+
+			return message;
 		}
 	}
 }

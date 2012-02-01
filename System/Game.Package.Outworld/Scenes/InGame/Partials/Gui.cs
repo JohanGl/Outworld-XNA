@@ -86,9 +86,9 @@ namespace Outworld.Scenes.InGame
 					{
 						disconnectedPlayers = true;
 					}
-					else if (message.Type == NetworkMessageType.ClientAction)
+					else if (message.Type == NetworkMessageType.EntityEvent)
 					{
-						if (message.ServerEntityEventType == ServerEntityEventType.Dead)
+						if (message.EntityEventType == EntityEventType.Dead)
 						{
 							audioHandler.PlaySound("Notification2");
 						}

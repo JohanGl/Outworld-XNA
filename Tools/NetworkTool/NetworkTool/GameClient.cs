@@ -1,27 +1,42 @@
 ﻿using System.Collections.Generic;
+using Framework.Network.Clients;
+using Framework.Network.Clients.Configurations;
 using Framework.Network.Messages;
-using Game.Network.Common;
 using Microsoft.Xna.Framework;
 
-namespace Game.Network.Clients
+namespace NetworkTool
 {
-	public partial class GameClient
+	public class GameClient
 	{
-		// Handled combined messages
+		private IClient client;
+		private MessageHelper messageHelper = new MessageHelper();
 		private bool isCombined;
 		private bool isCombinedInitialized;
-		
-		//private List<RecordedMessage> recordedMessages = new List<RecordedMessage>();
 
-		public void GetGameSettings()
+		public GameClient()
 		{
-			client.Writer.WriteNewMessage();
-			client.Writer.Write((byte)PacketType.GameSettings);
-			client.Writer.Write(client.TimeStamp);
-			client.Send(MessageDeliveryMethod.ReliableUnordered);
+			client = new LidgrenClient();
+
+			var configuration = new DefaultClientConfiguration
+			{
+				ServerAddress = "127.0.0.1",
+				ServerPort = 14242
+			};
+
+			client.Initialize(configuration);
 		}
 
-		public void SendClientSpatial(Vector3 position, Vector3 velocity, Vector3 angle)
+		public void Connect()
+		{
+			client.Connect();
+		}
+
+		public void Disconnect(string message = null)
+		{
+			client.Disconnect(message);
+		}
+
+		public void SendSpatial(Vector3 position, Vector3 velocity, Vector3 angle)
 		{
 			InitializeMessageWriter();
 			client.Writer.Write((byte)PacketType.EntitySpatial);
@@ -30,25 +45,9 @@ namespace Game.Network.Clients
 			messageHelper.WriteVector3(velocity, client.Writer);
 			messageHelper.WriteVector3(angle, client.Writer);
 			SendMessage();
-
-			// Recorded messages
-			//var recordedMessage = new RecordedMessage();
-			//recordedMessage.Spatial = new EntitySpatial();
-			//recordedMessage.Spatial.TimeStamp = client.TimeStamp;
-			//recordedMessage.Spatial.Position = position;
-			//recordedMessage.Spatial.Velocity = velocity;
-			//recordedMessage.Spatial.Angle = angle;
-			//recordedMessages.Add(recordedMessage);
-
-			//if (recordedMessages.Count == 1200)
-			//{
-			//    var dumper = new Framework.Core.Helpers.ObjectDumper();
-			//    System.IO.File.WriteAllText("d:\\recording.xml", dumper.ObjectToXml(recordedMessages));
-			//    recordedMessages.Clear();
-			//}
 		}
 
-		public void SendClientEvents(List<EntityEvent> events)
+		public void SendEvents(List<EntityEvent> events)
 		{
 			InitializeMessageWriter();
 			client.Writer.Write((byte)PacketType.EntityEvents);
@@ -61,12 +60,6 @@ namespace Game.Network.Clients
 			}
 
 			SendMessage(MessageDeliveryMethod.ReliableUnordered);
-
-			// Recorded messages
-			//var recordedMessage = new RecordedMessage();
-			//recordedMessage.Events = new List<EntityEvent>();
-			//recordedMessage.Events.AddRange(events);
-			//recordedMessages.Add(recordedMessage);
 		}
 
 		private void InitializeMessageWriter()

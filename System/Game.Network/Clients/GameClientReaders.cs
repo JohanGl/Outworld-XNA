@@ -9,8 +9,8 @@ namespace Game.Network.Clients
 	public partial class GameClient
 	{
 		public event EventHandler<GameSettingsEventArgs> GetGameSettingsCompleted;
-		public event EventHandler<ClientSpatialEventArgs> GetClientSpatialCompleted;
-		public event EventHandler<ClientActionsEventArgs> GetClientActionsCompleted;
+		public event EventHandler<ClientSpatialEventArgs> GetEntitySpatialCompleted;
+		public event EventHandler<ClientEventsEventArgs> GetEntityEventsCompleted;
 
 		private void ReceivedGameSettings(Message message)
 		{
@@ -21,9 +21,8 @@ namespace Game.Network.Clients
 				// Read the message
 				client.Reader.ReadNewMessage(message);
 				client.Reader.ReadByte();
-				args.ClientId = client.Reader.ReadByte();
+				args.ClientId = client.Reader.ReadUInt16();
 				args.Seed = client.Reader.ReadInt32();
-				args.Gravity = messageHelper.ReadVector3(client.Reader);
 
 				// Assign the client id
 				ClientId = args.ClientId;
@@ -32,7 +31,7 @@ namespace Game.Network.Clients
 
 				for (int i = 0; i < totalClients; i++)
 				{
-					byte currentClientId = client.Reader.ReadByte();
+					ushort currentClientId = client.Reader.ReadUInt16();
 					UpdateServerEntities(currentClientId, true);
 				}
 
@@ -45,7 +44,7 @@ namespace Game.Network.Clients
 			// Read the message
 			client.Reader.ReadNewMessage(message);
 			client.Reader.ReadByte();
-			byte clientId = client.Reader.ReadByte();
+			ushort clientId = client.Reader.ReadUInt16();
 			bool connected = client.Reader.ReadBool();
 
 			// Add a global message for this event
@@ -63,7 +62,7 @@ namespace Game.Network.Clients
 
 		private void ReceivedClientSpatial(Message message)
 		{
-			if (GetClientSpatialCompleted != null)
+			if (GetEntitySpatialCompleted != null)
 			{
 				var args = new ClientSpatialEventArgs();
 
@@ -75,29 +74,29 @@ namespace Game.Network.Clients
 				byte clients = client.Reader.ReadByte();
 
 				// Initialize and retrieve all client spatial data
-				args.Client = new ClientSpatial[clients];
+				args.Entity = new EntitySpatial[clients];
 
 				for (byte i = 0; i < clients; i++)
 				{
-					var data = new ClientSpatial();
-					data.ClientId = client.Reader.ReadByte();
+					var data = new EntitySpatial();
+					data.Id = client.Reader.ReadUInt16();
 					data.TimeStamp = client.Reader.ReadTimeStamp();
 					data.Position = messageHelper.ReadVector3(client.Reader);
 					data.Velocity = messageHelper.ReadVector3(client.Reader);
 					data.Angle = messageHelper.ReadVector3(client.Reader);
 
-					args.Client[i] = data;
+					args.Entity[i] = data;
 				}
 
-				GetClientSpatialCompleted(this, args);
+				GetEntitySpatialCompleted(this, args);
 			}
 		}
 
-		private void ReceivedClientActions(Message message)
+		private void ReceivedEntityEvents(Message message)
 		{
-			if (GetClientActionsCompleted != null)
+			if (GetEntityEventsCompleted != null)
 			{
-				var args = new ClientActionsEventArgs();
+				var args = new ClientEventsEventArgs();
 
 				// Read the message
 				client.Reader.ReadNewMessage(message);
@@ -109,38 +108,23 @@ namespace Game.Network.Clients
 				for (byte i = 0; i < clients; i++)
 				{
 					// Get the id of the current client
-					byte clientId = client.Reader.ReadByte();
+					ushort clientId = client.Reader.ReadUInt16();
 
-					// Get the number of actions for the current client
-					byte actions = client.Reader.ReadByte();
+					// Get the number of events for the current client
+					byte events = client.Reader.ReadByte();
 
-					for (byte j = 0; j < actions; j++)
+					for (byte j = 0; j < events; j++)
 					{
-						var action = new ClientAction();
-						action.ClientId = clientId;
-						action.TimeStamp = client.Reader.ReadTimeStamp();
-						action.Type = (ServerEntityEventType)client.Reader.ReadByte();
+						var entityEvent = new EntityEvent();
+						entityEvent.Id = clientId;
+						entityEvent.TimeStamp = client.Reader.ReadTimeStamp();
+						entityEvent.Type = (EntityEventType)client.Reader.ReadByte();
 
-						args.ClientActions.Add(action);
+						args.Events.Add(entityEvent);
 					}
 				}
 
-				GetClientActionsCompleted(this, args);
-			}
-		}
-
-		private void ReceivedSequence(Message message)
-		{
-			// Read the message
-			client.Reader.ReadNewMessage(message);
-			client.Reader.ReadByte();
-			int sequenceCount = client.Reader.ReadByte();
-
-			// Acknowledge all sequences within the message
-			for (int i = 0; i < sequenceCount; i++)
-			{
-				byte currentSequence = client.Reader.ReadByte();
-				unacknowledgedActions.Remove(currentSequence);
+				GetEntityEventsCompleted(this, args);
 			}
 		}
 	}

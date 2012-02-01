@@ -1,7 +1,6 @@
 using Framework.Core.Messaging;
-using Game.Network.Common;
 
-namespace Game.Network.Clients
+namespace Game.Network.Common
 {
 	/// <summary>
 	/// Used to send messages of server/client type to IMessageHandler
@@ -10,7 +9,7 @@ namespace Game.Network.Clients
 	{
 		public ushort ClientId;
 		public NetworkMessageType Type;
-		public ServerEntityEventType ServerEntityEventType;
+		public EntityEventType EntityEventType;
 		public string Text;
 	}
 
@@ -18,7 +17,7 @@ namespace Game.Network.Clients
 	{
 		Connected,
 		Disconnected,
-		ClientAction,
+		EntityEvent,
 		Chat
 	}
 }

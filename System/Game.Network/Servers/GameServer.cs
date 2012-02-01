@@ -18,49 +18,26 @@ namespace Game.Network.Servers
 		public WorldSimulation World { get; private set; }
 
 		private IServer server;
-		private Dictionary<long, byte> connectionIds;
+		private Dictionary<long, ushort> connectionIds;
+		private Dictionary<ushort, EntityInfo> entities;
+		private Dictionary<ushort, List<EntityEvent>> tempEntityEvents;
 		private MessageHelper messageHelper;
-		private Dictionary<byte, ClientData> clients;
 		private GameTimer tickrateTimer;
-		private GameTimer checkClientTimeoutsTimer;
+		private GameTimer timeoutTimer;
 
 		public GameServer()
 		{
 			messageHelper = new MessageHelper();
-			clients = new Dictionary<byte, ClientData>();
-			connectionIds = new Dictionary<long, byte>();
+			entities = new Dictionary<ushort, EntityInfo>();
+			connectionIds = new Dictionary<long, ushort>();
+			tempEntityEvents = new Dictionary<ushort, List<EntityEvent>>();
 
 			tickrateTimer = new GameTimer(TimeSpan.FromMilliseconds(1000 / 20));
-			checkClientTimeoutsTimer = new GameTimer(TimeSpan.FromSeconds(20));
+			timeoutTimer = new GameTimer(TimeSpan.FromSeconds(20));
 
 			InitializePacketSizeLookup();
 
 			Logger.RegisterLogLevelsFor<GameServer>(Logger.LogLevels.Adaptive);
-		}
-
-		private void CheckClientTimeouts(GameTime gameTime)
-		{
-			var clientsToRemove = new List<byte>();
-
-			foreach (var pair in clients)
-			{
-				if (gameTime.TotalGameTime.Seconds - pair.Value.Timeout >= 20)
-				{
-					var message = new Message();
-					message.ClientId = GetClientIdAsLong(pair.Key).Value;
-					message.Type = MessageType.Disconnect;
-					server.Messages.Add(message);
-
-					clientsToRemove.Add(pair.Key);
-
-					Logger.Log<LidgrenServer>(LogLevel.Debug, "Log: Client: {0} disconnected due to timeout.", pair.Key.ToString());
-				}
-			}
-
-			for (int i = 0; i < clientsToRemove.Count; i++)
-			{
-				clients.Remove(clientsToRemove[i]);
-			}
 		}
 
 		public bool IsStarted
@@ -84,7 +61,7 @@ namespace Game.Network.Servers
 			server = new LidgrenServer();
 			server.Initialize(configuration);
 
-			clients.Clear();
+			entities.Clear();
 		}
 
 		public void Start()
@@ -92,14 +69,14 @@ namespace Game.Network.Servers
 			World = new WorldSimulation();
 			World.Initialize(Settings.World.Gravity, Settings.World.Seed);
 
-			clients.Clear();
+			entities.Clear();
 			server.Start();
 		}
 
 		public void Stop(string message = null)
 		{
 			server.Stop(message);
-			clients.Clear();
+			entities.Clear();
 		}
 
 		public void Update(GameTime gameTime)
@@ -109,16 +86,16 @@ namespace Game.Network.Servers
 				return;
 			}
 
+			// Check for and remove clients that have timed out
+			if (timeoutTimer.Update(gameTime))
+			{
+				CheckTimeouts(gameTime);
+			}
+
 			// Skip the packet updates below if the tickrate hasnt been reached
 			if (!tickrateTimer.Update(gameTime))
 			{
 				return;
-			}
-
-			// Check for and remove clients that have timed out
-			if (checkClientTimeoutsTimer.Update(gameTime))
-			{
-				CheckClientTimeouts(gameTime);
 			}
 
 			// Check for new messages and store them if available
@@ -133,12 +110,41 @@ namespace Game.Network.Servers
 			// Clear all messages to prepare for a new batch the next time this function is called
 			server.Messages.Clear();
 
+			var clients = GetEntitiesOfType(EntityType.Client);
+
 			// Send updates to the clients
-			BroadcastClientSpatial();
-			BroadcastClientActions();
+			BroadcastEntitySpatial(clients);
+			BroadcastEntityEvents(clients);
 
 			// Update the world
 			World.Update(gameTime);
+		}
+
+		private void CheckTimeouts(GameTime gameTime)
+		{
+			var clientsToRemove = new List<ushort>();
+
+			var clients = GetEntitiesOfType(EntityType.Client);
+
+			foreach (var client in clients)
+			{
+				if (gameTime.TotalGameTime.Seconds - client.Timeout >= 20)
+				{
+					var message = new Message();
+					message.ClientId = GetClientIdAsLong(client.Id).Value;
+					message.Type = MessageType.Disconnect;
+					server.Messages.Add(message);
+
+					clientsToRemove.Add(client.Id);
+
+					Logger.Log<LidgrenServer>(LogLevel.Debug, "Log: Client: {0} disconnected due to timeout.", client.Id.ToString());
+				}
+			}
+
+			for (int i = 0; i < clientsToRemove.Count; i++)
+			{
+				entities.Remove(clientsToRemove[i]);
+			}
 		}
 
 		private void ProcessMessage(GameTime gameTime, Message message)
@@ -152,28 +158,28 @@ namespace Game.Network.Servers
 				}
 
 				// Reset the client timeout counter every time data has been received
-				byte clientId = connectionIds[message.ClientId];
-				if (clients.ContainsKey(clientId))
+				var clientId = connectionIds[message.ClientId];
+				if (entities.ContainsKey(clientId))
 				{
-					clients[clientId].Timeout = gameTime.TotalGameTime.Seconds;
+					entities[clientId].Timeout = gameTime.TotalGameTime.Seconds;
 				}
 
 				switch ((PacketType)message.Data[0])
 				{
+					case PacketType.Combined:
+						ReceivedCombinedMessage(message);
+						break;
+
 					case PacketType.GameSettings:
 						ReceivedGameSettingsRequest(message);
 						break;
 
 					case PacketType.EntitySpatial:
-						ReceivedClientSpatial(message);
+						ReceivedEntitySpatial(message);
 						break;
 
 					case PacketType.EntityEvents:
-						ReceivedClientActions(message);
-						break;
-
-					case PacketType.Combined:
-						ReceivedCombinedMessage(message);
+						ReceivedEntityEvents(message);
 						break;
 				}
 
@@ -196,20 +202,19 @@ namespace Game.Network.Servers
 			}
 			else
 			{
-				var args = new ClientStatusArgs()
-				{
-					Type = message.Type == MessageType.Connect ? ClientStatusType.Connected : ClientStatusType.Disconnected
-				};
+				var args = new EntityStatusArgs { Type = EntityType.Client };
 
-				if (args.Type == ClientStatusType.Connected)
+				if (message.Type == MessageType.Connect)
 				{
-					args.ClientId = CreateClientIdAsByteMapping(message.ClientId);
-					clients.Add(args.ClientId, new ClientData());
+					args.StatusType = EntityStatusType.Connected;
+					args.Id = CreateClientIdAsShortMapping(message.ClientId);
+					entities.Add(args.Id, new EntityInfo(args.Id));
 				}
 				else
 				{
-					args.ClientId = connectionIds[message.ClientId];
-					clients.Remove(args.ClientId);
+					args.StatusType = EntityStatusType.Disconnected;
+					args.Id = connectionIds[message.ClientId];
+					entities.Remove(args.Id);
 					connectionIds.Remove(message.ClientId);
 				}
 
@@ -217,15 +222,15 @@ namespace Game.Network.Servers
 			}
 		}
 
-		private byte CreateClientIdAsByteMapping(long clientId)
+		private ushort CreateClientIdAsShortMapping(long clientId)
 		{
 			// Initialize the client id if not already done
 			if (!connectionIds.ContainsKey(clientId))
 			{
-				byte clientByteId = 0;
+				ushort newId = 0;
 
-				// Find a unused id in the range 1-255
-				for (int i = 1; i <= 255; i++)
+				// Find a unused id
+				for (int i = 0; i < ushort.MaxValue; i++)
 				{
 					bool foundNewId = true;
 
@@ -240,19 +245,19 @@ namespace Game.Network.Servers
 
 					if (foundNewId)
 					{
-						clientByteId = (byte)i;
+						newId = (ushort)i;
 						break;
 					}
 				}
 
 				// Add the new client id to the lookup table
-				connectionIds.Add(clientId, clientByteId);
+				connectionIds.Add(clientId, newId);
 			}
 
 			return connectionIds[clientId];
 		}
 
-		private long? GetClientIdAsLong(byte clientId)
+		private long? GetClientIdAsLong(ushort clientId)
 		{
 			foreach (var connectionId in connectionIds)
 			{
@@ -263,6 +268,21 @@ namespace Game.Network.Servers
 			}
 
 			return null;
+		}
+
+		private List<EntityInfo> GetEntitiesOfType(EntityType type)
+		{
+			var result = new List<EntityInfo>();
+
+			for (ushort i = 0; i < entities.Count; i++)
+			{
+				if (entities[i].Type == type)
+				{
+					result.Add(entities[i]);
+				}
+			}
+
+			return result;
 		}
 	}
 }

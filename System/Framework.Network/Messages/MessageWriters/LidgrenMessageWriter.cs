@@ -38,6 +38,11 @@ namespace Framework.Network.Messages.MessageWriters
 			messageOut.Write(source);
 		}
 
+		public void Write(UInt16 source)
+		{
+			messageOut.Write(source);
+		}
+
 		public void Write(Int32 source)
 		{
 			messageOut.Write(source);

@@ -106,8 +106,6 @@
     <Compile Include="Messages\Message.cs" />
     <Compile Include="Messages\MessageDeliveryMethod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Servers\Events\ClientStatusArgs.cs" />
-    <Compile Include="Servers\Events\ClientStatusType.cs" />
     <Compile Include="Servers\Configurations\DefaultServerConfiguration.cs" />
     <Compile Include="Servers\Configurations\IServerConfiguration.cs" />
     <Compile Include="Servers\IServer.cs" />

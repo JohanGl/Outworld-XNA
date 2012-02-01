@@ -193,7 +193,6 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 		{
 			// Initialize the settings
 			globalSettings.World.Seed = e.Seed;
-			globalSettings.World.Gravity = e.Gravity;
 
 			// Initialize the world
 			gameClient.World = new WorldContext();

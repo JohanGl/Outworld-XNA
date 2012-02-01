@@ -5,6 +5,6 @@ namespace Game.Network.Clients.Events
 {
 	public class ClientSpatialEventArgs : EventArgs
 	{
-		public ClientSpatial[] Client;
+		public EntitySpatial[] Entity;
 	}
 }

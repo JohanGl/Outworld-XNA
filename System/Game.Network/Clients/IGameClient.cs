@@ -11,10 +11,10 @@ namespace Game.Network.Clients
 	public interface IGameClient
 	{
 		event EventHandler<GameSettingsEventArgs> GetGameSettingsCompleted;
-		event EventHandler<ClientSpatialEventArgs> GetClientSpatialCompleted;
-		event EventHandler<ClientActionsEventArgs> GetClientActionsCompleted;
+		event EventHandler<ClientSpatialEventArgs> GetEntitySpatialCompleted;
+		event EventHandler<ClientEventsEventArgs> GetEntityEventsCompleted;
 
-		byte ClientId { get; }
+		ushort ClientId { get; }
 		bool IsConnected { get; }
 		float TimeStamp { get; }
 		WorldContext World { get; set; }
@@ -27,7 +27,7 @@ namespace Game.Network.Clients
 
 		void GetGameSettings();
 		void SendClientSpatial(Vector3 position, Vector3 velocity, Vector3 angle);
-		void SendClientActions(List<ClientAction> actions);
+		void SendClientEvents(List<EntityEvent> events);
 
 		void BeginCombinedMessage();
 		void EndCombinedMessage();

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
-namespace Game.Network.Common
+namespace NetworkTool
 {
 	public class RecordedMessage
 	{
