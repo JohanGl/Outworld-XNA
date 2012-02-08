@@ -6,6 +6,7 @@ using Framework.Network.Messages;
 using Framework.Network.Servers;
 using Framework.Network.Servers.Configurations;
 using Game.Network.Common;
+using Game.Network.Servers.Helpers;
 using Game.Network.Servers.Settings;
 using Game.Network.Servers.Simulations.World;
 using Microsoft.Xna.Framework;
@@ -18,6 +19,7 @@ namespace Game.Network.Servers
 		public WorldSimulation World { get; private set; }
 
 		private IServer server;
+		private IMessageRecorder recorder;
 		private Dictionary<long, ushort> connectionIds;
 		private Dictionary<ushort, EntityInfo> entities;
 		private Dictionary<ushort, List<EntityEvent>> tempEntityEvents;
@@ -38,6 +40,10 @@ namespace Game.Network.Servers
 			InitializePacketSizeLookup();
 
 			Logger.RegisterLogLevelsFor<GameServer>(Logger.LogLevels.Adaptive);
+
+#if DEBUG
+			recorder = new DefaultMessageRecorder();
+#endif
 		}
 
 		public bool IsStarted
@@ -100,6 +106,10 @@ namespace Game.Network.Servers
 
 			// Check for new messages and store them if available
 			server.Update();
+
+#if DEBUG
+			recorder.Record(server.Messages);
+#endif
 
 			// Process all stored messages
 			for (int i = 0; i < server.Messages.Count; i++)

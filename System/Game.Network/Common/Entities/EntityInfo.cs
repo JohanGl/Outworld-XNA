@@ -25,7 +25,7 @@ namespace Game.Network.Common
 			}
 		}
 
-		public List<EntityEvent> GetRecentEvents(float currentTimeStamp, float seconds = 1f)
+		public List<EntityEvent> GetRecentEvents(float currentTimeStamp, float seconds = 2f)
 		{
 			var result = new List<EntityEvent>();
 
@@ -34,12 +34,12 @@ namespace Game.Network.Common
 				// Traverse backwards in time since the last events are the most recent
 				for (int i = Events.Count - 1; i >= 0; i--)
 				{
-					// Get all events within the last second
+					// Get all events within the specified timeframe
 					if (Events[i].TimeStamp > currentTimeStamp - seconds)
 					{
 						result.Add(Events[i]);
 					}
-					// No more relevant events left
+					// No more events within the last second
 					else
 					{
 						break;
@@ -59,7 +59,7 @@ namespace Game.Network.Common
 		{
 			Id = id;
 			SpatialData = new List<EntitySpatial>(110);
-			Events = new List<EntityEvent>(110);
+			Events = new List<EntityEvent>();
 			Timeout = int.MaxValue;
 		}
 	}

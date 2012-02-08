@@ -5,6 +5,8 @@ namespace Framework.Core.Diagnostics.Logging
 {
 	public class FileOutputSource : IOutputSource
 	{
+		public bool ApplySignature { get; set; }
+
 		private readonly string fileName;
 		private static readonly object writeLock = new object();
 
@@ -16,6 +18,8 @@ namespace Framework.Core.Diagnostics.Logging
 			{
 				File.Delete(fileName);
 			}
+
+			ApplySignature = true;
 		}
 
 		public void Write(string text)

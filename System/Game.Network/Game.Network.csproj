@@ -125,6 +125,8 @@
     <Compile Include="Common\Entities\EntityInfo.cs" />
     <Compile Include="Servers\GameServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Servers\Helpers\DefaultMessageRecorder.cs" />
+    <Compile Include="Servers\Helpers\IMessageRecorder.cs" />
     <Compile Include="Servers\IGameServer.cs" />
     <Compile Include="Servers\Settings\GameServerSettings.cs" />
     <Compile Include="Servers\Settings\WorldSettings.cs" />

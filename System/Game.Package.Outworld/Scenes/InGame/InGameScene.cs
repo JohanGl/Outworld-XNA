@@ -26,6 +26,7 @@ using Game.World.Terrains.Parts.Areas;
 using Game.World.Terrains.Parts.Areas.Helpers;
 using Game.World.Terrains.Parts.Tiles;
 using Outworld.Helpers.Logging;
+using Outworld.Helpers.Rendering;
 using Outworld.Players;
 using Outworld.Scenes.InGame.Controls.Hud;
 using Outworld.Scenes.InGame.Helpers.BreadCrumbs;
@@ -76,6 +77,9 @@ namespace Outworld.Scenes.InGame
 
 		private float tileBelowPlayerFeetOffsetY;
 
+		// Rendering
+		private ServerEntityRenderer serverEntityRenderer;
+
 		// Sounds
 		private bool walkToggle;
 
@@ -103,6 +107,7 @@ namespace Outworld.Scenes.InGame
 			InitializePlayer();
 			InitializeTimers();
 			InitializeAudio();
+			InitializeRendering();
 
 			clientEvents = new List<EntityEvent>();
 
@@ -205,6 +210,11 @@ namespace Outworld.Scenes.InGame
 		private void InitializeAudio()
 		{
 			audioHandler = ServiceLocator.Get<IAudioHandler>();
+		}
+
+		private void InitializeRendering()
+		{
+			serverEntityRenderer = new ServerEntityRenderer(Context);
 		}
 
 		public void Respawn()
@@ -310,8 +320,10 @@ namespace Outworld.Scenes.InGame
 
 			UpdateGui(gameTime);
 			skinnedModelPlayer.Update(gameTime);
+			serverEntityRenderer.Update(gameTime);
 			audioHandler.Update(gameTime);
 
+			// Update audio
 			audioHandler.UpdateListener(playerSpatial.Position);
 
 			// Update all timers
@@ -429,46 +441,47 @@ namespace Outworld.Scenes.InGame
 			// Render the terrain
 			gameClient.World.TerrainContext.Renderer.Render(gameTime, Context.View.Cameras[activeCamera]);
 
-			RenderServerEntities();
+			// Render all server entities
+			serverEntityRenderer.Render(Context.View.Cameras[activeCamera], gameClient.ServerEntities);
 
 			RenderGui();
 		}
 
-		private void RenderServerEntities()
-		{
-			// Render the current player (debug)
-			//var position = playerSpatial.Position + new Vector3(5f, 0.2f, 0);
-			//var angle = new Vector3(0, playerSpatial.Angle.X + 180f, 0);
-			//RenderSkinnedPlayer(currentClientEvent, position, angle);
+		//private void RenderServerEntities()
+		//{
+		//    // Render the current player (debug)
+		//    //var position = playerSpatial.Position + new Vector3(5f, 0.2f, 0);
+		//    //var angle = new Vector3(0, playerSpatial.Angle.X + 180f, 0);
+		//    //RenderSkinnedPlayer(currentClientEvent, position, angle);
 
-			// Render all server entities
-			for (int i = 0; i < gameClient.ServerEntities.Count; i++)
-			{
-				var entity = gameClient.ServerEntities[i];
-				RenderSkinnedRemotePlayer(entity.Animation, entity.PreviousAnimation, entity.Position, new Vector3(entity.Angle.X, 0, 0));
-			}
+		//    // Render all server entities
+		//    for (int i = 0; i < gameClient.ServerEntities.Count; i++)
+		//    {
+		//        var entity = gameClient.ServerEntities[i];
+		//        RenderSkinnedRemotePlayer(entity.Animation, entity.PreviousAnimation, entity.Position, new Vector3(entity.Angle.X, 0, 0));
+		//    }
 
-			previousClientEvent = currentClientEvent;
-		}
+		//    previousClientEvent = currentClientEvent;
+		//}
 
-		private void RenderSkinnedRemotePlayer(byte animation, byte previousAnimation, Vector3 position, Vector3 angle)
-		{
-			var camera = Context.View.Cameras["Default"];
+		//private void RenderSkinnedRemotePlayer(byte animation, byte previousAnimation, Vector3 position, Vector3 angle)
+		//{
+		//    var camera = Context.View.Cameras["Default"];
 
-			if (animation != previousAnimation)
-			{
-				if (animation >= (byte)EntityEventType.RunDirection1 && animation <= (byte)EntityEventType.RunDirection8)
-				{
-					skinnedModelPlayer.SetAnimationClip("Run");
-				}
-				else
-				{
-					skinnedModelPlayer.SetAnimationClip("Idle");
-				}
-			}
+		//    if (animation != previousAnimation)
+		//    {
+		//        if (animation >= (byte)EntityEventType.RunDirection1 && animation <= (byte)EntityEventType.RunDirection8)
+		//        {
+		//            skinnedModelPlayer.SetAnimationClip("Run");
+		//        }
+		//        else
+		//        {
+		//            skinnedModelPlayer.SetAnimationClip("Idle");
+		//        }
+		//    }
 
-			skinnedModelPlayer.Render(camera.View, camera.Projection, position + new Vector3(0, -0.725f, 0), angle.X);
-		}
+		//    skinnedModelPlayer.Render(camera.View, camera.Projection, position + new Vector3(0, -0.725f, 0), angle.X);
+		//}
 
 		private void RenderSkinnedPlayer(byte animation, Vector3 position, Vector3 angle)
 		{

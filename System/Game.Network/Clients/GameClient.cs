@@ -123,7 +123,7 @@ namespace Game.Network.Clients
 			}
 		}
 
-		private void UpdateServerEntities(ushort clientId, bool connected)
+		private void UpdateServerEntities(ushort clientId, EntityType type, bool connected)
 		{
 			// Skip self
 			if (ClientId == clientId)
@@ -139,7 +139,8 @@ namespace Game.Network.Clients
 			{
 				var entity = new ServerEntity
 				{
-					Id = clientId
+					Id = clientId,
+					Type = type
 				};
 
 				ServerEntities.Add(entity);

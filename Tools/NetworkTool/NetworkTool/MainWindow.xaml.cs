@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Timers;
-using Framework.Network.Clients;
 using Microsoft.Xna.Framework;
 
 namespace NetworkTool

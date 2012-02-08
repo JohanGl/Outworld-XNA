@@ -6,6 +6,7 @@ namespace Framework.Core.Diagnostics.Logging
 	{
 		private class LogHandlerItem
 		{
+			public IOutputSource OverriddenOutput { get; set;}
 			public List<LogLevel> Levels { get; set; }
 			public bool IsMuted { get; set; }
 

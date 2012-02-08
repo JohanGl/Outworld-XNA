@@ -102,6 +102,7 @@
     <Compile Include="GamePackage.cs" />
     <Compile Include="Helpers\EntityFactories\PlayerEntityFactory.cs" />
     <Compile Include="Helpers\Logging\LogFilterHelper.cs" />
+    <Compile Include="Helpers\Rendering\ServerEntityRenderer.cs" />
     <Compile Include="Players\PlayerMessage.cs" />
     <Compile Include="Scenes\Debug\Audio\AudioScene.cs" />
     <Compile Include="Scenes\Debug\Models\ModelScene.cs" />

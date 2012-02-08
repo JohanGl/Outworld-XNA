@@ -64,6 +64,16 @@ namespace Framework.Core.Diagnostics.Logging
 			}
 		}
 
+		public static void OverrideOutputFor<T>(IOutputSource outputSource)
+		{
+			string key = GetTypeKey<T>();
+
+			if (register.ContainsKey(key))
+			{
+				register[key].OverriddenOutput = outputSource;
+			}
+		}
+
 		/// <summary>
 		/// Removes all registered types
 		/// </summary>
@@ -78,25 +88,47 @@ namespace Framework.Core.Diagnostics.Logging
 		{
 			string key = GetTypeKey<T>();
 
+			message = string.Format(message, args);
+
 			if (register.ContainsKey(key))
 			{
 				if (!register[key].IsMuted &&
 					register[key].Levels.Contains(level))
 				{
-					Log(key, string.Format(message, args));
+					if (register[key].OverriddenOutput == null)
+					{
+						for (int i = 0; i < Outputs.Count; i++)
+						{
+							Log(key, message, Outputs[i]);
+						}
+					}
+					else
+					{
+						Log(key, message, register[key].OverriddenOutput);
+					}
 				}
 			}
 			else if (!OnlyLogRegisteredTypes)
 			{
-				Log(key, string.Format(message, args));
+				for (int i = 0; i < Outputs.Count; i++)
+				{
+					Log(key, message, Outputs[i]);
+				}
 			}
 		}
 
-		private static void Log(string key, string message)
+		private static void Log(string key, string message, IOutputSource output)
 		{
-			var span = (DateTime.Now - Started);
-			string text = string.Format("[{0:00}:{1:00}:{2:00}][{3}] {4}", span.Hours, span.Minutes, span.Seconds, key, message);
-			Outputs.ForEach(p => p.Write(text));
+			if (output.ApplySignature)
+			{
+				var span = (DateTime.Now - Started);
+				string text = string.Format("[{0:00}:{1:00}:{2:00}][{3}] {4}", span.Hours, span.Minutes, span.Seconds, key, message);
+				output.Write(text);
+			}
+			else
+			{
+				output.Write(message);
+			}
 		}
 
 		#endregion

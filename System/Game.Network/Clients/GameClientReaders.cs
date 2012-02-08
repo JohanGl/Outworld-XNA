@@ -32,7 +32,7 @@ namespace Game.Network.Clients
 				for (int i = 0; i < totalClients; i++)
 				{
 					ushort currentClientId = client.Reader.ReadUInt16();
-					UpdateServerEntities(currentClientId, true);
+					UpdateServerEntities(currentClientId, EntityType.Client, true);
 				}
 
 				GetGameSettingsCompleted(this, args);
@@ -57,7 +57,7 @@ namespace Game.Network.Clients
 
 			messageHandler.AddMessage(MessageHandlerType.GameClient, notificationMessage);
 
-			UpdateServerEntities(clientId, connected);
+			UpdateServerEntities(clientId, EntityType.Client, connected);
 		}
 
 		private void ReceivedClientSpatial(Message message)
