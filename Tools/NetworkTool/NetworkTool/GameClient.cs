@@ -38,6 +38,14 @@ namespace NetworkTool
 
 		public void SendMessage(Message message)
 		{
+			client.Writer.WriteNewMessage();
+
+			foreach (byte b in message.Data)
+			{
+				client.Writer.Write(b);
+			}
+
+			client.Send(MessageDeliveryMethod.ReliableOrdered);
 		}
 
 		//private MessageHelper messageHelper = new MessageHelper();

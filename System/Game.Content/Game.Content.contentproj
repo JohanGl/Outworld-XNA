@@ -411,13 +411,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Skies\Sky.jpg">
-      <Name>Sky</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Models\Skies\SkyDome.fbx">
       <Name>SkyDome</Name>
       <Importer>FbxImporter</Importer>
@@ -427,6 +420,13 @@
   <ItemGroup>
     <Compile Include="Models\Skies\Sky copy.png">
       <Name>Sky copy</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Models\Skies\Sky.png">
+      <Name>Sky</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

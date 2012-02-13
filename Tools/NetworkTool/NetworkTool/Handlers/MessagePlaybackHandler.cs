@@ -16,6 +16,7 @@ namespace NetworkTool
 		public MessagePlaybackHandler()
 		{
 			gameClient = new GameClient();
+			gameClient.Connect();
 
 			tickrateTimer = new DispatcherTimer();
 			tickrateTimer.Interval = TimeSpan.FromMilliseconds(1000 / 20);
@@ -27,14 +28,24 @@ namespace NetworkTool
 			this.messages = messages.Where(p => p.ClientId == clientId).ToList();
 
 			messageIndex = 0;
-			gameClient.Connect();
 			tickrateTimer.Start();
+
+			System.Diagnostics.Debug.WriteLine("Recording started");
+		}
+
+		public void Stop()
+		{
+			tickrateTimer.Stop();
+			messageIndex = 0;
+
+			System.Diagnostics.Debug.WriteLine("Recording stopped");
 		}
 
 		private void TickrateTimer_Tick(object sender, EventArgs eventArgs)
 		{
-			if (!gameClient.IsConnected)
+			if (messageIndex >= messages.Count)
 			{
+				Stop();
 				return;
 			}
 
@@ -46,15 +57,17 @@ namespace NetworkTool
 			}
 			else
 			{
-				if (message.Type == MessageType.Connect)
-				{
-					gameClient.Connect();
-				}
-				else
-				{
-					gameClient.Disconnect();
-				}
+				//if (message.Type == MessageType.Connect)
+				//{
+				//    gameClient.Connect();
+				//}
+				//else
+				//{
+				//    gameClient.Disconnect();
+				//}
 			}
+
+			System.Diagnostics.Debug.WriteLine(string.Format("Sending message: {0} / {1}", messageIndex + 1, messages.Count));
 
 			messageIndex++;
 		}
