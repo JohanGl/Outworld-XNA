@@ -1,83 +1,104 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Timers;
+using System.Windows.Controls;
+using System.Windows.Threading;
 using Microsoft.Xna.Framework;
 
 namespace NetworkTool
 {
 	public partial class MainWindow
 	{
-		private Timer updateTimer;
-		private List<RecordedMessage> recordedMessages;
-		private int index;
-		private GameClient gameClient;
+		private MessageHandler messageHandler;
+		private List<Message> messages;
+
+		private MessagePlaybackHandler playbackHandler;
 
 		public MainWindow()
 		{
 			InitializeComponent();
 
-			updateTimer = new Timer(1000 / 20);
-			updateTimer.Elapsed += updateTimer_Elapsed;
+			messageHandler = new MessageHandler();
+			messages = new List<Message>();
 
-			var reader = new RecordedFileReader(@"Recordings/recording01.xml");
-			recordedMessages = reader.GetRecording();
+			playbackHandler = new MessagePlaybackHandler();
 
-			gameClient = new GameClient();
-			gameClient.Connect();
+			InitializeAvailableRecordings();
+		}
+
+		private void InitializeAvailableRecordings()
+		{
+			var result = new List<FileRecording>();
+
+			var path = Path.Combine(Environment.CurrentDirectory, "Recordings");
+			var files = Directory.GetFiles(path).Where(p => p.EndsWith(".xml"));
+
+			foreach (var file in files)
+			{
+				var recording = new FileRecording
+				{
+					Path = file,
+					Name = file.Substring(file.LastIndexOf('\\') + 1)
+				};
+
+				result.Add(recording);
+			}
+
+			comboSelectedFile.DisplayMemberPath = "Name";
+			comboSelectedFile.ItemsSource = result;
+		}
+
+		private void InitializeAvailableClients()
+		{
+			var clients = messages.Select(p => p.ClientId).Distinct();
+
+			comboSelectedClient.ItemsSource = clients;
 		}
 
 		private void ButtonPlayback_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			StartPlayback();
-		}
-
-		private void StartPlayback()
-		{
-			index = 0;
-			updateTimer.Start();
-		}
-
-		private void StopPlayback()
-		{
-			updateTimer.Stop();
+			playbackHandler.Play((long)comboSelectedClient.SelectedItem, messages);
 		}
 
 		private void updateTimer_Elapsed(object sender, ElapsedEventArgs e)
 		{
-			System.Diagnostics.Debug.WriteLine("Index " + index + " / " + recordedMessages.Count);
+			//System.Diagnostics.Debug.WriteLine("Index " + index + " / " + recordedMessages.Count);
 
-			if (index >= recordedMessages.Count)
-			{
-				StopPlayback();
-				return;
-			}
+			//if (index >= recordedMessages.Count)
+			//{
+			//    StopPlayback();
+			//    return;
+			//}
 
-			var message = recordedMessages[index];
+			//var message = recordedMessages[index];
 
-			bool hasSpatial = HasSpatialData(message.Spatial);
-			bool hasEvents = message.Events.Count > 0;
-			bool isCombined = hasSpatial && hasEvents;
+			//bool hasSpatial = HasSpatialData(message.Spatial);
+			//bool hasEvents = message.Events.Count > 0;
+			//bool isCombined = hasSpatial && hasEvents;
 
-			if (isCombined)
-			{
-				gameClient.BeginCombinedMessage();
-			}
+			//if (isCombined)
+			//{
+			//    gameClient.BeginCombinedMessage();
+			//}
 
-			if (hasSpatial)
-			{
-				gameClient.SendSpatial(message.Spatial.Position, message.Spatial.Velocity, message.Spatial.Angle);
-			}
+			//if (hasSpatial)
+			//{
+			//    gameClient.SendSpatial(message.Spatial.Position, message.Spatial.Velocity, message.Spatial.Angle);
+			//}
 
-			if (hasEvents)
-			{
-				gameClient.SendEvents(message.Events);
-			}
+			//if (hasEvents)
+			//{
+			//    gameClient.SendEvents(message.Events);
+			//}
 
-			if (isCombined)
-			{
-				gameClient.EndCombinedMessage();
-			}
+			//if (isCombined)
+			//{
+			//    gameClient.EndCombinedMessage();
+			//}
 
-			index++;
+			//index++;
 		}
 
 		private bool HasSpatialData(EntitySpatial spatial)
@@ -90,6 +111,20 @@ namespace NetworkTool
 			}
 
 			return true;
+		}
+
+		private void comboSelectedFile_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			var file = (FileRecording)comboSelectedFile.SelectedItem;
+
+			messages = messageHandler.GetRecordings(file.Path);
+
+			InitializeAvailableClients();
+		}
+
+		private void comboSelectedClient_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			ButtonPlayback.IsEnabled = true;
 		}
 	}
 }

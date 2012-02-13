@@ -2,6 +2,7 @@
 using Framework.Network.Clients;
 using Framework.Network.Clients.Configurations;
 using Framework.Network.Messages;
+using Game.Network.Common;
 using Microsoft.Xna.Framework;
 
 namespace NetworkTool
@@ -9,9 +10,8 @@ namespace NetworkTool
 	public class GameClient
 	{
 		private IClient client;
-		private MessageHelper messageHelper = new MessageHelper();
-		private bool isCombined;
-		private bool isCombinedInitialized;
+
+		public bool IsConnected { get { return client.IsConnected; } }
 
 		public GameClient()
 		{
@@ -36,64 +36,72 @@ namespace NetworkTool
 			client.Disconnect(message);
 		}
 
-		public void SendSpatial(Vector3 position, Vector3 velocity, Vector3 angle)
+		public void SendMessage(Message message)
 		{
-			InitializeMessageWriter();
-			client.Writer.Write((byte)PacketType.EntitySpatial);
-			client.Writer.WriteTimeStamp();
-			messageHelper.WriteVector3(position, client.Writer);
-			messageHelper.WriteVector3(velocity, client.Writer);
-			messageHelper.WriteVector3(angle, client.Writer);
-			SendMessage();
 		}
 
-		public void SendEvents(List<EntityEvent> events)
-		{
-			InitializeMessageWriter();
-			client.Writer.Write((byte)PacketType.EntityEvents);
-			client.Writer.Write((byte)(events.Count * 5));
+		//private MessageHelper messageHelper = new MessageHelper();
+		//private bool isCombined;
+		//private bool isCombinedInitialized;
 
-			for (int i = 0; i < events.Count; i++)
-			{
-				client.Writer.Write(events[i].TimeStamp);
-				client.Writer.Write((byte)events[i].Type);
-			}
+		//public void SendSpatial(Vector3 position, Vector3 velocity, Vector3 angle)
+		//{
+		//    InitializeMessageWriter();
+		//    client.Writer.Write((byte)PacketType.EntitySpatial);
+		//    client.Writer.WriteTimeStamp();
+		//    messageHelper.WriteVector3(position, client.Writer);
+		//    messageHelper.WriteVector3(velocity, client.Writer);
+		//    messageHelper.WriteVector3(angle, client.Writer);
+		//    SendMessage();
+		//}
 
-			SendMessage(MessageDeliveryMethod.ReliableUnordered);
-		}
+		//public void SendEvents(List<EntityEvent> events)
+		//{
+		//    InitializeMessageWriter();
+		//    client.Writer.Write((byte)PacketType.EntityEvents);
+		//    client.Writer.Write((byte)(events.Count * 5));
 
-		private void InitializeMessageWriter()
-		{
-			if (!isCombined)
-			{
-				client.Writer.WriteNewMessage();
-			}
-			else if (isCombined && !isCombinedInitialized)
-			{
-				client.Writer.WriteNewMessage();
-				client.Writer.Write((byte)PacketType.Combined);
-				isCombinedInitialized = true;
-			}
-		}
+		//    for (int i = 0; i < events.Count; i++)
+		//    {
+		//        client.Writer.Write(events[i].TimeStamp);
+		//        client.Writer.Write((byte)events[i].Type);
+		//    }
 
-		private void SendMessage(MessageDeliveryMethod method = MessageDeliveryMethod.Unreliable)
-		{
-			if (!isCombined)
-			{
-				client.Send(method);
-			}
-		}
+		//    SendMessage(MessageDeliveryMethod.ReliableUnordered);
+		//}
 
-		public void BeginCombinedMessage()
-		{
-			isCombined = true;
-			isCombinedInitialized = false;
-		}
+		//private void InitializeMessageWriter()
+		//{
+		//    if (!isCombined)
+		//    {
+		//        client.Writer.WriteNewMessage();
+		//    }
+		//    else if (isCombined && !isCombinedInitialized)
+		//    {
+		//        client.Writer.WriteNewMessage();
+		//        client.Writer.Write((byte)PacketType.Combined);
+		//        isCombinedInitialized = true;
+		//    }
+		//}
 
-		public void EndCombinedMessage()
-		{
-			client.Send(MessageDeliveryMethod.Unreliable);
-			isCombined = false;
-		}
+		//private void SendMessage(MessageDeliveryMethod method = MessageDeliveryMethod.Unreliable)
+		//{
+		//    if (!isCombined)
+		//    {
+		//        client.Send(method);
+		//    }
+		//}
+
+		//public void BeginCombinedMessage()
+		//{
+		//    isCombined = true;
+		//    isCombinedInitialized = false;
+		//}
+
+		//public void EndCombinedMessage()
+		//{
+		//    client.Send(MessageDeliveryMethod.Unreliable);
+		//    isCombined = false;
+		//}
 	}
 }

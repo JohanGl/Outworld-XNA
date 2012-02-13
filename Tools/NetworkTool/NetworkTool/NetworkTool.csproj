@@ -58,11 +58,12 @@
     </ApplicationDefinition>
     <Compile Include="Entities\EntityEvent.cs" />
     <Compile Include="Entities\EntitySpatial.cs" />
+    <Compile Include="Handlers\MessagePlaybackHandler.cs" />
+    <Compile Include="Handlers\Entities\FileRecording.cs" />
     <Compile Include="GameClient.cs" />
-    <Compile Include="MessageHelper.cs" />
     <Compile Include="Entities\PacketType.cs" />
-    <Compile Include="RecordedFileReader.cs" />
-    <Compile Include="Entities\RecordedMessage.cs" />
+    <Compile Include="Handlers\MessageHandler.cs" />
+    <Compile Include="Entities\Message.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -77,6 +78,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -107,9 +109,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Recordings\recording01.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Resource Include="Recordings\server.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

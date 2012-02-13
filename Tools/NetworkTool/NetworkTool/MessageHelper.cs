@@ -1,8 +1,8 @@
-using Framework.Network.Messages.MessageReaders;
+﻿using Framework.Network.Messages.MessageReaders;
 using Framework.Network.Messages.MessageWriters;
 using Microsoft.Xna.Framework;
 
-namespace NetworkTool
+namespace Game.Network.Common
 {
 	/// <summary>
 	/// Contains helper functions related to read/write operations of messages with XNA
