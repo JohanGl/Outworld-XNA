@@ -19,7 +19,7 @@ namespace Game.Network.Servers
 			server.Writer.Write(e.Id);
 			server.Writer.Write(e.StatusType == EntityStatusType.Connected);
 
-			server.Broadcast(MessageDeliveryMethod.ReliableUnordered, GetClientIdAsLong(e.Id));
+			server.Broadcast(MessageDeliveryMethod.ReliableUnordered, e.ServerId);
 		}
 
 		private void SendGameSettings(Message message)
@@ -146,7 +146,7 @@ namespace Game.Network.Servers
 				return;
 			}
 
-			System.Diagnostics.Debug.WriteLine("Sending {0} events to client {1}", tempEntityEvents.Count, client.Id);
+			//System.Diagnostics.Debug.WriteLine("Sending {0} events to client {1}", tempEntityEvents.Count, client.Id);
 
 			// Write the header
 			InitializeMessageWriter();
@@ -172,7 +172,7 @@ namespace Game.Network.Servers
 				}
 			}
 
-			SendMessage(MessageDeliveryMethod.ReliableUnordered, client.Id);
+			SendMessage(MessageDeliveryMethod.ReliableUnordered, client.ServerId);
 		}
 
 		private List<EntityInfo> GetClientsWithinViewDistance(EntityInfo client, List<EntityInfo> clients)
@@ -209,14 +209,14 @@ namespace Game.Network.Servers
 			}
 		}
 
-		private void SendMessage(MessageDeliveryMethod deliveryMethod, ushort? clientId = null)
+		private void SendMessage(MessageDeliveryMethod deliveryMethod, long? clientId = null)
 		{
 			if (!isCombined)
 			{
 				// Send to a single client
 				if (clientId.HasValue)
 				{
-					server.Send(GetClientIdAsLong(clientId.Value).Value, deliveryMethod);
+					server.Send(clientId.Value, deliveryMethod);
 				}
 				// Send to all clients
 				else
@@ -232,12 +232,12 @@ namespace Game.Network.Servers
 			isCombinedInitialized = false;
 		}
 
-		public void EndCombinedMessage(MessageDeliveryMethod deliveryMethod, ushort? clientId = null)
+		public void EndCombinedMessage(MessageDeliveryMethod deliveryMethod, long? clientId = null)
 		{
 			// Send to a single client
 			if (clientId.HasValue)
 			{
-				server.Send(GetClientIdAsLong(clientId.Value).Value, deliveryMethod);
+				server.Send(clientId.Value, deliveryMethod);
 			}
 			// Send to all clients
 			else

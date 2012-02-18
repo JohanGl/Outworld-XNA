@@ -141,7 +141,7 @@ namespace Game.Network.Servers
 				if (gameTime.TotalGameTime.Seconds - client.Timeout >= 20)
 				{
 					var message = new Message();
-					message.ClientId = GetClientIdAsLong(client.Id).Value;
+					message.ClientId = client.ServerId;
 					message.Type = MessageType.Disconnect;
 					server.Messages.Add(message);
 
@@ -201,14 +201,19 @@ namespace Game.Network.Servers
 			}
 			else
 			{
-				var args = new EntityStatusArgs { Type = EntityType.Client };
+				var args = new EntityStatusArgs
+				{
+					Type = EntityType.Client,
+					ServerId = message.ClientId
+				};
 
 				if (message.Type == MessageType.Connect)
 				{
 					args.StatusType = EntityStatusType.Connected;
-					args.Id = CreateClientIdAsShortMapping(message.ClientId);
-					entities.Add(args.Id, new EntityInfo(args.Id));
-					Logger.Log<GameServer>(LogLevel.Debug, "Client with id {0} connected", args.Id);
+					args.Id = CreateShortClientId(message.ClientId);
+
+					entities.Add(args.Id, CreateConnectedClient(args.Id, message));
+					Logger.Log<GameServer>(LogLevel.Debug, "Client with id {0} connected with remote time offset: {1}", args.Id, message.RemoteTimeOffset);
 				}
 				else
 				{
@@ -223,7 +228,14 @@ namespace Game.Network.Servers
 			}
 		}
 
-		private ushort CreateClientIdAsShortMapping(long clientId)
+		private EntityInfo CreateConnectedClient(ushort id, Message message)
+		{
+			var entityInfo = new EntityInfo(id, message.ClientId);
+			entityInfo.RemoteTimeOffset = message.RemoteTimeOffset;
+			return entityInfo;
+		}
+
+		private ushort CreateShortClientId(long clientId)
 		{
 			// Initialize the client id if not already done
 			if (!connectionIds.ContainsKey(clientId))
@@ -256,19 +268,6 @@ namespace Game.Network.Servers
 			}
 
 			return connectionIds[clientId];
-		}
-
-		private long? GetClientIdAsLong(ushort clientId)
-		{
-			foreach (var connectionId in connectionIds)
-			{
-				if (connectionId.Value == clientId)
-				{
-					return connectionId.Key;
-				}
-			}
-
-			return null;
 		}
 
 		private List<EntityInfo> GetEntitiesOfType(EntityType type)

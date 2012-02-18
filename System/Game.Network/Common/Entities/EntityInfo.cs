@@ -6,7 +6,10 @@ namespace Game.Network.Common
 	public class EntityInfo
 	{
 		public ushort Id { get; private set; }
+		public long ServerId { get; private set; }
 		public EntityType Type;
+
+		public float RemoteTimeOffset { get; set; }
 
 		public int Timeout;
 		public List<EntitySpatial> SpatialData { get; set; }
@@ -29,6 +32,9 @@ namespace Game.Network.Common
 		{
 			var result = new List<EntityEvent>();
 
+			// Subtract the clients local time to get an accurate measurement
+			currentTimeStamp += RemoteTimeOffset;
+
 			if (Events.Count > 0)
 			{
 				// Traverse backwards in time since the last events are the most recent
@@ -38,11 +44,12 @@ namespace Game.Network.Common
 					if (Events[i].TimeStamp > currentTimeStamp - seconds)
 					{
 						result.Add(Events[i]);
+						System.Diagnostics.Debug.WriteLine(string.Format("Sending: TimeStamp: {0}, Type: {1}, Server: {2}, Server -2: {3}", Events[i].TimeStamp, Events[i].Type, currentTimeStamp, currentTimeStamp - seconds));
 					}
 					// No more events within the timespan
 					else
 					{
-						System.Diagnostics.Debug.WriteLine(string.Format("Failed event: TimeStamp: {0}, Type: {1}", Events[i].TimeStamp, Events[i].Type));
+						//System.Diagnostics.Debug.WriteLine(string.Format("Failed event: TimeStamp: {0}, Type: {1}, Server: {2}", Events[i].TimeStamp, Events[i].Type, currentTimeStamp - seconds));
 						break;
 					}
 				}
@@ -56,9 +63,10 @@ namespace Game.Network.Common
 			return Vector3.Distance(CurrentSpatial.Position, otherEntity.CurrentSpatial.Position) < 75;
 		}
 
-		public EntityInfo(ushort id)
+		public EntityInfo(ushort id, long serverId)
 		{
 			Id = id;
+			ServerId = serverId;
 			SpatialData = new List<EntitySpatial>(110);
 			Events = new List<EntityEvent>();
 			Timeout = int.MaxValue;

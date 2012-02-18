@@ -96,8 +96,8 @@ namespace Game.Network.Clients
 		{
 			if (GetEntityEventsCompleted != null)
 			{
-				System.Diagnostics.Debug.WriteLine("");
-				System.Diagnostics.Debug.WriteLine(string.Format("[X] Client received events in message: {0}", messageHelper.BytesToString(message.Data)));
+				//System.Diagnostics.Debug.WriteLine("");
+				//System.Diagnostics.Debug.WriteLine(string.Format("[X] Client received events in message: {0}", messageHelper.BytesToString(message.Data)));
 
 				var args = new ClientEventsEventArgs();
 
@@ -108,7 +108,7 @@ namespace Game.Network.Clients
 				// Get the number of entities in this message
 				ushort entities = client.Reader.ReadUInt16();
 
-				System.Diagnostics.Debug.WriteLine(string.Format("[X] Number of entities: {0}", entities));
+				//System.Diagnostics.Debug.WriteLine(string.Format("[X] Number of entities: {0}", entities));
 
 				for (ushort i = 0; i < entities; i++)
 				{
@@ -118,7 +118,7 @@ namespace Game.Network.Clients
 					// Get the number of events for the current entity
 					byte events = client.Reader.ReadByte();
 
-					System.Diagnostics.Debug.WriteLine(string.Format("[X] ClientId: {0}, Events: {1}", entityId, events));
+					//System.Diagnostics.Debug.WriteLine(string.Format("[X] ClientId: {0}, Events: {1}", entityId, events));
 
 					for (byte j = 0; j < events; j++)
 					{
@@ -129,7 +129,7 @@ namespace Game.Network.Clients
 
 						args.Events.Add(entityEvent);
 
-						System.Diagnostics.Debug.WriteLine(string.Format("[X] Client received event: ClientId: {0}, TimeStamp: {1}, Type: {2}", entityEvent.Id, entityEvent.TimeStamp, entityEvent.Type));
+						//System.Diagnostics.Debug.WriteLine(string.Format("[X] Client received event: ClientId: {0}, TimeStamp: {1}, Type: {2}", entityEvent.Id, entityEvent.TimeStamp, entityEvent.Type));
 					}
 				}
 

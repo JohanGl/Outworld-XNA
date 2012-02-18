@@ -195,7 +195,8 @@ namespace Framework.Network.Servers
 				var message = new Message
 				{
 					ClientId = messageIn.SenderConnection.RemoteUniqueIdentifier,
-					Type = MessageType.Connect
+					Type = MessageType.Connect,
+					RemoteTimeOffset = messageIn.SenderConnection.RemoteTimeOffset
 				};
 
 				Messages.Add(message);
