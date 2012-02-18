@@ -114,11 +114,11 @@ namespace Game.Network.Servers
 			// No other clients nearby
 			if (otherClients.Count == 0)
 			{
-				System.Diagnostics.Debug.WriteLine(string.Format("Client {0} is not nearby other clients", client.Id));
+				//System.Diagnostics.Debug.WriteLine(string.Format("Client {0} is not nearby other clients", client.Id));
 				return;
 			}
 
-			System.Diagnostics.Debug.WriteLine(string.Format("Client {0} is nearby clients {1}", client.Id, string.Join(",", otherClients.Select(p => p.Id.ToString()))));
+			//System.Diagnostics.Debug.WriteLine(string.Format("Client {0} is nearby clients {1}", client.Id, string.Join(",", otherClients.Select(p => p.Id.ToString()))));
 
 			tempEntityEvents.Clear();
 
@@ -126,7 +126,7 @@ namespace Game.Network.Servers
 			{
 				var events = otherClients[i].GetRecentEvents(server.TimeStamp);
 
-				System.Diagnostics.Debug.WriteLine(string.Format("Client {0} wants {1} events from other client {2}", client.Id, events.Count, otherClients[i].Id));
+				//System.Diagnostics.Debug.WriteLine(string.Format("Client {0} wants {1} events from other client {2}", client.Id, events.Count, otherClients[i].Id));
 
 				if (events.Count > 0)
 				{
@@ -208,7 +208,7 @@ namespace Game.Network.Servers
 				// Send to a single client
 				if (clientId.HasValue)
 				{
-					server.Send(connectionIds[clientId.Value], deliveryMethod);
+					server.Send(GetClientIdAsLong(clientId.Value).Value, deliveryMethod);
 				}
 				// Send to all clients
 				else
@@ -229,7 +229,7 @@ namespace Game.Network.Servers
 			// Send to a single client
 			if (clientId.HasValue)
 			{
-				server.Send(connectionIds[clientId.Value], deliveryMethod);
+				server.Send(GetClientIdAsLong(clientId.Value).Value, deliveryMethod);
 			}
 			// Send to all clients
 			else
