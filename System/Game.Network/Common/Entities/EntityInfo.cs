@@ -39,9 +39,10 @@ namespace Game.Network.Common
 					{
 						result.Add(Events[i]);
 					}
-					// No more events within the last second
+					// No more events within the timespan
 					else
 					{
+						System.Diagnostics.Debug.WriteLine(string.Format("Failed event: TimeStamp: {0}, Type: {1}", Events[i].TimeStamp, Events[i].Type));
 						break;
 					}
 				}

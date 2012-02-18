@@ -10,6 +10,8 @@ namespace Game.Network.Clients
 		// Handled combined messages
 		private bool isCombined;
 		private bool isCombinedInitialized;
+
+		private bool recordMessages = false;
 		
 		private List<RecordedMessage> recordedMessages = new List<RecordedMessage>();
 
@@ -31,20 +33,23 @@ namespace Game.Network.Clients
 			messageHelper.WriteVector3(angle, client.Writer);
 			SendMessage();
 
-			// Recorded messages
-			var recordedMessage = new RecordedMessage();
-			recordedMessage.Spatial = new EntitySpatial();
-			recordedMessage.Spatial.TimeStamp = client.TimeStamp;
-			recordedMessage.Spatial.Position = position;
-			recordedMessage.Spatial.Velocity = velocity;
-			recordedMessage.Spatial.Angle = angle;
-			recordedMessages.Add(recordedMessage);
-
-			if (recordedMessages.Count >= 1200)
+			if (recordMessages)
 			{
-				var dumper = new Framework.Core.Helpers.ObjectDumper();
-				System.IO.File.WriteAllText("d:\\recording.xml", dumper.ObjectToXml(recordedMessages));
-				recordedMessages.Clear();
+				// Recorded messages
+				var recordedMessage = new RecordedMessage();
+				recordedMessage.Spatial = new EntitySpatial();
+				recordedMessage.Spatial.TimeStamp = client.TimeStamp;
+				recordedMessage.Spatial.Position = position;
+				recordedMessage.Spatial.Velocity = velocity;
+				recordedMessage.Spatial.Angle = angle;
+				recordedMessages.Add(recordedMessage);
+
+				if (recordedMessages.Count >= 1200)
+				{
+					var dumper = new Framework.Core.Helpers.ObjectDumper();
+					System.IO.File.WriteAllText("d:\\recording.xml", dumper.ObjectToXml(recordedMessages));
+					recordedMessages.Clear();
+				}
 			}
 		}
 
@@ -62,10 +67,13 @@ namespace Game.Network.Clients
 
 			SendMessage(MessageDeliveryMethod.ReliableUnordered);
 
-			// Recorded messages
-			var recordedMessage = new RecordedMessage();
-			recordedMessage.Events = new List<EntityEvent>(events);
-			recordedMessages.Add(recordedMessage);
+			if (recordMessages)
+			{
+				// Recorded messages
+				var recordedMessage = new RecordedMessage();
+				recordedMessage.Events = new List<EntityEvent>(events);
+				recordedMessages.Add(recordedMessage);
+			}
 		}
 
 		private void InitializeMessageWriter()

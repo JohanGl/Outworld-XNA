@@ -109,6 +109,12 @@ namespace Game.Network.Servers
 
 		private void SendEntityEvents(EntityInfo client, List<EntityInfo> clients)
 		{
+			// TODO: DEBUG
+			if (client.Id != 0)
+			{
+				return;
+			}
+
 			var otherClients = GetClientsWithinViewDistance(client, clients);
 
 			// No other clients nearby
@@ -139,6 +145,8 @@ namespace Game.Network.Servers
 			{
 				return;
 			}
+
+			System.Diagnostics.Debug.WriteLine("Sending {0} events to client {1}", tempEntityEvents.Count, client.Id);
 
 			// Write the header
 			InitializeMessageWriter();
