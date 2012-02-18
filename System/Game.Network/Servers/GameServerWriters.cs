@@ -140,6 +140,8 @@ namespace Game.Network.Servers
 				return;
 			}
 
+			System.Diagnostics.Debug.WriteLine("Sending {0} events to client {1}", tempEntityEvents.Count, client.Id);
+
 			// Write the header
 			InitializeMessageWriter();
 			server.Writer.Write((byte)PacketType.EntityEvents);
