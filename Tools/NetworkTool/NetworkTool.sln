@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{6B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Network", "..\..\System\Framework.Network\Framework.Network.csproj", "{B970FFE7-43B4-4D78-9CD3-254BCA6564FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.Network", "..\..\System\Game.Network\Game.Network.csproj", "{816F4C8D-21DE-440A-AE9A-D99E077C3703}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -21,11 +23,16 @@ Global
 		{B970FFE7-43B4-4D78-9CD3-254BCA6564FA}.Debug|x86.Build.0 = Debug|x86
 		{B970FFE7-43B4-4D78-9CD3-254BCA6564FA}.Release|x86.ActiveCfg = Release|x86
 		{B970FFE7-43B4-4D78-9CD3-254BCA6564FA}.Release|x86.Build.0 = Release|x86
+		{816F4C8D-21DE-440A-AE9A-D99E077C3703}.Debug|x86.ActiveCfg = Debug|x86
+		{816F4C8D-21DE-440A-AE9A-D99E077C3703}.Debug|x86.Build.0 = Debug|x86
+		{816F4C8D-21DE-440A-AE9A-D99E077C3703}.Release|x86.ActiveCfg = Release|x86
+		{816F4C8D-21DE-440A-AE9A-D99E077C3703}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B970FFE7-43B4-4D78-9CD3-254BCA6564FA} = {6B641D6C-C5AE-48EB-B9EE-470B37CEDC72}
+		{816F4C8D-21DE-440A-AE9A-D99E077C3703} = {6B641D6C-C5AE-48EB-B9EE-470B37CEDC72}
 	EndGlobalSection
 EndGlobal

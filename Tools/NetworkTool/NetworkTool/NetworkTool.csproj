@@ -56,14 +56,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Entities\EntityEvent.cs" />
-    <Compile Include="Entities\EntitySpatial.cs" />
+    <Compile Include="ClientMainWindow.xaml.cs">
+      <DependentUpon>ClientMainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Handlers\ClientPlaybackHandler.cs" />
     <Compile Include="Handlers\MessagePlaybackHandler.cs" />
     <Compile Include="Handlers\Entities\FileRecording.cs" />
     <Compile Include="GameClient.cs" />
     <Compile Include="Entities\PacketType.cs" />
     <Compile Include="Handlers\MessageHandler.cs" />
     <Compile Include="Entities\Message.cs" />
+    <Page Include="ClientMainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -107,9 +113,18 @@
       <Project>{B970FFE7-43B4-4D78-9CD3-254BCA6564FA}</Project>
       <Name>Framework.Network</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\System\Game.Network\Game.Network.csproj">
+      <Project>{816F4C8D-21DE-440A-AE9A-D99E077C3703}</Project>
+      <Name>Game.Network</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Recordings\server.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Recordings\client.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

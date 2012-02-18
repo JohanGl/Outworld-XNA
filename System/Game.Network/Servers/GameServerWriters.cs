@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Framework.Network.Messages;
 using Game.Network.Common;
 using Microsoft.Xna.Framework;
@@ -100,7 +101,7 @@ namespace Game.Network.Servers
 			}
 
 			// Send individual packets to all clients
-			for (ushort i = 0; i < clients.Count; i++)
+			for (int i = 0; i < clients.Count; i++)
 			{
 				SendEntityEvents(clients[i], clients);
 			}
@@ -113,14 +114,19 @@ namespace Game.Network.Servers
 			// No other clients nearby
 			if (otherClients.Count == 0)
 			{
+				System.Diagnostics.Debug.WriteLine(string.Format("Client {0} is not nearby other clients", client.Id));
 				return;
 			}
+
+			System.Diagnostics.Debug.WriteLine(string.Format("Client {0} is nearby clients {1}", client.Id, string.Join(",", otherClients.Select(p => p.Id.ToString()))));
 
 			tempEntityEvents.Clear();
 
 			for (int i = 0; i < otherClients.Count; i++)
 			{
 				var events = otherClients[i].GetRecentEvents(server.TimeStamp);
+
+				System.Diagnostics.Debug.WriteLine(string.Format("Client {0} wants {1} events from other client {2}", client.Id, events.Count, otherClients[i].Id));
 
 				if (events.Count > 0)
 				{
@@ -145,6 +151,9 @@ namespace Game.Network.Servers
 				// Write the current entity id
 				server.Writer.Write(pair.Key);
 
+				// Write the number of events for the current entity
+				server.Writer.Write((byte)pair.Value.Count);
+
 				// Write the current entity events
 				for (int i = 0; i < pair.Value.Count; i++)
 				{
@@ -155,7 +164,7 @@ namespace Game.Network.Servers
 				}
 			}
 
-			SendMessage(MessageDeliveryMethod.ReliableUnordered);
+			SendMessage(MessageDeliveryMethod.ReliableUnordered, client.Id);
 		}
 
 		private List<EntityInfo> GetClientsWithinViewDistance(EntityInfo client, List<EntityInfo> clients)
@@ -192,11 +201,20 @@ namespace Game.Network.Servers
 			}
 		}
 
-		private void SendMessage(MessageDeliveryMethod deliveryMethod)
+		private void SendMessage(MessageDeliveryMethod deliveryMethod, ushort? clientId = null)
 		{
 			if (!isCombined)
 			{
-				server.Broadcast(deliveryMethod);
+				// Send to a single client
+				if (clientId.HasValue)
+				{
+					server.Send(connectionIds[clientId.Value], deliveryMethod);
+				}
+				// Send to all clients
+				else
+				{
+					server.Broadcast(deliveryMethod);
+				}
 			}
 		}
 
@@ -206,9 +224,19 @@ namespace Game.Network.Servers
 			isCombinedInitialized = false;
 		}
 
-		public void EndCombinedMessage(MessageDeliveryMethod deliveryMethod)
+		public void EndCombinedMessage(MessageDeliveryMethod deliveryMethod, ushort? clientId = null)
 		{
-			server.Broadcast(deliveryMethod);
+			// Send to a single client
+			if (clientId.HasValue)
+			{
+				server.Send(connectionIds[clientId.Value], deliveryMethod);
+			}
+			// Send to all clients
+			else
+			{
+				server.Broadcast(deliveryMethod);
+			}
+
 			isCombined = false;
 		}
 	}

@@ -98,17 +98,17 @@ namespace Game.Network.Clients
 						break;
 				}
 
-				// TODO: Temp Debug
-				if ((PacketType)message.Data[0] != PacketType.EntitySpatial)
-				{
-					string bytes = "";
-					for (int j = 0; j < message.Data.Length; j++)
-					{
-						bytes += Convert.ToInt16(message.Data[j]).ToString();
-					}
+				//// TODO: Temp Debug
+				//if ((PacketType)message.Data[0] != PacketType.EntitySpatial)
+				//{
+				//    string bytes = "";
+				//    for (int j = 0; j < message.Data.Length; j++)
+				//    {
+				//        bytes += Convert.ToInt16(message.Data[j]).ToString();
+				//    }
 
-					Logger.Log<GameClient>(LogLevel.Debug, "Received Data: {0} ({1} bytes)", bytes, message.Data.Length);
-				}
+				//    Logger.Log<GameClient>(LogLevel.Debug, "Received Data: {0} ({1} bytes)", bytes, message.Data.Length);
+				//}
 			}
 
 			client.Messages.Clear();

@@ -196,18 +196,7 @@ namespace Game.Network.Servers
 				// TODO: Temp Debug
 				if ((PacketType)message.Data[0] != PacketType.EntitySpatial)
 				{
-					string bytes = "";
-					for (int j = 0; j < message.Data.Length; j++)
-					{
-						bytes += Convert.ToInt16(message.Data[j]).ToString();
-
-						if (j < message.Data.Length - 1)
-						{
-							bytes += ",";
-						}
-					}
-
-					Logger.Log<GameServer>(LogLevel.Debug, "Received Data: {0} ({1} bytes)", bytes, message.Data.Length);
+					Logger.Log<GameServer>(LogLevel.Debug, "Received Data: {0} ({1} bytes)", messageHelper.BytesToString(message.Data), message.Data.Length);
 				}
 			}
 			else
@@ -219,6 +208,7 @@ namespace Game.Network.Servers
 					args.StatusType = EntityStatusType.Connected;
 					args.Id = CreateClientIdAsShortMapping(message.ClientId);
 					entities.Add(args.Id, new EntityInfo(args.Id));
+					Logger.Log<GameServer>(LogLevel.Debug, "Client with id {0} connected", args.Id);
 				}
 				else
 				{
@@ -226,6 +216,7 @@ namespace Game.Network.Servers
 					args.Id = connectionIds[message.ClientId];
 					entities.Remove(args.Id);
 					connectionIds.Remove(message.ClientId);
+					Logger.Log<GameServer>(LogLevel.Debug, "Client with id {0} disconnected", args.Id);
 				}
 
 				BroadcastClientStatusChanged(args);

@@ -1,4 +1,5 @@
-﻿using Framework.Network.Messages.MessageReaders;
+﻿using System;
+using Framework.Network.Messages.MessageReaders;
 using Framework.Network.Messages.MessageWriters;
 using Microsoft.Xna.Framework;
 
@@ -59,6 +60,23 @@ namespace Game.Network.Common
 		public float AngleByteToFloat(byte angle)
 		{
 			return angle * ByteToFloatDegree;
+		}
+
+		public string BytesToString(byte[] bytes)
+		{
+			string result = "";
+			
+			for (int j = 0; j < bytes.Length; j++)
+			{
+				result += Convert.ToInt16(bytes[j]).ToString();
+
+				if (j < bytes.Length - 1)
+				{
+					result += ",";
+				}
+			}
+			
+			return result;
 		}
 	}
 }

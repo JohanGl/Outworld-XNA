@@ -1,13 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 using Framework.Network.Messages;
+using Game.Network.Common;
 
 namespace NetworkTool
 {
 	public class MessageHandler
 	{
+		public List<RecordedMessage> GetClientRecordings(string fileName)
+		{
+			byte[] bytes = Encoding.UTF8.GetBytes(File.ReadAllText(fileName));
+			MemoryStream mem = new MemoryStream(bytes);
+			XmlSerializer ser = new XmlSerializer(typeof(List<RecordedMessage>));
+			return (List<RecordedMessage>)ser.Deserialize(mem);
+
+			//var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+			//XmlSerializer ser = new XmlSerializer(typeof(List<RecordedMessage>));
+			//return ser.Deserialize();
+
+			//return result;
+		}
+
 		public List<Message> GetRecordings(string fileName)
 		{
 			var document = XDocument.Load(fileName);

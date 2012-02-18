@@ -96,31 +96,40 @@ namespace Game.Network.Clients
 		{
 			if (GetEntityEventsCompleted != null)
 			{
+				System.Diagnostics.Debug.WriteLine("");
+				System.Diagnostics.Debug.WriteLine(string.Format("[X] Client received events in message: {0}", messageHelper.BytesToString(message.Data)));
+
 				var args = new ClientEventsEventArgs();
 
 				// Read the message
 				client.Reader.ReadNewMessage(message);
 				client.Reader.ReadByte();
 
-				// Get the number of clients in this message
-				byte clients = client.Reader.ReadByte();
+				// Get the number of entities in this message
+				ushort entities = client.Reader.ReadUInt16();
 
-				for (byte i = 0; i < clients; i++)
+				System.Diagnostics.Debug.WriteLine(string.Format("[X] Number of entities: {0}", entities));
+
+				for (ushort i = 0; i < entities; i++)
 				{
-					// Get the id of the current client
-					ushort clientId = client.Reader.ReadUInt16();
+					// Get the id of the current entity
+					ushort entityId = client.Reader.ReadUInt16();
 
-					// Get the number of events for the current client
+					// Get the number of events for the current entity
 					byte events = client.Reader.ReadByte();
+
+					System.Diagnostics.Debug.WriteLine(string.Format("[X] ClientId: {0}, Events: {1}", entityId, events));
 
 					for (byte j = 0; j < events; j++)
 					{
 						var entityEvent = new EntityEvent();
-						entityEvent.Id = clientId;
+						entityEvent.Id = entityId;
 						entityEvent.TimeStamp = client.Reader.ReadTimeStamp();
 						entityEvent.Type = (EntityEventType)client.Reader.ReadByte();
 
 						args.Events.Add(entityEvent);
+
+						System.Diagnostics.Debug.WriteLine(string.Format("[X] Client received event: ClientId: {0}, TimeStamp: {1}, Type: {2}", entityEvent.Id, entityEvent.TimeStamp, entityEvent.Type));
 					}
 				}
 

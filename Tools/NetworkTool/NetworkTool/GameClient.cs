@@ -10,8 +10,17 @@ namespace NetworkTool
 	public class GameClient
 	{
 		private IClient client;
-
 		public bool IsConnected { get { return client.IsConnected; } }
+		public float TimeStamp { get { return client.TimeStamp; } }
+		public byte[] TimeStampAsBytes
+		{
+			get
+			{
+				client.Writer.WriteNewMessage();
+				client.Writer.Write(TimeStamp);
+				return client.Writer.GetBytes();
+			}
+		}
 
 		public GameClient()
 		{
@@ -48,68 +57,70 @@ namespace NetworkTool
 			client.Send(MessageDeliveryMethod.ReliableOrdered);
 		}
 
-		//private MessageHelper messageHelper = new MessageHelper();
-		//private bool isCombined;
-		//private bool isCombinedInitialized;
+		// -----------------------------------------------------------------------------
 
-		//public void SendSpatial(Vector3 position, Vector3 velocity, Vector3 angle)
-		//{
-		//    InitializeMessageWriter();
-		//    client.Writer.Write((byte)PacketType.EntitySpatial);
-		//    client.Writer.WriteTimeStamp();
-		//    messageHelper.WriteVector3(position, client.Writer);
-		//    messageHelper.WriteVector3(velocity, client.Writer);
-		//    messageHelper.WriteVector3(angle, client.Writer);
-		//    SendMessage();
-		//}
+		private MessageHelper messageHelper = new MessageHelper();
+		private bool isCombined;
+		private bool isCombinedInitialized;
 
-		//public void SendEvents(List<EntityEvent> events)
-		//{
-		//    InitializeMessageWriter();
-		//    client.Writer.Write((byte)PacketType.EntityEvents);
-		//    client.Writer.Write((byte)(events.Count * 5));
+		public void SendSpatial(Vector3 position, Vector3 velocity, Vector3 angle)
+		{
+			InitializeMessageWriter();
+			client.Writer.Write((byte)PacketType.EntitySpatial);
+			client.Writer.WriteTimeStamp();
+			messageHelper.WriteVector3(position, client.Writer);
+			messageHelper.WriteVector3(velocity, client.Writer);
+			messageHelper.WriteVector3(angle, client.Writer);
+			SendMessage();
+		}
 
-		//    for (int i = 0; i < events.Count; i++)
-		//    {
-		//        client.Writer.Write(events[i].TimeStamp);
-		//        client.Writer.Write((byte)events[i].Type);
-		//    }
+		public void SendEvents(List<EntityEvent> events)
+		{
+			InitializeMessageWriter();
+			client.Writer.Write((byte)PacketType.EntityEvents);
+			client.Writer.Write((byte)(events.Count * 5));
 
-		//    SendMessage(MessageDeliveryMethod.ReliableUnordered);
-		//}
+			for (int i = 0; i < events.Count; i++)
+			{
+				client.Writer.Write(events[i].TimeStamp);
+				client.Writer.Write((byte)events[i].Type);
+			}
 
-		//private void InitializeMessageWriter()
-		//{
-		//    if (!isCombined)
-		//    {
-		//        client.Writer.WriteNewMessage();
-		//    }
-		//    else if (isCombined && !isCombinedInitialized)
-		//    {
-		//        client.Writer.WriteNewMessage();
-		//        client.Writer.Write((byte)PacketType.Combined);
-		//        isCombinedInitialized = true;
-		//    }
-		//}
+			SendMessage(MessageDeliveryMethod.ReliableUnordered);
+		}
 
-		//private void SendMessage(MessageDeliveryMethod method = MessageDeliveryMethod.Unreliable)
-		//{
-		//    if (!isCombined)
-		//    {
-		//        client.Send(method);
-		//    }
-		//}
+		private void InitializeMessageWriter()
+		{
+			if (!isCombined)
+			{
+				client.Writer.WriteNewMessage();
+			}
+			else if (isCombined && !isCombinedInitialized)
+			{
+				client.Writer.WriteNewMessage();
+				client.Writer.Write((byte)PacketType.Combined);
+				isCombinedInitialized = true;
+			}
+		}
 
-		//public void BeginCombinedMessage()
-		//{
-		//    isCombined = true;
-		//    isCombinedInitialized = false;
-		//}
+		private void SendMessage(MessageDeliveryMethod method = MessageDeliveryMethod.Unreliable)
+		{
+			if (!isCombined)
+			{
+				client.Send(method);
+			}
+		}
 
-		//public void EndCombinedMessage()
-		//{
-		//    client.Send(MessageDeliveryMethod.Unreliable);
-		//    isCombined = false;
-		//}
+		public void BeginCombinedMessage()
+		{
+			isCombined = true;
+			isCombinedInitialized = false;
+		}
+
+		public void EndCombinedMessage()
+		{
+			client.Send(MessageDeliveryMethod.Unreliable);
+			isCombined = false;
+		}
 	}
 }

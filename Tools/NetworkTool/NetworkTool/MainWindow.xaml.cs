@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Timers;
 using System.Windows.Controls;
-using System.Windows.Threading;
+using Game.Network.Common;
 using Microsoft.Xna.Framework;
 
 namespace NetworkTool

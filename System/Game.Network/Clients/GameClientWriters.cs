@@ -11,7 +11,7 @@ namespace Game.Network.Clients
 		private bool isCombined;
 		private bool isCombinedInitialized;
 		
-		//private List<RecordedMessage> recordedMessages = new List<RecordedMessage>();
+		private List<RecordedMessage> recordedMessages = new List<RecordedMessage>();
 
 		public void GetGameSettings()
 		{
@@ -32,20 +32,20 @@ namespace Game.Network.Clients
 			SendMessage();
 
 			// Recorded messages
-			//var recordedMessage = new RecordedMessage();
-			//recordedMessage.Spatial = new EntitySpatial();
-			//recordedMessage.Spatial.TimeStamp = client.TimeStamp;
-			//recordedMessage.Spatial.Position = position;
-			//recordedMessage.Spatial.Velocity = velocity;
-			//recordedMessage.Spatial.Angle = angle;
-			//recordedMessages.Add(recordedMessage);
+			var recordedMessage = new RecordedMessage();
+			recordedMessage.Spatial = new EntitySpatial();
+			recordedMessage.Spatial.TimeStamp = client.TimeStamp;
+			recordedMessage.Spatial.Position = position;
+			recordedMessage.Spatial.Velocity = velocity;
+			recordedMessage.Spatial.Angle = angle;
+			recordedMessages.Add(recordedMessage);
 
-			//if (recordedMessages.Count == 1200)
-			//{
-			//    var dumper = new Framework.Core.Helpers.ObjectDumper();
-			//    System.IO.File.WriteAllText("d:\\recording.xml", dumper.ObjectToXml(recordedMessages));
-			//    recordedMessages.Clear();
-			//}
+			if (recordedMessages.Count >= 1200)
+			{
+				var dumper = new Framework.Core.Helpers.ObjectDumper();
+				System.IO.File.WriteAllText("d:\\recording.xml", dumper.ObjectToXml(recordedMessages));
+				recordedMessages.Clear();
+			}
 		}
 
 		public void SendClientEvents(List<EntityEvent> events)
@@ -63,10 +63,9 @@ namespace Game.Network.Clients
 			SendMessage(MessageDeliveryMethod.ReliableUnordered);
 
 			// Recorded messages
-			//var recordedMessage = new RecordedMessage();
-			//recordedMessage.Events = new List<EntityEvent>();
-			//recordedMessage.Events.AddRange(events);
-			//recordedMessages.Add(recordedMessage);
+			var recordedMessage = new RecordedMessage();
+			recordedMessage.Events = new List<EntityEvent>(events);
+			recordedMessages.Add(recordedMessage);
 		}
 
 		private void InitializeMessageWriter()
