@@ -5,6 +5,7 @@ using Framework.Core.Scenes.Cameras;
 using Game.Network.Clients;
 using Game.Network.Common;
 using Microsoft.Xna.Framework;
+using ServerEntity = Game.Network.Clients.ServerEntity;
 
 namespace Outworld.Helpers.Rendering
 {

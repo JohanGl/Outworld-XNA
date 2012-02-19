@@ -26,7 +26,7 @@ namespace Game.Network.Servers
 		{
 			var clientId = connectionIds[message.ClientId];
 
-			if (!entities.ContainsKey(clientId))
+			if (!entityHelper.Entities.ContainsKey(clientId))
 			{
 				return;
 			}
@@ -41,20 +41,14 @@ namespace Game.Network.Servers
 			spatial.Velocity = messageHelper.ReadVector3(server.Reader);
 			spatial.Angle = messageHelper.ReadVector3(server.Reader);
 
-			entities[clientId].SpatialData.Add(spatial);
-
-			// Keep a maximum of 100 entries
-			if (entities[clientId].SpatialData.Count > 100)
-			{
-				entities[clientId].SpatialData.RemoveAt(0);
-			}
+			entityHelper.AddSpatial(clientId, spatial);
 		}
 
 		private void ReceivedEntityEvents(Message message)
 		{
 			var clientId = connectionIds[message.ClientId];
 
-			if (!entities.ContainsKey(clientId))
+			if (!entityHelper.Entities.ContainsKey(clientId))
 			{
 				return;
 			}
@@ -72,13 +66,7 @@ namespace Game.Network.Servers
 				entityEvent.TimeStamp = server.Reader.ReadTimeStamp();
 				entityEvent.Type = (EntityEventType)server.Reader.ReadByte();
 
-				entities[clientId].Events.Add(entityEvent);
-
-				// Keep a maximum of 100 entries
-				if (entities[clientId].Events.Count > 100)
-				{
-					entities[clientId].Events.RemoveAt(0);
-				}
+				entityHelper.AddEvent(clientId, entityEvent);
 			}
 		}
 
@@ -86,7 +74,7 @@ namespace Game.Network.Servers
 		{
 			var clientId = connectionIds[message.ClientId];
 
-			if (!entities.ContainsKey(clientId))
+			if (!entityHelper.Entities.ContainsKey(clientId))
 			{
 				return;
 			}
