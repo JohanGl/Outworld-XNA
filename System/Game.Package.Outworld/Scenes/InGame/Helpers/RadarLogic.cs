@@ -8,6 +8,7 @@ using Game.Entities.Outworld.World;
 using Game.Network.Clients;
 using Game.Network.Common;
 using Microsoft.Xna.Framework;
+using ServerEntity = Game.Network.Clients.ServerEntity;
 
 namespace Outworld.Scenes.InGame.Controls.Hud
 {

@@ -20,9 +20,10 @@ namespace Game.Network.Servers
 
 		private IServer server;
 		private IMessageRecorder recorder;
-		private Dictionary<long, ushort> connectionIds;
-		private Dictionary<ushort, EntityInfo> entities;
+		private ServerEntityHelper entityHelper;
 		private Dictionary<ushort, List<EntityEvent>> tempEntityEvents;
+
+		private Dictionary<long, ushort> connectionIds;
 		private MessageHelper messageHelper;
 		private GameTimer tickrateTimer;
 		private GameTimer timeoutTimer;
@@ -30,8 +31,9 @@ namespace Game.Network.Servers
 		public GameServer()
 		{
 			messageHelper = new MessageHelper();
-			entities = new Dictionary<ushort, EntityInfo>();
 			connectionIds = new Dictionary<long, ushort>();
+
+			entityHelper = new ServerEntityHelper();
 			tempEntityEvents = new Dictionary<ushort, List<EntityEvent>>();
 
 			tickrateTimer = new GameTimer(TimeSpan.FromMilliseconds(1000 / 20));
@@ -67,7 +69,8 @@ namespace Game.Network.Servers
 			server = new LidgrenServer();
 			server.Initialize(configuration);
 
-			entities.Clear();
+			entityHelper.Clear();
+			tempEntityEvents.Clear();
 		}
 
 		public void Start()
@@ -75,14 +78,16 @@ namespace Game.Network.Servers
 			World = new WorldSimulation();
 			World.Initialize(Settings.World.Gravity, Settings.World.Seed);
 
-			entities.Clear();
+			entityHelper.Clear();
+			tempEntityEvents.Clear();
 			server.Start();
 		}
 
 		public void Stop(string message = null)
 		{
 			server.Stop(message);
-			entities.Clear();
+			entityHelper.Clear();
+			tempEntityEvents.Clear();
 		}
 
 		public void Update(GameTime gameTime)
@@ -120,7 +125,7 @@ namespace Game.Network.Servers
 			// Clear all messages to prepare for a new batch the next time this function is called
 			server.Messages.Clear();
 
-			var clients = GetEntitiesOfType(EntityType.Client);
+			var clients = entityHelper.GetEntitiesOfType(EntityType.Client);
 
 			// Send updates to the clients
 			BroadcastEntitySpatial(clients);
@@ -134,7 +139,7 @@ namespace Game.Network.Servers
 		{
 			var clientsToRemove = new List<ushort>();
 
-			var clients = GetEntitiesOfType(EntityType.Client);
+			var clients = entityHelper.GetEntitiesOfType(EntityType.Client);
 
 			foreach (var client in clients)
 			{
@@ -153,7 +158,7 @@ namespace Game.Network.Servers
 
 			for (int i = 0; i < clientsToRemove.Count; i++)
 			{
-				entities.Remove(clientsToRemove[i]);
+				entityHelper.Entities.Remove(clientsToRemove[i]);
 			}
 		}
 
@@ -169,10 +174,8 @@ namespace Game.Network.Servers
 
 				// Reset the client timeout counter every time data has been received
 				var clientId = connectionIds[message.ClientId];
-				if (entities.ContainsKey(clientId))
-				{
-					entities[clientId].Timeout = gameTime.TotalGameTime.Seconds;
-				}
+
+				entityHelper.UpdateTimeout(gameTime, clientId);
 
 				switch ((PacketType)message.Data[0])
 				{
@@ -201,7 +204,7 @@ namespace Game.Network.Servers
 			}
 			else
 			{
-				var args = new EntityStatusArgs
+				var status = new EntityStatusArgs
 				{
 					Type = EntityType.Client,
 					ServerId = message.ClientId
@@ -209,30 +212,26 @@ namespace Game.Network.Servers
 
 				if (message.Type == MessageType.Connect)
 				{
-					args.StatusType = EntityStatusType.Connected;
-					args.Id = CreateShortClientId(message.ClientId);
+					status.StatusType = EntityStatusType.Connected;
+					status.Id = CreateShortClientId(message.ClientId);
 
-					entities.Add(args.Id, CreateConnectedClient(args.Id, message));
-					Logger.Log<GameServer>(LogLevel.Debug, "Client with id {0} connected with remote time offset: {1}", args.Id, message.RemoteTimeOffset);
+					entityHelper.Entities.Add(status.Id, CreateConnectedClient(status.Id, message));
+
+					Logger.Log<GameServer>(LogLevel.Debug, "Client with id {0} connected with remote time offset: {1}", status.Id, message.RemoteTimeOffset);
 				}
 				else
 				{
-					args.StatusType = EntityStatusType.Disconnected;
-					args.Id = connectionIds[message.ClientId];
-					entities.Remove(args.Id);
+					status.StatusType = EntityStatusType.Disconnected;
+					status.Id = connectionIds[message.ClientId];
+
+					entityHelper.Entities.Remove(status.Id);
 					connectionIds.Remove(message.ClientId);
-					Logger.Log<GameServer>(LogLevel.Debug, "Client with id {0} disconnected", args.Id);
+
+					Logger.Log<GameServer>(LogLevel.Debug, "Client with id {0} disconnected", status.Id);
 				}
 
-				BroadcastClientStatusChanged(args);
+				BroadcastClientStatusChanged(status);
 			}
-		}
-
-		private EntityInfo CreateConnectedClient(ushort id, Message message)
-		{
-			var entityInfo = new EntityInfo(id, message.ClientId);
-			entityInfo.RemoteTimeOffset = message.RemoteTimeOffset;
-			return entityInfo;
 		}
 
 		private ushort CreateShortClientId(long clientId)
@@ -270,19 +269,11 @@ namespace Game.Network.Servers
 			return connectionIds[clientId];
 		}
 
-		private List<EntityInfo> GetEntitiesOfType(EntityType type)
+		private ServerEntity CreateConnectedClient(ushort id, Message message)
 		{
-			var result = new List<EntityInfo>();
-
-			for (ushort i = 0; i < entities.Count; i++)
-			{
-				if (entities[i].Type == type)
-				{
-					result.Add(entities[i]);
-				}
-			}
-
-			return result;
+			var entityInfo = new ServerEntity(id, message.ClientId);
+			entityInfo.RemoteTimeOffset = message.RemoteTimeOffset;
+			return entityInfo;
 		}
 	}
 }

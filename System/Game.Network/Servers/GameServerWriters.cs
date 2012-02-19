@@ -26,7 +26,7 @@ namespace Game.Network.Servers
 		{
 			var clientId = connectionIds[message.ClientId];
 
-			var clients = GetEntitiesOfType(EntityType.Client);
+			var clients = entityHelper.GetEntitiesOfType(EntityType.Client);
 
 			server.Writer.WriteNewMessage();
 			server.Writer.Write((byte)PacketType.GameSettings);
@@ -46,7 +46,7 @@ namespace Game.Network.Servers
 			server.Send(message.ClientId, MessageDeliveryMethod.ReliableUnordered);
 		}
 
-		private void BroadcastEntitySpatial(List<EntityInfo> clients)
+		private void BroadcastEntitySpatial(List<ServerEntity> clients)
 		{
 			if (clients.Count < 2)
 			{
@@ -60,9 +60,9 @@ namespace Game.Network.Servers
 			}
 		}
 
-		private void SendEntitySpatial(EntityInfo client, List<EntityInfo> clients)
+		private void SendEntitySpatial(ServerEntity client, List<ServerEntity> clients)
 		{
-			var otherClients = GetClientsWithinViewDistance(client, clients);
+			var otherClients = entityHelper.GetClientsWithinViewDistance(client, clients);
 
 			// No other clients nearby
 			if (otherClients.Count == 0)
@@ -93,7 +93,7 @@ namespace Game.Network.Servers
 			SendMessage(MessageDeliveryMethod.Unreliable);
 		}
 
-		private void BroadcastEntityEvents(List<EntityInfo> clients)
+		private void BroadcastEntityEvents(List<ServerEntity> clients)
 		{
 			if (clients.Count < 2)
 			{
@@ -107,15 +107,9 @@ namespace Game.Network.Servers
 			}
 		}
 
-		private void SendEntityEvents(EntityInfo client, List<EntityInfo> clients)
+		private void SendEntityEvents(ServerEntity client, List<ServerEntity> clients)
 		{
-			// TODO: DEBUG
-			if (client.Id != 0)
-			{
-				return;
-			}
-
-			var otherClients = GetClientsWithinViewDistance(client, clients);
+			var otherClients = entityHelper.GetClientsWithinViewDistance(client, clients);
 
 			// No other clients nearby
 			if (otherClients.Count == 0)
@@ -130,7 +124,7 @@ namespace Game.Network.Servers
 
 			for (int i = 0; i < otherClients.Count; i++)
 			{
-				var events = otherClients[i].GetRecentEvents(server.TimeStamp);
+				var events = entityHelper.GetRecentEvents(otherClients[i], server.TimeStamp);
 
 				//System.Diagnostics.Debug.WriteLine(string.Format("Client {0} wants {1} events from other client {2}", client.Id, events.Count, otherClients[i].Id));
 
@@ -173,26 +167,6 @@ namespace Game.Network.Servers
 			}
 
 			SendMessage(MessageDeliveryMethod.ReliableUnordered, client.ServerId);
-		}
-
-		private List<EntityInfo> GetClientsWithinViewDistance(EntityInfo client, List<EntityInfo> clients)
-		{
-			var otherClients = new List<EntityInfo>();
-
-			for (ushort i = 0; i < clients.Count; i++)
-			{
-				var otherClient = clients[i];
-
-				if (otherClient.Id != client.Id)
-				{
-					if (otherClient.IsWithinViewDistanceOf(client))
-					{
-						otherClients.Add(otherClient);
-					}
-				}
-			}
-
-			return otherClients;
 		}
 
 		private void InitializeMessageWriter()
