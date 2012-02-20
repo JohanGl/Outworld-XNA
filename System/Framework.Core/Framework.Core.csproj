@@ -122,7 +122,6 @@
     <Compile Include="Helpers\BoundingBoxHelper.cs" />
     <Compile Include="Helpers\ObjectDumper.cs" />
     <Compile Include="Messaging\DefaultMessageHandler.cs" />
-    <Compile Include="Messaging\IMessage.cs" />
     <Compile Include="Messaging\IMessageHandler.cs" />
     <Compile Include="Packages\GamePackageInfo.cs" />
     <Compile Include="Packages\IGamePackage.cs" />

@@ -132,6 +132,10 @@
       <XnaReferenceType>Content</XnaReferenceType>
       <Project>{C94A52DB-BE2B-41EE-9939-CF4FEBE1C4FF}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Game.Package.Outworld\Game.Package.Outworld.csproj">
+      <Project>{B5CC347C-15CB-4E6F-B87B-66E931C33A3C}</Project>
+      <Name>Game.Package.Outworld</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">

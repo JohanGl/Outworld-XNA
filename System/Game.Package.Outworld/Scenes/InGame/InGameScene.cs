@@ -68,12 +68,9 @@ namespace Outworld.Scenes.InGame
 		private GameTimer timerWalkingSounds;
 		private GameTimer timerSaveBreadCrumb;
 		private GameTimer timerUpdateCurrentProcess;
-		private byte currentClientEvent;
-		private byte previousClientEvent;
 		private List<EntityEvent> clientEvents;
 
 		private SkinnedModel skinnedModelPlayer;
-		private Vector3 soundPosition;
 
 		private float tileBelowPlayerFeetOffsetY;
 
@@ -544,7 +541,6 @@ namespace Outworld.Scenes.InGame
 				    for (int i = 0; i < playerMessages.Count; i++)
 				    {
 						clientEvents.Add(playerMessages[i].EntityEvent);
-						currentClientEvent = (byte)playerMessages[i].EntityEvent.Type;
 				    }
 
 				    gameClient.BeginCombinedMessage();
@@ -643,6 +639,8 @@ namespace Outworld.Scenes.InGame
 						{
 							serverEntity.Animation = 0;
 						}
+
+						System.Diagnostics.Debug.WriteLine(string.Format("Entity {0} set animation from {1} to {2}", serverEntity.Id, serverEntity.PreviousAnimation, serverEntity.Animation));
 
 						break;
 					}

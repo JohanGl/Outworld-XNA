@@ -7,21 +7,44 @@ namespace Framework.Core.Messaging
 	/// </summary>
 	public class DefaultMessageHandler : IMessageHandler
 	{
-		public Dictionary<int, List<IMessage>> MessageGroups { get; set; }
+		private Dictionary<int, List<object>> MessageGroups { get; set; }
+
+		public bool Contains(int groupId)
+		{
+			return MessageGroups.ContainsKey(groupId);
+		}
+
+		public bool HasMessages(int groupId)
+		{
+			if (!Contains(groupId))
+			{
+				return false;
+			}
+
+			return MessageGroups[groupId].Count > 0;
+		}
 
 		public DefaultMessageHandler()
 		{
-			MessageGroups = new Dictionary<int, List<IMessage>>();
+			MessageGroups = new Dictionary<int, List<object>>();
 		}
 
-		public void AddMessage(int groupId, IMessage message)
+		public void AddMessage(int groupId, object message)
 		{
-			if (!MessageGroups.ContainsKey(groupId))
+			if (!Contains(groupId))
 			{
-				MessageGroups.Add(groupId, new List<IMessage>());
+				MessageGroups.Add(groupId, new List<object>());
 			}
 
 			MessageGroups[groupId].Add(message);
+		}
+
+		public void RemoveMessage(int groupId, object message)
+		{
+			if (Contains(groupId))
+			{
+				MessageGroups[groupId].Remove(message);
+			}
 		}
 
 		public List<T> GetMessages<T>(int groupId)
@@ -39,14 +62,16 @@ namespace Framework.Core.Messaging
 			return result;
 		}
 
-		public void Clear(int groupId)
+		public void Clear(int? groupId)
 		{
-			MessageGroups.Remove(groupId);
-		}
-
-		public void Clear()
-		{
-			MessageGroups.Clear();
+			if (groupId.HasValue)
+			{
+				MessageGroups.Remove(groupId.Value);
+			}
+			else
+			{
+				MessageGroups.Clear();
+			}
 		}
 	}
 }

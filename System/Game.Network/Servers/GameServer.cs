@@ -132,7 +132,7 @@ namespace Game.Network.Servers
 			BroadcastEntityEvents(clients);
 
 			// Update the world
-			World.Update(gameTime);
+			//World.Update(gameTime);
 		}
 
 		private void CheckTimeouts(GameTime gameTime)
@@ -239,10 +239,10 @@ namespace Game.Network.Servers
 			// Initialize the client id if not already done
 			if (!connectionIds.ContainsKey(clientId))
 			{
-				ushort newId = 0;
+				ushort newId = 1;
 
-				// Find a unused id
-				for (int i = 0; i < ushort.MaxValue; i++)
+				// Find an unused id
+				for (int i = 1; i < ushort.MaxValue; i++)
 				{
 					bool foundNewId = true;
 

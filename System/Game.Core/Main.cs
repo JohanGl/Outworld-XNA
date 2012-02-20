@@ -73,10 +73,14 @@ namespace Game.Core
 			(context.Graphics.Effect as BasicEffect).TextureEnabled = true;
 			(context.Graphics.Effect as BasicEffect).LightingEnabled = false;
 
-			// Initialize the game package
-			gamePackageManager = new GamePackageManager();
-			gamePackageManager.Initialize();
-			gamePackageManager.GamePackage.Initialize(context);
+			// Initialize the game package (dynamic load of assemblies)
+			//gamePackageManager = new GamePackageManager();
+			//gamePackageManager.Initialize();
+			//gamePackageManager.GamePackage.Initialize(context);
+
+			// Initialize the game package (static load of assemblies)
+			var gamePackage = new Outworld.GamePackage();
+			gamePackage.Initialize(context);
 
 			// Scenes
 			context.Scenes.Initialize(context);

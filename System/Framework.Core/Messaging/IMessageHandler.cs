@@ -7,11 +7,11 @@ namespace Framework.Core.Messaging
 	/// </summary>
 	public interface IMessageHandler
 	{
-		Dictionary<int, List<IMessage>> MessageGroups { get; set; }
-
-		void AddMessage(int groupId, IMessage message);
+		bool Contains(int groupId);
+		bool HasMessages(int groupId);
+		void AddMessage(int groupId, object message);
+		void RemoveMessage(int groupId, object message);
 		List<T> GetMessages<T>(int groupId);
-		void Clear(int groupId);
-		void Clear();
+		void Clear(int? groupId = null);
 	}
 }

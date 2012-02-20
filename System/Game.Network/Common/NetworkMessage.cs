@@ -1,11 +1,9 @@
-using Framework.Core.Messaging;
-
 namespace Game.Network.Common
 {
 	/// <summary>
-	/// Used to send messages of server/client type to IMessageHandler
+	/// Used to send messages of server/client info
 	/// </summary>
-	public class NetworkMessage : IMessage
+	public class NetworkMessage
 	{
 		public ushort ClientId;
 		public NetworkMessageType Type;

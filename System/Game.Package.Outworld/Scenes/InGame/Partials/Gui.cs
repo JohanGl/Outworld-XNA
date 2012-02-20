@@ -65,7 +65,7 @@ namespace Outworld.Scenes.InGame
 
 		private void UpdateNetworkNotifications(GameTime gameTime)
 		{
-			if (messageHandler.MessageGroups.ContainsKey(MessageHandlerType.GameClient))
+			if (messageHandler.Contains(MessageHandlerType.GameClient))
 			{
 				bool connectedPlayers = false;
 				bool disconnectedPlayers = false;

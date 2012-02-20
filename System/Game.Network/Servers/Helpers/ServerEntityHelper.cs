@@ -89,11 +89,11 @@ namespace Game.Network.Servers.Helpers
 		{
 			var result = new List<ServerEntity>();
 
-			for (ushort i = 0; i < Entities.Count; i++)
+			foreach (var entity in Entities)
 			{
-				if (Entities[i].Type == type)
+				if (entity.Value.Type == type)
 				{
-					result.Add(Entities[i]);
+					result.Add(entity.Value);
 				}
 			}
 
