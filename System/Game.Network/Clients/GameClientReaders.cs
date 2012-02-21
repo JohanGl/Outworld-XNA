@@ -103,6 +103,7 @@ namespace Game.Network.Clients
 
 				// Read the message
 				client.Reader.ReadNewMessage(message);
+				client.Reader.ReadByte();
 
 				// Get the number of entities in this message
 				ushort entities = client.Reader.ReadUInt16();
