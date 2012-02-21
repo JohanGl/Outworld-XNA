@@ -85,7 +85,7 @@ namespace Outworld.Scenes.InGame
 			base.Initialize(context);
 
 			stringBuilder = new StringBuilder(100, 500);
-			
+
 			globalSettings = ServiceLocator.Get<GlobalSettings>();
 			messageHandler = ServiceLocator.Get<IMessageHandler>();
 
@@ -108,7 +108,8 @@ namespace Outworld.Scenes.InGame
 
 			clientEvents = new List<EntityEvent>();
 
-			new LogFilterHelper().FilterTerrain();
+			new LogFilterHelper().FilterEverythingExceptGameClient();
+			//new LogFilterHelper().FilterTerrain();
 			//new LogFilterHelper().FilterAll();
 		}
 

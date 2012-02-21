@@ -1,4 +1,5 @@
 ﻿using Framework.Core.Diagnostics.Logging;
+using Game.Network.Clients;
 using Game.World.Terrains.Generators;
 using Game.World.Terrains.Rendering;
 using Game.World.Terrains.Visibility;
@@ -14,6 +15,12 @@ namespace Outworld.Helpers.Logging
 			Logger.Mute<TerrainRenderer>(true);
 			Logger.Mute<TerrainVisibility>(true);
 			Logger.Mute<VisibilityQueue>(true);
+		}
+
+		public void FilterEverythingExceptGameClient()
+		{
+			Logger.Mute(true);
+			Logger.Mute<GameClient>(false);
 		}
 
 		public void FilterAll()

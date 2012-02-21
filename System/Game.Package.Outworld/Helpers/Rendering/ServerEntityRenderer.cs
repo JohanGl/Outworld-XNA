@@ -2,7 +2,6 @@
 using Framework.Animations;
 using Framework.Core.Contexts;
 using Framework.Core.Scenes.Cameras;
-using Game.Network.Clients;
 using Game.Network.Common;
 using Microsoft.Xna.Framework;
 using ServerEntity = Game.Network.Clients.ServerEntity;
@@ -83,6 +82,9 @@ namespace Outworld.Helpers.Rendering
 			{
 				renderedClients[entity.Id].SetAnimationClip("Idle");
 			}
+
+			// Mark the animation as changed
+			entity.PreviousAnimation = entity.Animation;
 		}
 	}
 }
