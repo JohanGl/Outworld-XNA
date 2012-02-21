@@ -63,11 +63,11 @@ namespace Game.Network.Servers.Helpers
 				currentTimeStamp -= withinSeconds;
 
 				// Find the last event timestamp sent to this entity and make sure we dont send events older than this
-				float lastEventProcessed = ServerEntityEventsProcessed[toEntity.Id][fromEntity.Id];
+				float lastEventTimeStampProcessed = GetLastEventTimeStampProcessed(toEntity.Id, fromEntity.Id);
 
-				if (currentTimeStamp < lastEventProcessed)
+				if (currentTimeStamp < lastEventTimeStampProcessed)
 				{
-					currentTimeStamp = lastEventProcessed;
+					currentTimeStamp = lastEventTimeStampProcessed;
 				}
 
 				// Traverse backwards in time since the last events are the most recent
@@ -91,6 +91,21 @@ namespace Game.Network.Servers.Helpers
 			}
 
 			return result;
+		}
+
+		private float GetLastEventTimeStampProcessed(ushort toEntityId, ushort fromEntityId)
+		{
+			if (!ServerEntityEventsProcessed.ContainsKey(toEntityId))
+			{
+				ServerEntityEventsProcessed.Add(toEntityId, new Dictionary<ushort, float>());
+			}
+
+			if (!ServerEntityEventsProcessed[toEntityId].ContainsKey(fromEntityId))
+			{
+				ServerEntityEventsProcessed[toEntityId].Add(fromEntityId, 0);
+			}
+
+			return ServerEntityEventsProcessed[toEntityId][fromEntityId];
 		}
 
 		public void UpdateTimeout(GameTime gameTime, ushort entityId)
