@@ -124,7 +124,7 @@ namespace Game.Network.Servers
 
 			for (int i = 0; i < otherClients.Count; i++)
 			{
-				var events = entityHelper.GetRecentEvents(otherClients[i], server.TimeStamp);
+				var events = entityHelper.GetRecentEvents(client, otherClients[i], server.TimeStamp);
 
 				//System.Diagnostics.Debug.WriteLine(string.Format("Client {0} wants {1} events from other client {2}", client.Id, events.Count, otherClients[i].Id));
 

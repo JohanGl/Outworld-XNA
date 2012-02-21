@@ -9,9 +9,12 @@ namespace Game.Network.Servers.Helpers
 	{
 		public Dictionary<ushort, ServerEntity> Entities;
 
+		Dictionary<ushort, Dictionary<ushort, float>> ServerEntityEventsProcessed;
+
 		public ServerEntityHelper()
 		{
 			Entities = new Dictionary<ushort, ServerEntity>();
+			ServerEntityEventsProcessed = new Dictionary<ushort, Dictionary<ushort, float>>();
 		}
 
 		public void Clear()
@@ -47,21 +50,34 @@ namespace Game.Network.Servers.Helpers
 			return otherClients;
 		}
 
-		public List<EntityEvent> GetRecentEvents(ServerEntity fromEntity, float currentTimeStamp, float withinSeconds = 2f)
+		public List<EntityEvent> GetRecentEvents(ServerEntity toEntity, ServerEntity fromEntity, float currentTimeStamp, float withinSeconds = 2f)
 		{
 			var result = new List<EntityEvent>();
 
-			// Subtract the clients local time to get an accurate measurement
-			currentTimeStamp += fromEntity.RemoteTimeOffset;
-
 			if (fromEntity.Events.Count > 0)
 			{
+				// Subtract the clients local time to get an accurate measurement
+				currentTimeStamp += fromEntity.RemoteTimeOffset;
+
+				// Subtract the number of seconds to get the interval from which we retrieve events
+				currentTimeStamp -= withinSeconds;
+
+				// Find the last event timestamp sent to this entity and make sure we dont send events older than this
+				float lastEventProcessed = ServerEntityEventsProcessed[toEntity.Id][fromEntity.Id];
+
+				if (currentTimeStamp < lastEventProcessed)
+				{
+					currentTimeStamp = lastEventProcessed;
+				}
+
 				// Traverse backwards in time since the last events are the most recent
 				for (int i = fromEntity.Events.Count - 1; i >= 0; i--)
 				{
 					// Get all events within the specified timeframe
-					if (fromEntity.Events[i].TimeStamp > currentTimeStamp - withinSeconds)
+					if (fromEntity.Events[i].TimeStamp > currentTimeStamp)
 					{
+						ServerEntityEventsProcessed[toEntity.Id][fromEntity.Id] = fromEntity.Events[i].TimeStamp;
+
 						result.Add(fromEntity.Events[i]);
 						//System.Diagnostics.Debug.WriteLine(string.Format("Sending: TimeStamp: {0}, Type: {1}, Server: {2}, Server -2: {3}", Events[i].TimeStamp, Events[i].Type, currentTimeStamp, currentTimeStamp - seconds));
 					}

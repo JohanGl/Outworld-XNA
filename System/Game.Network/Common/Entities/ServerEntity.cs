@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 
 namespace Game.Network.Common
 {
@@ -13,6 +12,7 @@ namespace Game.Network.Common
 
 		public int Timeout;
 		public List<EntitySpatial> SpatialData { get; set; }
+		
 		public List<EntityEvent> Events { get; set; }
 
 		public EntitySpatial CurrentSpatial
