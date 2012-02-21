@@ -597,34 +597,20 @@ namespace Outworld.Scenes.InGame
 
 		private void GameClientGetEntityEventsCompleted(object sender, ClientEventsEventArgs e)
 		{
-			for (int i = 0; i < e.Events.Count; i++)
+			for (int eventIndex = 0; eventIndex < e.Events.Count; eventIndex++)
 			{
-				var entityEvent = e.Events[i];
+				var entityEvent = e.Events[eventIndex];
 
-				for (int j = 0; j < gameClient.ServerEntities.Count; j++)
+				for (int serverEntityIndex = 0; serverEntityIndex < gameClient.ServerEntities.Count; serverEntityIndex++)
 				{
-					var serverEntity = gameClient.ServerEntities[j];
+					var serverEntity = gameClient.ServerEntities[serverEntityIndex];
 
 					if (serverEntity.Id == entityEvent.Id)
 					{
 						serverEntity.PreviousAnimation = serverEntity.Animation;
+						serverEntity.Animation = (byte)entityEvent.Type;
 
-						if (entityEvent.Type == EntityEventType.Idle)
-						{
-							serverEntity.Animation = 0;
-						}
-						else if (entityEvent.Type == EntityEventType.RunDirection1 ||
-								 entityEvent.Type == EntityEventType.RunDirection2 ||
-								 entityEvent.Type == EntityEventType.RunDirection3 ||
-								 entityEvent.Type == EntityEventType.RunDirection4 ||
-								 entityEvent.Type == EntityEventType.RunDirection5 ||
-								 entityEvent.Type == EntityEventType.RunDirection6 ||
-								 entityEvent.Type == EntityEventType.RunDirection7 ||
-								 entityEvent.Type == EntityEventType.RunDirection8)
-						{
-							serverEntity.Animation = 1;
-						}
-						else if (entityEvent.Type == EntityEventType.Dead)
+						if (entityEvent.Type == EntityEventType.Dead)
 						{
 							// Add a global message for this event
 							var notificationMessage = new NetworkMessage()
@@ -635,10 +621,6 @@ namespace Outworld.Scenes.InGame
 							};
 
 							messageHandler.AddMessage(MessageHandlerType.GameClient, notificationMessage);
-						}
-						else
-						{
-							serverEntity.Animation = 0;
 						}
 
 						System.Diagnostics.Debug.WriteLine(string.Format("Entity {0} set animation from {1} to {2}", serverEntity.Id, serverEntity.PreviousAnimation, serverEntity.Animation));

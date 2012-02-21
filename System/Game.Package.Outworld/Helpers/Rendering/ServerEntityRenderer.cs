@@ -78,6 +78,10 @@ namespace Outworld.Helpers.Rendering
 			{
 				renderedClients[entity.Id].SetAnimationClip("Run");
 			}
+			else if (entity.Animation == (byte)EntityEventType.Jump || entity.Animation == (byte)EntityEventType.Fall)
+			{
+				renderedClients[entity.Id].SetAnimationClip("Run");
+			}
 			else
 			{
 				renderedClients[entity.Id].SetAnimationClip("Idle");
