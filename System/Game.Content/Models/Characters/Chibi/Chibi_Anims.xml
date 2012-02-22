@@ -13,18 +13,18 @@
 				<ClipName>Idle</ClipName>
 				<StartFrame>5100</StartFrame>
 				<EndFrame>7854</EndFrame>
-				<Duration>3</Duration>
+				<Duration>2</Duration>
 			</Item>
 			<Item>
 				<ClipName>Run</ClipName>
 				<StartFrame>204</StartFrame>
 				<EndFrame>1530</EndFrame>
-				<Duration>3</Duration>
+				<Duration>2</Duration>
 				<!-- We can register events in this clip, so we can know when certain frames are hit -->
 				<Events>
 					<Item>
 						<Name>FireFrame</Name>
-						<Keyframe>70</Keyframe>
+						<Keyframe>300</Keyframe>
 					</Item>
 				</Events>
 			</Item>

@@ -50,7 +50,7 @@ namespace Framework.Animations.System
 			}
 
 			currentClipValue = clip;
-			currentTimeValue = TimeSpan.Zero;
+			currentTimeValue = clip.Keyframes[0].Time;
 			currentKeyframe = 0;
 
 			// Initialize bone transforms to the bind pose.
@@ -101,10 +101,24 @@ namespace Framework.Animations.System
 			if (time < currentTimeValue)
 			{
 				currentKeyframe = 0;
-				boneTransforms[keyframes[0].Bone] = keyframes[0].Transform;
 
+				// First try
 				// Initialize bone transforms to the bind pose.
 				//skinningDataValue.BindPose.CopyTo(boneTransforms, 0);
+
+				// Second try
+				//boneTransforms[keyframes[0].Bone] = keyframes[0].Transform;
+
+				// Third try
+				for (int i = 1; i < keyframes.Count; i++)
+				{
+					if (keyframes[i].Time != keyframes[0].Time)
+					{
+						break;
+					}
+
+					boneTransforms[keyframes[i].Bone] = keyframes[i].Transform;
+				}
 			}
 
 			currentTimeValue = time;
