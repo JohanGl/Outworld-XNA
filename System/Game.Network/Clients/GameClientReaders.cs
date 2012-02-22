@@ -27,6 +27,11 @@ namespace Game.Network.Clients
 				// Assign the client id
 				ClientId = args.ClientId;
 
+				// World gravity (skip for now)
+				client.Reader.ReadFloat();
+				client.Reader.ReadFloat();
+				client.Reader.ReadFloat();
+
 				byte totalClients = client.Reader.ReadByte();
 
 				for (int i = 0; i < totalClients; i++)
