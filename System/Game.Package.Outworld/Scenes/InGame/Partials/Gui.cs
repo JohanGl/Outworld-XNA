@@ -21,6 +21,7 @@ namespace Outworld.Scenes.InGame
 		private HealthBar healthBar;
 		private RadarLogic radarLogic;
 		private Notifications notifications;
+		private bool showDebugInfo = true;
 
 		private void InitializeGui()
 		{
@@ -117,6 +118,11 @@ namespace Outworld.Scenes.InGame
 
 		private void RenderText()
 		{
+			if (!showDebugInfo)
+			{
+				return;
+			}
+
 			// Construct the string
 			stringBuilder.Clear();
 

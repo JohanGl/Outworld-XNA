@@ -80,6 +80,7 @@ namespace Game.World.Terrains.Parts.Areas.AreaModels.Builders
 
 			blockBuilder.Initialize(ref buildInfo, ref meshLookup);
 
+			// 12 faces per cube (2 polygons on each of the 6 sides)
 			area.Model.TotalFaces = Area.TotalTiles * 12;
 			area.Model.TotalVisibleFaces = 0;
 

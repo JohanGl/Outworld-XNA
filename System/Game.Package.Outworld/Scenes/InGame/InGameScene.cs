@@ -342,6 +342,7 @@ namespace Outworld.Scenes.InGame
 
 			if (Context.Input.Keyboard.KeyboardState[Keys.F1].WasJustPressed)
 			{
+				showDebugInfo = !showDebugInfo;
 				//skinnedModelPlayer.SetAnimationClip("Idle");
 			}
 			else if (Context.Input.Keyboard.KeyboardState[Keys.F2].WasJustPressed)
