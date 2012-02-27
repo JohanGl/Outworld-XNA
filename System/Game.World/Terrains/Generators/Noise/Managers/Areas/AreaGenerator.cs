@@ -42,7 +42,7 @@ namespace Game.World.Terrains.Generators.Noise.Managers.Areas
 							   Persistence = 0.3,
 							   Octaves = 8,
 							   Amplitude = 0.01,
-							   CloudCoverage = 0.17,
+							   CloudCoverage = 0.05f,
 							   CloudDensity = 1
 						   };
 
@@ -84,7 +84,7 @@ namespace Game.World.Terrains.Generators.Noise.Managers.Areas
 							   Persistence = 0.8,
 							   Octaves = 8,
 							   Amplitude = 0.01,
-							   CloudCoverage = 0.02,
+							   CloudCoverage = 0.0075f,
 							   CloudDensity = 0.5
 						   };
 

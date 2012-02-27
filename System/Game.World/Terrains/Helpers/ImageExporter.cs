@@ -4,10 +4,10 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
 using Framework.Core.Common;
+using Game.World.Terrains.Generators.Noise;
 using Game.World.Terrains.Generators.Noise.Managers.Areas;
 using Game.World.Terrains.Parts.Areas;
 using Game.World.Terrains.Parts.Tiles;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Game.World.Terrains.Helpers
 {
@@ -423,6 +423,19 @@ namespace Game.World.Terrains.Helpers
 
 				bitmap.Save(fileName);
 			}
+		}
+
+		public static void SaveNoiseToBitmap(string fileName, INoiseGenerator noiseGenerator, int width, int height)
+		{
+			var currentSize = noiseGenerator.GetOutputSize();
+
+			// Generate the noise and save it to file
+			noiseGenerator.SetOutputSize(width, height, 1);
+			noiseGenerator.Generate(0, 0, 0);
+			SaveGrayScaleImage(fileName, noiseGenerator.Output, width, height);
+
+			// Reset the previous output size
+			noiseGenerator.SetOutputSize(currentSize.X, currentSize.Y, currentSize.Z);
 		}
 	}
 }

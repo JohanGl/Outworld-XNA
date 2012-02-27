@@ -27,6 +27,7 @@ namespace Game.World.Terrains.Generators.Noise.Managers
 
 			AreaResources = new AreaResourceGenerator(seed, width, height, depth);
 			AreaResources.Generators[NoiseAreaResourceType.Default].SetOutputSize(width, height, depth);
+			AreaResources.Generators[NoiseAreaResourceType.Grainy].SetOutputSize(width, height, depth);
 		}
 	}
 }

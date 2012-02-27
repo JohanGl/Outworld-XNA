@@ -1,4 +1,5 @@
 ﻿using System;
+using Framework.Core.Common;
 
 namespace Game.World.Terrains.Generators.Noise
 {
@@ -9,7 +10,6 @@ namespace Game.World.Terrains.Generators.Noise
 		#region private members
 
 		private NoiseGeneratorSettings settings;
-		private Random random;
 		private int width;
 		private int height;
 		private int depth;
@@ -27,7 +27,6 @@ namespace Game.World.Terrains.Generators.Noise
 		{
 			this.settings = settings;
 
-			random = new Random(settings.Seed);
 			offset = Int32.MaxValue / 2;
 
 			lacunarity = 2.0f;
@@ -41,6 +40,11 @@ namespace Game.World.Terrains.Generators.Noise
 			this.depth = depth;
 
 			Output = new byte[width * height * depth];
+		}
+
+		public Vector3i GetOutputSize()
+		{
+			return new Vector3i(width, height, depth);
 		}
 
 		public void Generate(int x, int y)
@@ -78,7 +82,7 @@ namespace Game.World.Terrains.Generators.Noise
 
 		public byte GenerateSinglePoint(int x, int y)
 		{
-			throw new NotImplementedException();
+			return GenerateSinglePoint(x, y, 0);
 		}
 
 		public byte GenerateSinglePoint(int x, int y, int z)

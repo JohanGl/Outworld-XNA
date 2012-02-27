@@ -30,11 +30,10 @@ namespace Outworld.Settings.Global
 
 		public void InitializeDefaults()
 		{
-			// World (seed 500 = buggy)
-			World.Seed = 140024513;
-			World.Fog = true;
+			// World (seed 500 = buggy), 140024513 = default
+			World.Seed = 12345;
+			World.Fog = false;
 			World.Gravity = new Vector3(0, -30, 0);
-			//World.ViewDistance = new Vector2i(3, 3);
 			World.ViewDistance = new Vector2i(3, 3);
 
 			// Player

@@ -2,6 +2,7 @@
 {
 	public enum NoiseAreaResourceType
 	{
-		Default
+		Default,
+		Grainy
 	}
 }

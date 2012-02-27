@@ -342,11 +342,11 @@ namespace Outworld.Scenes.InGame
 
 			if (Context.Input.Keyboard.KeyboardState[Keys.F1].WasJustPressed)
 			{
-				skinnedModelPlayer.SetAnimationClip("Idle");
+				//skinnedModelPlayer.SetAnimationClip("Idle");
 			}
 			else if (Context.Input.Keyboard.KeyboardState[Keys.F2].WasJustPressed)
 			{
-				skinnedModelPlayer.SetAnimationClip("Run");
+				//skinnedModelPlayer.SetAnimationClip("Run");
 			}
 
 			// Debug tool shortcuts

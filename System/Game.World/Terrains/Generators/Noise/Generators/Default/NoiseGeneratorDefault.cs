@@ -1,4 +1,5 @@
 ﻿using System;
+using Framework.Core.Common;
 
 namespace Game.World.Terrains.Generators.Noise
 {
@@ -45,6 +46,11 @@ namespace Game.World.Terrains.Generators.Noise
 			Output = new byte[width * height * depth];
 		}
 
+		public Vector3i GetOutputSize()
+		{
+			return new Vector3i(width, height, depth);
+		}
+
 		public void Generate(int x, int y)
 		{
 			int index = 0;
@@ -61,7 +67,7 @@ namespace Game.World.Terrains.Generators.Noise
 
 		public void Generate(int x, int y, int z)
 		{
-			throw new NotSupportedException("Not supported yet");
+			Generate(x, y);
 		}
 
 		public byte GenerateSinglePoint(int x, int y)

@@ -1,4 +1,5 @@
 ﻿using Framework.Core.Common;
+using Game.World.Terrains.Generators.Noise.Helpers;
 using Game.World.Terrains.Generators.Noise.Managers;
 using Game.World.Terrains.Generators.Noise.Managers.AreaResources;
 using Game.World.Terrains.Generators.Noise.Managers.Areas;
@@ -143,7 +144,7 @@ namespace Game.World.Terrains.Generators.Areas.Tiles
 
 		private TileType GetSurfaceTileType(Vector3i location, int tileX, int tileY, int tileZ)
 		{
-			byte tileType = noiseManager.AreaResources.Generators[NoiseAreaResourceType.Default].GenerateSinglePoint(
+			byte tileType = noiseManager.AreaResources.Generators[NoiseAreaResourceType.Grainy].GenerateSinglePoint(
 				tileX + (location.X * Area.Size.X),
 				tileY + (location.Y * Area.Size.Y),
 				tileZ + (location.Z * Area.Size.Z));
@@ -168,10 +169,18 @@ namespace Game.World.Terrains.Generators.Areas.Tiles
 			}
 			else
 			{
+				// Mountains are based on 2 noise patterns
 				noiseManager.Areas.Generators[NoiseAreaType.Mountains].Generate(x, z);
-				surface = noiseManager.Areas.Generators[NoiseAreaType.Mountains].Output;
+				noiseManager.Areas.Generators[NoiseAreaType.Mountains_Ground].Generate(x, z);
 
-				heightMapCache.HeightMaps.Add(location, noiseManager.Areas.Generators[NoiseAreaType.Mountains].Output);
+				// Extract the noise
+				surface = noiseManager.Areas.Generators[NoiseAreaType.Mountains].Output;
+				var surfaceGround = noiseManager.Areas.Generators[NoiseAreaType.Mountains_Ground].Output;
+
+				// Combine the noise patterns
+				noiseManager.Areas.Modifiers.Combine(ref surface, surfaceGround, CombineMode.Add);
+
+				heightMapCache.HeightMaps.Add(location, surface);
 			}
 		}
 	}

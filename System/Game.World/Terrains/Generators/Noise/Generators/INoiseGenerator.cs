@@ -1,4 +1,6 @@
-﻿namespace Game.World.Terrains.Generators.Noise
+﻿using Framework.Core.Common;
+
+namespace Game.World.Terrains.Generators.Noise
 {
 	/// <summary>
 	/// Base interface for all noise generator implementations
@@ -10,6 +12,7 @@
 		void Initialize(NoiseGeneratorSettings settings);
 
 		void SetOutputSize(int width, int height, int depth = 1);
+		Vector3i GetOutputSize();
 
 		void Generate(int x, int y);
 		void Generate(int x, int y, int z);

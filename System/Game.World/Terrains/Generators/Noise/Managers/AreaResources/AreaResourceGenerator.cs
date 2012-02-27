@@ -21,6 +21,7 @@ namespace Game.World.Terrains.Generators.Noise.Managers.AreaResources
 			// Initialize the arearesource-type generators
 			Generators = new Dictionary<NoiseAreaResourceType, INoiseGenerator>();
 			Generators[NoiseAreaResourceType.Default] = InitializeDefault();
+			Generators[NoiseAreaResourceType.Grainy] = InitializeGrainy();
 		}
 
 		#region Generator initializers
@@ -37,6 +38,27 @@ namespace Game.World.Terrains.Generators.Noise.Managers.AreaResources
 				Octaves = 1,
 				Amplitude = 0.01,
 				CloudCoverage = 0.17,
+				CloudDensity = 1
+			};
+
+			generator.Initialize(settings);
+			generator.SetOutputSize(width, height);
+
+			return generator;
+		}
+
+		private INoiseGenerator InitializeGrainy()
+		{
+			var generator = new NoiseGeneratorLibNoise();
+
+			var settings = new NoiseGeneratorSettings
+			{
+				Seed = seed,
+				Frequency = 0.25,
+				Persistence = 0.3,
+				Octaves = 1,
+				Amplitude = 0.01,
+				CloudCoverage = 0,
 				CloudDensity = 1
 			};
 
