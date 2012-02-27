@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using Framework.Core.Common;
 using Game.World.Terrains.Generators.Noise.Managers;
 using Game.World.Terrains.Generators.Noise.Managers.Areas;
 using Game.World.Terrains.Generators.Noise.Managers.World;
-using Game.World.Terrains.Helpers;
 
 namespace Game.World.Terrains.Generators.Areas.Themes
 {

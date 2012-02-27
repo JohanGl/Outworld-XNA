@@ -66,7 +66,7 @@ namespace Outworld.Scenes.Debug.Terrain
 			var resources = Context.Resources;
 
 			// Terrain
-			string[] tiles = { "Grass", "Grass2", "Stone5", "Stone6", "Sand", "Mud" };
+			string[] tiles = { "Grass", "Grass2", "Stone", "Stone2", "Sand", "Mud" };
 			for (int i = 1; i <= 6; i++)
 			{
 				resources.Textures.Add("Tile" + i, content.Load<Texture2D>(@"Tiles\" + tiles[i - 1]));

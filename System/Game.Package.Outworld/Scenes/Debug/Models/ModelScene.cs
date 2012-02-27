@@ -1,6 +1,4 @@
-﻿using System.Text;
-using Framework.Animations;
-using Framework.Core.Contexts;
+﻿using Framework.Animations;
 using Framework.Core.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,11 +10,6 @@ namespace Outworld.Scenes.Debug.Models
 		private Vector3 Position = Vector3.Zero;
 		private float angle;
 		private SkinnedModel skinnedModel;
-
-		public override void Initialize(GameContext context)
-		{
-			base.Initialize(context);
-		}
 
 		public override void LoadContent()
 		{
@@ -40,8 +33,8 @@ namespace Outworld.Scenes.Debug.Models
 
 		public override void Update(GameTime gameTime)
 		{
-			//angle = 90;
-			angle += 60f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+			angle = 90;
+			//angle += 60f * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
 			skinnedModel.Update(gameTime);
 		}
@@ -57,7 +50,7 @@ namespace Outworld.Scenes.Debug.Models
 		{
 			float aspectRatio = Context.Graphics.Device.Viewport.AspectRatio;
 			Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45.0f), aspectRatio, 1.0f, 10000.0f);
-			Matrix view = Matrix.CreateLookAt(new Vector3(0.0f, 1.0f, 6f), Vector3.Zero, Vector3.Up);
+			Matrix view = Matrix.CreateLookAt(new Vector3(0, 1, 4), new Vector3(0, 0.5f, 0), Vector3.Up);
 
 			skinnedModel.Render(view, projection, new Vector3(0), angle);
 		}

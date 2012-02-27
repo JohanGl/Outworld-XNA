@@ -5,7 +5,6 @@ using Game.World.Terrains.Generators.Areas.Themes;
 using Game.World.Terrains.Generators.Areas.Tiles;
 using Game.World.Terrains.Generators.Noise.Managers;
 using Game.World.Terrains.Generators.Noise.Managers.Areas;
-using Game.World.Terrains.Helpers;
 using Game.World.Terrains.Parts.Areas;
 using Game.World.Terrains.Parts.Tiles;
 

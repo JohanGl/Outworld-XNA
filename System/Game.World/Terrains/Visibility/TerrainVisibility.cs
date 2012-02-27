@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Framework.Core.Common;
 using Framework.Core.Diagnostics.Logging;
@@ -70,6 +71,9 @@ namespace Game.World.Terrains.Visibility
 
 		public void Teleport(Vector3 position)
 		{
+			var stopwatch = new Stopwatch();
+			stopwatch.Start();
+
 			// Clear all current areas
 			Clear();
 
@@ -114,7 +118,8 @@ namespace Game.World.Terrains.Visibility
 				AreaModelHandler.Build(AreaCollection.Areas[i]);
 			}
 
-			Logger.Log<TerrainVisibility>(LogLevel.Debug, "Teleported to {0} with a view distance of {1}", view.Location, view.ViewDistance.ToString());
+			stopwatch.Stop();
+			Logger.Log<TerrainVisibility>(LogLevel.Debug, "Teleported to {0} with a view distance of {1} took {2} ms", view.Location, view.ViewDistance.ToString(), stopwatch.ElapsedMilliseconds);
 		}
 
 		public void Update(ref Vector3 position)

@@ -92,24 +92,12 @@ namespace Game.World.Terrains.Parts.Areas.AreaModels.Builders
 			meshInfo.Vertices[meshInfo.VertexCount++] = GetVertex(x2, y, z2, textureBox.Max.X, textureBox.Max.Z);
 			meshInfo.Vertices[meshInfo.VertexCount++] = GetVertex(x, y, z2, textureBox.Min.X, textureBox.Max.Z);
 
-			//vertices.Add(GetVertex(x, y, z, textureBox.Min.X, textureBox.Min.Z));
-			//vertices.Add(GetVertex(x2, y, z, textureBox.Max.X, textureBox.Min.Z));
-			//vertices.Add(GetVertex(x2, y, z2, textureBox.Max.X, textureBox.Max.Z));
-			//vertices.Add(GetVertex(x, y, z2, textureBox.Min.X, textureBox.Max.Z));
-
 			meshInfo.Indices[meshInfo.IndexCount++] = index;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 1;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 3;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 1;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 2;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 3;
-
-			//indices.Add(index);
-			//indices.Add((index + 1));
-			//indices.Add((index + 3));
-			//indices.Add((index + 1));
-			//indices.Add((index + 2));
-			//indices.Add((index + 3));
 		}
 
 		private void AddBottom(float x, float y, float z)
@@ -128,24 +116,12 @@ namespace Game.World.Terrains.Parts.Areas.AreaModels.Builders
 			meshInfo.Vertices[meshInfo.VertexCount++] = GetVertex(x2, y, z2, textureBox.Max.X, textureBox.Max.Z);
 			meshInfo.Vertices[meshInfo.VertexCount++] = GetVertex(x, y, z2, textureBox.Min.X, textureBox.Max.Z);
 
-			//vertices.Add(GetVertex(x, y, z, textureBox.Min.X, textureBox.Min.Z));
-			//vertices.Add(GetVertex(x2, y, z, textureBox.Max.X, textureBox.Min.Z));
-			//vertices.Add(GetVertex(x2, y, z2, textureBox.Max.X, textureBox.Max.Z));
-			//vertices.Add(GetVertex(x, y, z2, textureBox.Min.X, textureBox.Max.Z));
-
 			meshInfo.Indices[meshInfo.IndexCount++] = index;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 3;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 1;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 1;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 3;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 2;
-
-			//indices.Add(index);
-			//indices.Add((index + 3));
-			//indices.Add((index + 1));
-			//indices.Add((index + 1));
-			//indices.Add((index + 3));
-			//indices.Add((index + 2));
 		}
 
 		private void AddLeft(float x, float y, float z)
@@ -162,24 +138,12 @@ namespace Game.World.Terrains.Parts.Areas.AreaModels.Builders
 			meshInfo.Vertices[meshInfo.VertexCount++] = GetVertex(x, y2, z2, textureBox.Max.Y, textureBox.Max.Z);
 			meshInfo.Vertices[meshInfo.VertexCount++] = GetVertex(x, y2, z, textureBox.Max.Y, textureBox.Min.Z);
 
-			//vertices.Add(GetVertex(x, y, z, textureBox.Min.Y, textureBox.Min.Z));
-			//vertices.Add(GetVertex(x, y, z2, textureBox.Min.Y, textureBox.Max.Z));
-			//vertices.Add(GetVertex(x, y2, z2, textureBox.Max.Y, textureBox.Max.Z));
-			//vertices.Add(GetVertex(x, y2, z, textureBox.Max.Y, textureBox.Min.Z));
-
 			meshInfo.Indices[meshInfo.IndexCount++] = index;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 1;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 3;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 1;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 2;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 3;
-
-			//indices.Add(index);
-			//indices.Add((index + 1));
-			//indices.Add((index + 3));
-			//indices.Add((index + 1));
-			//indices.Add((index + 2));
-			//indices.Add((index + 3));
 		}
 
 		private void AddRight(float x, float y, float z)
@@ -198,24 +162,12 @@ namespace Game.World.Terrains.Parts.Areas.AreaModels.Builders
 			meshInfo.Vertices[meshInfo.VertexCount++] = GetVertex(x, y2, z2, textureBox.Max.Y, textureBox.Max.Z);
 			meshInfo.Vertices[meshInfo.VertexCount++] = GetVertex(x, y2, z, textureBox.Max.Y, textureBox.Min.Z);
 
-			//vertices.Add(GetVertex(x, y, z, textureBox.Min.Y, textureBox.Min.Z));
-			//vertices.Add(GetVertex(x, y, z2, textureBox.Min.Y, textureBox.Max.Z));
-			//vertices.Add(GetVertex(x, y2, z2, textureBox.Max.Y, textureBox.Max.Z));
-			//vertices.Add(GetVertex(x, y2, z, textureBox.Max.Y, textureBox.Min.Z));
-
 			meshInfo.Indices[meshInfo.IndexCount++] = index;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 3;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 1;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 1;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 3;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 2;
-
-			//indices.Add(index);
-			//indices.Add((index + 3));
-			//indices.Add((index + 1));
-			//indices.Add((index + 1));
-			//indices.Add((index + 3));
-			//indices.Add((index + 2));
 		}
 
 		private void AddFront(float x, float y, float z)
@@ -234,24 +186,12 @@ namespace Game.World.Terrains.Parts.Areas.AreaModels.Builders
 			meshInfo.Vertices[meshInfo.VertexCount++] = GetVertex(x2, y2, z, textureBox.Max.X, textureBox.Max.Y);
 			meshInfo.Vertices[meshInfo.VertexCount++] = GetVertex(x, y2, z, textureBox.Min.X, textureBox.Max.Y);
 
-			//vertices.Add(GetVertex(x, y, z, textureBox.Min.X, textureBox.Min.Y));
-			//vertices.Add(GetVertex(x2, y, z, textureBox.Max.X, textureBox.Min.Y));
-			//vertices.Add(GetVertex(x2, y2, z, textureBox.Max.X, textureBox.Max.Y));
-			//vertices.Add(GetVertex(x, y2, z, textureBox.Min.X, textureBox.Max.Y));
-
 			meshInfo.Indices[meshInfo.IndexCount++] = index;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 1;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 3;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 1;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 2;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 3;
-
-			//indices.Add(index);
-			//indices.Add((index + 1));
-			//indices.Add((index + 3));
-			//indices.Add((index + 1));
-			//indices.Add((index + 2));
-			//indices.Add((index + 3));
 		}
 
 		private void AddBack(float x, float y, float z)
@@ -268,24 +208,12 @@ namespace Game.World.Terrains.Parts.Areas.AreaModels.Builders
 			meshInfo.Vertices[meshInfo.VertexCount++] = GetVertex(x2, y2, z, textureBox.Max.X, textureBox.Max.Y);
 			meshInfo.Vertices[meshInfo.VertexCount++] = GetVertex(x, y2, z, textureBox.Min.X, textureBox.Max.Y);
 
-			//vertices.Add(GetVertex(x, y, z, textureBox.Min.X, textureBox.Min.Y));
-			//vertices.Add(GetVertex(x2, y, z, textureBox.Max.X, textureBox.Min.Y));
-			//vertices.Add(GetVertex(x2, y2, z, textureBox.Max.X, textureBox.Max.Y));
-			//vertices.Add(GetVertex(x, y2, z, textureBox.Min.X, textureBox.Max.Y));
-
 			meshInfo.Indices[meshInfo.IndexCount++] = index;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 3;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 1;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 1;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 3;
 			meshInfo.Indices[meshInfo.IndexCount++] = index + 2;
-
-			//indices.Add(index);
-			//indices.Add((index + 3));
-			//indices.Add((index + 1));
-			//indices.Add((index + 1));
-			//indices.Add((index + 3));
-			//indices.Add((index + 2));
 		}
 
 		private TerrainVertex GetVertex(float x, float y, float z, float u, float v)

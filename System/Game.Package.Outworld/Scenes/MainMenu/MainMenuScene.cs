@@ -22,6 +22,12 @@ namespace Outworld.Scenes.MainMenu
 		private IAudioHandler audioHandler;
 		private TextBlock title;
 		private bool isSoundEnabled;
+		private bool autoStartAsHost;
+
+		public MainMenuScene(bool autoStartAsHost = false)
+		{
+			this.autoStartAsHost = autoStartAsHost;
+		}
 
 		public override void LoadContent()
 		{
@@ -58,6 +64,11 @@ namespace Outworld.Scenes.MainMenu
 			joinGameScene.InitializeGui(gui);
 
 			ShowScene(SceneType.Main);
+
+			if (autoStartAsHost)
+			{
+				newGameScene.StartAsHost();
+			}
 		}
 
 		public override void UnloadContent()

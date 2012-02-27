@@ -20,6 +20,7 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 		private IGameServer gameServer;
 		private IGameClient gameClient;
 		private bool startedLoading;
+		private bool overrideStartAsHost;
 
 		private StackPanel menuOptions;
 
@@ -128,7 +129,7 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 
 		public override void Update(GameTime gameTime)
 		{
-			if (menuOptions.Visibility != Visibility.Visible)
+			if (menuOptions.Visibility != Visibility.Visible && !overrideStartAsHost)
 			{
 				return;
 			}
@@ -152,6 +153,13 @@ namespace Outworld.Scenes.MainMenu.ChildScenes
 
 		public override void Render(GameTime gameTime)
 		{
+		}
+
+		public void StartAsHost()
+		{
+			((MainMenuScene)Parent).DisableSound();
+			overrideStartAsHost = true;
+			CreateHost();
 		}
 
 		private void CreateHost()

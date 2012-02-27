@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Framework.Audio;
+﻿using Framework.Audio;
 using Framework.Core.Contexts;
 using Framework.Core.Messaging;
 using Framework.Core.Packages;
@@ -59,7 +57,7 @@ namespace Outworld
 			gameContext.Resources.Textures.Add("Global.TerrainMergeMask", content.Load<Texture2D>(@"Terrain\TerrainMergeMask"));
 
 			// Initialize the root scene of this game package
-			gameContext.Scenes.Add(new MainMenuScene());
+			gameContext.Scenes.Add(new MainMenuScene(true));
 			//gameContext.Scenes.Add(new TerrainDebugScene());
 			//gameContext.Scenes.Add(new ModelScene());
 			//gameContext.Scenes.Add(new AudioScene());

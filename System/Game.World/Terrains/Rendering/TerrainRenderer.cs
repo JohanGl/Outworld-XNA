@@ -93,7 +93,7 @@ namespace Game.World.Terrains.Rendering
 					mesh = meshCollection.Value[i];
 
 					// Skip empty meshes
-					if (mesh.VertexBuffer == null)
+					if (mesh.VertexCount == 0 || mesh.VertexBuffer == null)
 					{
 						continue;
 					}

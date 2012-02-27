@@ -138,6 +138,7 @@ namespace Outworld.Scenes.InGame
 			//stringBuilder.Append(")");
 			//stringBuilder.Append(Environment.NewLine);
 
+			// Player
 			stringBuilder.Append("Direction: ");
 			stringBuilder.Append((int)playerInput.MovementDirection);
 			stringBuilder.Append(Environment.NewLine);
@@ -160,6 +161,7 @@ namespace Outworld.Scenes.InGame
 			stringBuilder.Append(")");
 			stringBuilder.Append(Environment.NewLine);
 
+			// Areas
 			stringBuilder.Append("Area (");
 			stringBuilder.Append(playerSpatial.Area.X);
 			stringBuilder.Append(", ");
@@ -169,23 +171,25 @@ namespace Outworld.Scenes.InGame
 			stringBuilder.Append(")");
 			stringBuilder.Append(Environment.NewLine);
 
-			//stringBuilder.Append("Total Areas: ");
-			//stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalAreas);
-			//stringBuilder.Append(Environment.NewLine);
+			stringBuilder.Append("Total Areas: ");
+			stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalAreas);
+			stringBuilder.Append(Environment.NewLine);
 
-			//stringBuilder.Append("Total Cached Areas: ");
-			//stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalCachedAreas);
-			//stringBuilder.Append(Environment.NewLine);
+			stringBuilder.Append("Total Cached Areas: ");
+			stringBuilder.Append(gameClient.World.TerrainContext.Visibility.Statistics.TotalCachedAreas);
+			stringBuilder.Append(Environment.NewLine);
 
-			//stringBuilder.Append("MeshPool: ");
-			//stringBuilder.Append(TerrainMeshPool.Statistics);
-			//stringBuilder.Append(Environment.NewLine);
+			stringBuilder.Append("MeshPool: ");
+			stringBuilder.Append(TerrainMeshPool.Statistics);
+			stringBuilder.Append(Environment.NewLine);
 
+			// Memory
 			stringBuilder.Append("Allocated RAM: ");
 			stringBuilder.Append((currentProcess.PeakWorkingSet64 / 1024) / 1024);
 			stringBuilder.Append(" MB");
 			stringBuilder.Append(Environment.NewLine);
 
+			// Player movement
 			stringBuilder.Append(Environment.NewLine);
 			stringBuilder.Append("Ascending ");
 			stringBuilder.Append(playerSpatialSensor.State[SpatialSensorStateType.Ascending].IsActive);

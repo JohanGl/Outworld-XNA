@@ -229,7 +229,7 @@ namespace Outworld.Scenes.InGame
 			resources.Fonts.Add("Hud.Small", content.Load<SpriteFont>(@"Fonts\Moire_Small"));
 
 			// Terrain
-			string[] tiles = { "Grass", "Grass2", "Stone5", "Stone6", "Sand", "Mud" };
+			string[] tiles = { "Grass", "Grass2", "Stone", "Stone2", "Sand", "Mud" };
 			for (int i = 1; i <= 6; i++)
 			{
 				resources.Textures.Add("Tile" + i, content.Load<Texture2D>(@"Tiles\" + tiles[i - 1]));
