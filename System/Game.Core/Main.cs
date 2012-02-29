@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using Framework.Core.Contexts;
 using Framework.Core.Diagnostics.Logging;
-using Framework.Core.Helpers.Input;
 using Game.Core.Utils;
 using Game.GamePackages;
 using Microsoft.Xna.Framework;
@@ -18,7 +17,7 @@ namespace Game.Core
 	{
 		private GameContext context;
 		private FpsCounter fpsCounter;
-		private GamePackageManager gamePackageManager;
+		//private GamePackageManager gamePackageManager;
 
 		/// <summary>
 		/// Default constructor

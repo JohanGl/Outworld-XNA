@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Framework.Core.Contexts;
+using Framework.Core.Contexts.Input;
 using Framework.Gui.Events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

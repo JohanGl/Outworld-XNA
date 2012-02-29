@@ -7,6 +7,7 @@ using Framework.Animations;
 using Framework.Audio;
 using Framework.Core.Common;
 using Framework.Core.Contexts;
+using Framework.Core.Contexts.Input;
 using Framework.Core.Messaging;
 using Framework.Core.Scenes;
 using Framework.Core.Scenes.Cameras;
@@ -111,6 +112,8 @@ namespace Outworld.Scenes.InGame
 			new LogFilterHelper().FilterEverythingExceptGameClient();
 			//new LogFilterHelper().FilterTerrain();
 			//new LogFilterHelper().FilterAll();
+
+			//bool a = context.Input.Bindings[0].WasJustPressed;
 		}
 
 		private void InitializeHelpers()
@@ -143,25 +146,43 @@ namespace Outworld.Scenes.InGame
 
 		private void InitializeInput()
 		{
-			Context.Input.Keyboard.ClearMappings();
-			Context.Input.Keyboard.AddMapping(Keys.Escape);
-			Context.Input.Keyboard.AddMapping(Keys.W);
-			Context.Input.Keyboard.AddMapping(Keys.A);
-			Context.Input.Keyboard.AddMapping(Keys.S);
-			Context.Input.Keyboard.AddMapping(Keys.D);
-			Context.Input.Keyboard.AddMapping(Keys.LeftShift);
-			Context.Input.Keyboard.AddMapping(Keys.Space);
-			Context.Input.Keyboard.AddMapping(Keys.Up);
-			Context.Input.Keyboard.AddMapping(Keys.Down);
-			Context.Input.Keyboard.AddMapping(Keys.Left);
-			Context.Input.Keyboard.AddMapping(Keys.Right);
-			Context.Input.Keyboard.AddMapping(Keys.F1);
-			Context.Input.Keyboard.AddMapping(Keys.F2);
-			Context.Input.Keyboard.AddMapping(Keys.F11);
-			Context.Input.Keyboard.AddMapping(Keys.F12);
+			var input = Context.Input;
 
-			Context.Input.Mouse.ShowCursor = false;
-			Context.Input.Mouse.AutoCenter = true;
+			// Keyboard settings
+			input.Keyboard.ClearMappings();
+			input.Keyboard.AddMapping(Keys.Escape);
+			input.Keyboard.AddMapping(Keys.W);
+			input.Keyboard.AddMapping(Keys.A);
+			input.Keyboard.AddMapping(Keys.S);
+			input.Keyboard.AddMapping(Keys.D);
+			input.Keyboard.AddMapping(Keys.LeftShift);
+			input.Keyboard.AddMapping(Keys.Space);
+			input.Keyboard.AddMapping(Keys.Up);
+			input.Keyboard.AddMapping(Keys.Down);
+			input.Keyboard.AddMapping(Keys.Left);
+			input.Keyboard.AddMapping(Keys.Right);
+			input.Keyboard.AddMapping(Keys.F1);
+			input.Keyboard.AddMapping(Keys.F2);
+			input.Keyboard.AddMapping(Keys.F11);
+			input.Keyboard.AddMapping(Keys.F12);
+
+			// Mouse settings
+			input.Mouse.ShowCursor = false;
+			input.Mouse.AutoCenter = true;
+
+			// Assign default bindings
+			input.Bindings.Clear();
+			input.Bindings.AddKeyboardBinding(Keys.W, PlayerInputBindings.Forward);
+			input.Bindings.AddKeyboardBinding(Keys.S, PlayerInputBindings.Backwards);
+			input.Bindings.AddKeyboardBinding(Keys.A, PlayerInputBindings.Left);
+			input.Bindings.AddKeyboardBinding(Keys.D, PlayerInputBindings.Right);
+			input.Bindings.AddKeyboardBinding(Keys.Space, PlayerInputBindings.Jump);
+
+			input.Bindings.AddMouseBinding(MouseInputType.MoveUp, PlayerInputBindings.LookUp);
+			input.Bindings.AddMouseBinding(MouseInputType.MoveDown, PlayerInputBindings.LookDown);
+			input.Bindings.AddMouseBinding(MouseInputType.MoveLeft, PlayerInputBindings.LookLeft);
+			input.Bindings.AddMouseBinding(MouseInputType.MoveRight, PlayerInputBindings.LookRight);
+			input.Bindings.AddMouseBinding(MouseInputType.LeftButton, PlayerInputBindings.Jump);
 		}
 
 		private void InitializePlayer()

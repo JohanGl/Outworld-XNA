@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MessageHandlerTypes.cs" />
+    <Compile Include="Common\PlayerInputBindings.cs" />
     <Compile Include="Outworld\Characters\HealthComponent.cs" />
     <Compile Include="Outworld\Entity.cs" />
     <Compile Include="Outworld\Weapons\WeaponComponent.cs" />

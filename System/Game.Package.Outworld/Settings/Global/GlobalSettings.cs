@@ -1,5 +1,6 @@
 ﻿using Framework.Core.Common;
 using Framework.Core.Contexts;
+using Framework.Core.Contexts.Input;
 using Game.World.Terrains.Parts.Areas;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -34,7 +35,7 @@ namespace Outworld.Settings.Global
 			World.Seed = 12345;
 			World.Fog = false;
 			World.Gravity = new Vector3(0, -30, 0);
-			World.ViewDistance = new Vector2i(3, 3);
+			World.ViewDistance = new Vector2i(4, 4);
 
 			// Player
 			Player.CameraOffsetY = 0.7f;

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Framework.Core.Contexts;
+using Framework.Core.Contexts.Input;
 using Microsoft.Xna.Framework.Input;
 
 namespace Outworld.Settings.Global

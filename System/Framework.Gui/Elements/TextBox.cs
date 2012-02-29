@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using Framework.Core.Common;
 using Framework.Core.Contexts;
+using Framework.Core.Contexts.Input;
 using Framework.Gui.Events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

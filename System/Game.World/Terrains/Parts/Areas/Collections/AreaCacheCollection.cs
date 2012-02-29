@@ -26,50 +26,32 @@ namespace Game.World.Terrains.Parts.Areas.Collections
 
 		public void Add(Area area)
 		{
-			lock (areaCollection.CollectionLock)
-			{
-				areaCollection.Add(area);
-			}
+			areaCollection.Add(area);
 		}
 
 		public void AddRange(List<Area> areas)
 		{
-			lock (areaCollection.CollectionLock)
-			{
-				areaCollection.AddRange(areas);
-			}
+			areaCollection.AddRange(areas);
 		}
 
 		public void Remove(Area area)
 		{
-			lock (areaCollection.CollectionLock)
-			{
-				areaCollection.Remove(area);
-			}
+			areaCollection.Remove(area);
 		}
 
 		public void RemoveRange(List<Area> areas)
 		{
-			lock (areaCollection.CollectionLock)
-			{
-				areaCollection.RemoveRange(areas);
-			}
+			areaCollection.RemoveRange(areas);
 		}
 
 		public void Clear()
 		{
-			lock (areaCollection.CollectionLock)
-			{
-				areaCollection.Clear();
-			}
+			areaCollection.Clear();
 		}
 
 		public Area GetAreaAt(int x, int y, int z)
 		{
-			lock (areaCollection.CollectionLock)
-			{
-				return areaCollection.GetAreaAt(x, y, z);
-			}
+			return areaCollection.GetAreaAt(x, y, z);
 		}
 
 		public void RemoveExpiredAreas(Vector3i location, Vector3i viewDistance)

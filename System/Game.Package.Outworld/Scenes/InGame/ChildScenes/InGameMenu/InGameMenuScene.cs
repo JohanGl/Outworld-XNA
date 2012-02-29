@@ -59,7 +59,7 @@ namespace Outworld.Scenes.InGame.ChildScenes.InGameMenu
 		public override void Update(GameTime gameTime)
 		{
 			// Leave menu
-			if (Context.Input.GamePadState[Buttons.Back].WasJustPressed)
+			if (Context.Input.GamePad.GamePadState[Buttons.Back].WasJustPressed)
 			{
 				ExitScene();
 			}
@@ -157,8 +157,8 @@ namespace Outworld.Scenes.InGame.ChildScenes.InGameMenu
 		private void UpdateInputs()
 		{
 			// Select the previous GUI-item
-			if (Context.Input.GamePadState[Buttons.LeftThumbstickUp].WasJustPressed ||
-				Context.Input.GamePadState[Buttons.DPadUp].WasJustPressed ||
+			if (Context.Input.GamePad.GamePadState[Buttons.LeftThumbstickUp].WasJustPressed ||
+				Context.Input.GamePad.GamePadState[Buttons.DPadUp].WasJustPressed ||
 				Context.Input.Keyboard.KeyboardState[Keys.Up].WasJustPressed)
 			{
 				buttonIndex--;
@@ -172,8 +172,8 @@ namespace Outworld.Scenes.InGame.ChildScenes.InGameMenu
 			}
 
 			// Select the next GUI-item
-			if (Context.Input.GamePadState[Buttons.LeftThumbstickDown].WasJustPressed || 
-				Context.Input.GamePadState[Buttons.DPadDown].WasJustPressed ||
+			if (Context.Input.GamePad.GamePadState[Buttons.LeftThumbstickDown].WasJustPressed ||
+				Context.Input.GamePad.GamePadState[Buttons.DPadDown].WasJustPressed ||
 				Context.Input.Keyboard.KeyboardState[Keys.Down].WasJustPressed)
 			{
 				buttonIndex++;
@@ -187,7 +187,7 @@ namespace Outworld.Scenes.InGame.ChildScenes.InGameMenu
 			}
 
 			// GUI-item pressed
-			if (Context.Input.GamePadState[Buttons.A].WasJustPressed ||
+			if (Context.Input.GamePad.GamePadState[Buttons.A].WasJustPressed ||
 				Context.Input.Keyboard.KeyboardState[Keys.Space].WasJustPressed)
 			{
 				PressSelectedButton();

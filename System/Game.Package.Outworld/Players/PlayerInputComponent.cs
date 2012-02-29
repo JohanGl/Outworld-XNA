@@ -1,5 +1,6 @@
 ﻿using System;
 using Framework.Core.Contexts;
+using Framework.Core.Contexts.Input;
 using Framework.Core.Messaging;
 using Framework.Core.Scenes.Cameras;
 using Framework.Core.Services;
@@ -121,22 +122,10 @@ namespace Outworld.Players
 				controller.TryJump = false;
 
 				// Jump
-				if (inputContext.HasGamePad)
+				if (inputContext.Bindings.Binding[PlayerInputBindings.Jump].WasJustPressed)
 				{
-					if (inputContext.GamePadState[Buttons.A].WasJustPressed)
-					{
-						controller.TryJump = true;
-						messageHandler.AddMessage(MessageHandlerType.ServerEntityEvents, GetPlayerMessage(EntityEventType.Jump));
-					}
-				}
-
-				if (inputContext.Keyboard.IsEnabled)
-				{
-					if (inputContext.Keyboard.KeyboardState[Keys.Space].WasJustPressed)
-					{
-						controller.TryJump = true;
-						messageHandler.AddMessage(MessageHandlerType.ServerEntityEvents, GetPlayerMessage(EntityEventType.Jump));
-					}
+					controller.TryJump = true;
+					messageHandler.AddMessage(MessageHandlerType.ServerEntityEvents, GetPlayerMessage(EntityEventType.Jump));					
 				}
 			}
 
@@ -147,19 +136,28 @@ namespace Outworld.Players
 
 		private void HandleInputLookAround()
 		{
+			//// Look up
+			//if (inputContext.Bindings.Binding[PlayerInputBindings.LookUp].Pressed)
+			//{
+			//    spatialComponent.Angle.Y += inputContext.Bindings.Binding[PlayerInputBindings.LookUp].Value * lookAroundAmplifier.Y;
+			//}
+			//// Look down
+			//else if (inputContext.Bindings.Binding[PlayerInputBindings.LookDown].Pressed)
+			//{
+			//    spatialComponent.Angle.Y -= inputContext.Bindings.Binding[PlayerInputBindings.LookDown].Value * lookAroundAmplifier.Y;
+			//}
+
+			if (inputContext.Mouse.MouseState[MouseInputType.MoveUp].Pressed)
+			{
+				spatialComponent.Angle.Y += inputContext.Mouse.MouseState[MouseInputType.MoveUp].Value * lookAroundAmplifier.Y;
+			}
+			else if (inputContext.Mouse.MouseState[MouseInputType.MoveDown].Pressed)
+			{
+				spatialComponent.Angle.Y += inputContext.Mouse.MouseState[MouseInputType.MoveDown].Value * lookAroundAmplifier.Y;
+			}
+
 			if (inputContext.Mouse.IsEnabled)
 			{
-				// Look up
-				if (inputContext.Mouse.MouseState[MouseInputType.MoveUp].Pressed)
-				{
-					spatialComponent.Angle.Y += inputContext.Mouse.MouseState[MouseInputType.MoveUp].Value * lookAroundAmplifier.Y;
-				}
-				// Look down
-				else if (inputContext.Mouse.MouseState[MouseInputType.MoveDown].Pressed)
-				{
-					spatialComponent.Angle.Y -= inputContext.Mouse.MouseState[MouseInputType.MoveDown].Value * lookAroundAmplifier.Y;
-				}
-
 				// Look left
 				if (inputContext.Mouse.MouseState[MouseInputType.MoveLeft].Pressed)
 				{
@@ -171,31 +169,31 @@ namespace Outworld.Players
 					spatialComponent.Angle.X += inputContext.Mouse.MouseState[MouseInputType.MoveRight].Value * lookAroundAmplifier.X;
 				}
 			}
-			
-			if (inputContext.HasGamePad)
-			{
-				// Look up
-				if (inputContext.GamePadState[Buttons.RightThumbstickUp].Pressed)
-				{
-					spatialComponent.Angle.Y += inputContext.GamePadState[Buttons.RightThumbstickUp].Value * lookAroundAmplifier.Y;
-				}
-					// Look down
-				else if (inputContext.GamePadState[Buttons.RightThumbstickDown].Pressed)
-				{
-					spatialComponent.Angle.Y -= inputContext.GamePadState[Buttons.RightThumbstickDown].Value * lookAroundAmplifier.Y;
-				}
 
-				// Look left
-				if (inputContext.GamePadState[Buttons.RightThumbstickLeft].Pressed)
-				{
-					spatialComponent.Angle.X -= inputContext.GamePadState[Buttons.RightThumbstickLeft].Value * lookAroundAmplifier.X;
-				}
-					// Look right
-				else if (inputContext.GamePadState[Buttons.RightThumbstickRight].Pressed)
-				{
-					spatialComponent.Angle.X += inputContext.GamePadState[Buttons.RightThumbstickRight].Value * lookAroundAmplifier.X;
-				}
-			}
+			//if (inputContext.GamePad.IsEnabled)
+			//{
+			//    // Look up
+			//    if (inputContext.GamePad.GamePadState[Buttons.RightThumbstickUp].Pressed)
+			//    {
+			//        spatialComponent.Angle.Y += inputContext.GamePad.GamePadState[Buttons.RightThumbstickUp].Value * lookAroundAmplifier.Y;
+			//    }
+			//        // Look down
+			//    else if (inputContext.GamePad.GamePadState[Buttons.RightThumbstickDown].Pressed)
+			//    {
+			//        spatialComponent.Angle.Y -= inputContext.GamePad.GamePadState[Buttons.RightThumbstickDown].Value * lookAroundAmplifier.Y;
+			//    }
+
+			//    // Look left
+			//    if (inputContext.GamePad.GamePadState[Buttons.RightThumbstickLeft].Pressed)
+			//    {
+			//        spatialComponent.Angle.X -= inputContext.GamePad.GamePadState[Buttons.RightThumbstickLeft].Value * lookAroundAmplifier.X;
+			//    }
+			//        // Look right
+			//    else if (inputContext.GamePad.GamePadState[Buttons.RightThumbstickRight].Pressed)
+			//    {
+			//        spatialComponent.Angle.X += inputContext.GamePad.GamePadState[Buttons.RightThumbstickRight].Value * lookAroundAmplifier.X;
+			//    }
+			//}
 
 			// Left/right angle limit checks
 			if (spatialComponent.Angle.X < 0)
@@ -224,75 +222,39 @@ namespace Outworld.Players
 			movementVelocity.Y = 0;
 			movementVelocity.Z = 0;
 
-			if (inputContext.Keyboard.IsEnabled)
+			var forward = inputContext.Bindings.Binding[PlayerInputBindings.Forward];
+			var backwards = inputContext.Bindings.Binding[PlayerInputBindings.Backwards];
+			var left = inputContext.Bindings.Binding[PlayerInputBindings.Left];
+			var right = inputContext.Bindings.Binding[PlayerInputBindings.Right];
+
+			if (forward.Pressed)
 			{
-				bool forward = inputContext.Keyboard.KeyboardState[Keys.W].Pressed;
-				bool backwards = inputContext.Keyboard.KeyboardState[Keys.S].Pressed;
-				bool left = inputContext.Keyboard.KeyboardState[Keys.A].Pressed;
-				bool right = inputContext.Keyboard.KeyboardState[Keys.D].Pressed;
-
-				if (forward)
-				{
-					float speed = (1f * movementAmplifier.X);
-					movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X + 90));
-					movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X + 90));
-				}
-				else if (backwards)
-				{
-					float speed = (1f * movementAmplifier.X);
-					movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X - 90));
-					movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X - 90));
-				}
-
-				if (left)
-				{
-					float speed = (1f * movementAmplifier.Y);
-					movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X));
-					movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X));
-				}
-				else if (right)
-				{
-					float speed = (1f * movementAmplifier.Y);
-					movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X + 180));
-					movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X + 180));
-				}
-
-				UpdateInputMovementDirection(forward, backwards, left, right);
+				float speed = (forward.Value * movementAmplifier.X);
+				movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X + 90));
+				movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X + 90));
 			}
+			else if (backwards.Pressed)
+			{
+				float speed = (backwards.Value * movementAmplifier.X);
+				movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X - 90));
+				movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X - 90));
+			}
+
+			if (left.Pressed)
+			{
+				float speed = (left.Value * movementAmplifier.Y);
+				movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X));
+				movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X));
+			}
+			else if (right.Pressed)
+			{
+				float speed = (right.Value * movementAmplifier.Y);
+				movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X + 180));
+				movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X + 180));
+			}
+
+			UpdateInputMovementDirection(forward.Pressed, backwards.Pressed, left.Pressed, right.Pressed);
 			
-			//if (inputContext.HasGamePad)
-			//{
-			//    // Walk forward
-			//    if (inputContext.GamePadState[Buttons.LeftThumbstickUp].Pressed)
-			//    {
-			//        float speed = (inputContext.GamePadState[Buttons.LeftThumbstickUp].Value * movementAmplifier.X);
-			//        movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X + 90));
-			//        movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X + 90));
-			//    }
-			//        // Walk backwards
-			//    else if (inputContext.GamePadState[Buttons.LeftThumbstickDown].Pressed)
-			//    {
-			//        float speed = (inputContext.GamePadState[Buttons.LeftThumbstickDown].Value * movementAmplifier.X);
-			//        movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X - 90));
-			//        movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X - 90));
-			//    }
-
-			//    // Strafe left
-			//    if (inputContext.GamePadState[Buttons.LeftThumbstickLeft].Pressed)
-			//    {
-			//        float speed = (inputContext.GamePadState[Buttons.LeftThumbstickLeft].Value * movementAmplifier.Y);
-			//        movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X));
-			//        movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X));
-			//    }
-			//        // Strafe right
-			//    else if (inputContext.GamePadState[Buttons.LeftThumbstickRight].Pressed)
-			//    {
-			//        float speed = (inputContext.GamePadState[Buttons.LeftThumbstickRight].Value * movementAmplifier.Y);
-			//        movementVelocity.X += speed * (float)Math.Cos(radian * (spatialComponent.Angle.X + 180));
-			//        movementVelocity.Z += speed * (float)Math.Sin(radian * (spatialComponent.Angle.X + 180));
-			//    }
-			//}
-
 			// Lower the movement speed if crouching
 			if (playerComponent.IsCrouching)
 			{
@@ -353,9 +315,9 @@ namespace Outworld.Players
 				}
 			}
 
-			if (inputContext.HasGamePad)
+			if (inputContext.GamePad.IsEnabled)
 			{
-				if (inputContext.GamePadState[Buttons.LeftStick].WasJustPressed)
+				if (inputContext.GamePad.GamePadState[Buttons.LeftStick].WasJustPressed)
 				{
 					playerComponent.ToggleStandCrouch();
 				}
